@@ -96,16 +96,22 @@ export const getJobPosts = unstable_cache(
 );
 
 export async function getJobBySlug(slug: string): Promise<JobPost | null> {
-  const { data, error } = await supabase
-    .from("jobs")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .single();
 
-  if (error || !data) return null;
+      if (error || !data) return null;
 
-  return mapJobRow(data);
+      return mapJobRow(data);
+    },
+    [`job-${slug}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
 }
 
 // =============================================================================
@@ -134,16 +140,22 @@ export const getSchemePosts = unstable_cache(
 export async function getSchemeBySlug(
   slug: string
 ): Promise<SchemePost | null> {
-  const { data, error } = await supabase
-    .from("schemes")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("schemes")
+        .select("*")
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .single();
 
-  if (error || !data) return null;
+      if (error || !data) return null;
 
-  return mapSchemeRow(data);
+      return mapSchemeRow(data);
+    },
+    [`scheme-${slug}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
 }
 
 // =============================================================================
@@ -151,71 +163,95 @@ export async function getSchemeBySlug(
 // =============================================================================
 
 export async function getJobsByCategory(category: string): Promise<JobPost[]> {
-  const { data, error } = await supabase
-    .from("jobs")
-    .select("*")
-    .eq("is_active", true)
-    .ilike("category", category)
-    .order("published_at", { ascending: false });
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("is_active", true)
+        .ilike("category", category)
+        .order("published_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching jobs by category:", error.message);
-    return [];
-  }
+      if (error) {
+        console.error("Error fetching jobs by category:", error.message);
+        return [];
+      }
 
-  return (data || []).map(mapJobRow);
+      return (data || []).map(mapJobRow);
+    },
+    [`jobs-category-${category}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
 }
 
 export async function getJobsByState(state: string): Promise<JobPost[]> {
-  const { data, error } = await supabase
-    .from("jobs")
-    .select("*")
-    .eq("is_active", true)
-    .ilike("state", state)
-    .order("published_at", { ascending: false });
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("is_active", true)
+        .ilike("state", state)
+        .order("published_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching jobs by state:", error.message);
-    return [];
-  }
+      if (error) {
+        console.error("Error fetching jobs by state:", error.message);
+        return [];
+      }
 
-  return (data || []).map(mapJobRow);
+      return (data || []).map(mapJobRow);
+    },
+    [`jobs-state-${state}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
 }
 
 export async function getSchemesByCategory(
   category: string
 ): Promise<SchemePost[]> {
-  const { data, error } = await supabase
-    .from("schemes")
-    .select("*")
-    .eq("is_active", true)
-    .ilike("category", category)
-    .order("published_at", { ascending: false });
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("schemes")
+        .select("*")
+        .eq("is_active", true)
+        .ilike("category", category)
+        .order("published_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching schemes by category:", error.message);
-    return [];
-  }
+      if (error) {
+        console.error("Error fetching schemes by category:", error.message);
+        return [];
+      }
 
-  return (data || []).map(mapSchemeRow);
+      return (data || []).map(mapSchemeRow);
+    },
+    [`schemes-category-${category}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
 }
 
 export async function getSchemesByState(
   state: string
 ): Promise<SchemePost[]> {
-  const { data, error } = await supabase
-    .from("schemes")
-    .select("*")
-    .eq("is_active", true)
-    .ilike("state", state)
-    .order("published_at", { ascending: false });
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("schemes")
+        .select("*")
+        .eq("is_active", true)
+        .ilike("state", state)
+        .order("published_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching schemes by state:", error.message);
-    return [];
-  }
+      if (error) {
+        console.error("Error fetching schemes by state:", error.message);
+        return [];
+      }
 
-  return (data || []).map(mapSchemeRow);
+      return (data || []).map(mapSchemeRow);
+    },
+    [`schemes-state-${state}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
 }
 
 // =============================================================================

@@ -8,7 +8,9 @@ import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getSchemePosts, getSchemeBySlug } from "@/lib/content";
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+
+export const revalidate = REVALIDATE_INTERVAL;
 
 interface SchemePageProps {
   params: { slug: string };

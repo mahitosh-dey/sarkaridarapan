@@ -6,7 +6,9 @@ import SchemeCard from "@/components/ui/SchemeCard";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import { getJobsByState, getSchemesByState } from "@/lib/content";
-import { SITE_NAME, SITE_URL, STATES } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, STATES, REVALIDATE_INTERVAL } from "@/lib/constants";
+
+export const revalidate = REVALIDATE_INTERVAL;
 
 interface StatePageProps {
   params: { state: string };

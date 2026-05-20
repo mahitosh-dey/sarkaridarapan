@@ -6,7 +6,9 @@ import Pagination from "@/components/ui/Pagination";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import { getJobsByCategory } from "@/lib/content";
-import { SITE_NAME, SITE_URL, JOB_CATEGORIES } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+
+export const revalidate = REVALIDATE_INTERVAL;
 
 interface CategoryPageProps {
   params: { category: string };

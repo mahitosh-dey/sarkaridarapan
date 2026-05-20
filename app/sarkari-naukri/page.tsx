@@ -7,7 +7,9 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getJobPosts } from "@/lib/content";
-import { SITE_NAME, SITE_URL, JOB_CATEGORIES } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+
+export const revalidate = REVALIDATE_INTERVAL;
 
 export const metadata: Metadata = {
   title: "Latest Sarkari Naukri 2025 - Government Jobs",

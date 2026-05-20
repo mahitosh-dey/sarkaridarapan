@@ -7,7 +7,9 @@ import SchemeCard from "@/components/ui/SchemeCard";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getJobPosts, getSchemePosts } from "@/lib/content";
-import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+
+export const revalidate = REVALIDATE_INTERVAL;
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana 2025`,
