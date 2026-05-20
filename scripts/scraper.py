@@ -19,6 +19,12 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
 # Suppress InsecureRequestWarning — government sites often have broken SSL certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -103,6 +109,29 @@ def _parse_date(text: str) -> str:
     """Try to find a date string like '15-06-2025' or '15/06/2025' in text."""
     m = re.search(r"\d{1,2}[/-]\d{1,2}[/-]\d{4}", text)
     return m.group(0) if m else ""
+
+
+_BAD_TITLE_PATTERNS = ["{{", "translate", "loading"]
+
+# Minimum number of alphabetic words (3+ letters each) a title must contain
+_MIN_REAL_WORDS = 2
+
+
+def _validate_title(title: str) -> str | None:
+    """Validate a scraped title. Returns a reason string if invalid, None if OK."""
+    stripped = title.strip()
+    if not stripped:
+        return "empty"
+    lower = stripped.lower()
+    for pat in _BAD_TITLE_PATTERNS:
+        if pat in lower:
+            return f"contains '{pat}'"
+    if len(stripped) > 200:
+        return f"too long ({len(stripped)} chars)"
+    real_words = [w for w in re.findall(r"[a-zA-Z]{3,}", stripped)]
+    if len(real_words) < _MIN_REAL_WORDS:
+        return "no real words (only symbols/codes)"
+    return None
 
 
 def _make_job(
@@ -489,33 +518,63 @@ def scrape_bpsc() -> list[dict]:
 
 
 def scrape_uppsc() -> list[dict]:
-    """Scrape latest notifications from UPPSC (uppsc.up.nic.in)."""
+    """Scrape latest notifications from UPPSC (uppsc.up.nic.in).
+
+    UPPSC uses AngularJS for rendering so a plain HTTP GET returns template
+    strings like ``{{'Examinations_HM' | translate}}``.  We use Playwright
+    (headless Chromium) to let JavaScript execute before reading the DOM.
+    """
     jobs: list[dict] = []
     url = "https://uppsc.up.nic.in"
-    session = _session()
 
-    try:
-        resp = session.get(url, timeout=30)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        log.warning(f"  Could not reach UPPSC: {e}")
+    if not HAS_PLAYWRIGHT:
+        log.warning("  Playwright not installed — skipping UPPSC (pip install playwright && playwright install chromium)")
         return jobs
 
-    soup = BeautifulSoup(resp.text, "html.parser")
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/120.0.0.0 Safari/537.36"
+                ),
+                ignore_https_errors=True,
+            )
+            page.goto(url, wait_until="networkidle", timeout=60000)
+            # Wait for Angular to finish rendering
+            page.wait_for_timeout(3000)
 
-    links = soup.find_all("a", href=True)
+            # Extract all links from the rendered DOM
+            link_data = page.evaluate("""() => {
+                return Array.from(document.querySelectorAll('a[href]')).map(a => ({
+                    text: a.innerText.trim(),
+                    href: a.href,
+                }));
+            }""")
+
+            browser.close()
+    except Exception as e:
+        log.warning(f"  Playwright error scraping UPPSC: {e}")
+        return jobs
+
     seen_titles: set[str] = set()
+    keywords = ["recruitment", "vacancy", "examination", "notification",
+                 "advt", "advertisement", "apply", "admit card", "result",
+                 "combined", "pcs", "ro", "aro", "review officer",
+                 "lecturer", "medical", "dental", "engineer", "teacher"]
 
-    for link in links:
-        text = link.get_text(strip=True)
-        href = link["href"]
+    for item in link_data:
+        text = item.get("text", "")
+        href = item.get("href", "")
 
         if not text or len(text) < 15:
             continue
-        keywords = ["recruitment", "vacancy", "examination", "notification",
-                     "advt", "advertisement", "apply", "admit card", "result",
-                     "combined", "pcs", "ro", "aro", "review officer",
-                     "lecturer", "medical", "dental", "engineer", "teacher"]
+        reason = _validate_title(text)
+        if reason:
+            log.info(f"    Skipped (UPPSC): {reason} — {text[:80]!r}")
+            continue
         if not any(kw in text.lower() for kw in keywords):
             continue
 
@@ -729,6 +788,18 @@ def main():
         log.info(f"  Found {len(found)} notifications")
         all_jobs.extend(found)
 
+    # Validate all titles before saving
+    valid_jobs: list[dict] = []
+    for j in all_jobs:
+        reason = _validate_title(j["title"])
+        if reason:
+            log.info(f"  Skipped job: {reason} — {j['title'][:80]!r}")
+        else:
+            valid_jobs.append(j)
+    if len(valid_jobs) < len(all_jobs):
+        log.info(f"  Filtered out {len(all_jobs) - len(valid_jobs)} invalid job titles")
+    all_jobs = valid_jobs
+
     # Deduplicate across scrapers by slug
     unique_jobs: dict[str, dict] = {}
     for job in all_jobs:
@@ -764,6 +835,18 @@ def main():
             found = []
         log.info(f"  Found {len(found)} schemes")
         all_schemes.extend(found)
+
+    # Validate all scheme titles before saving
+    valid_schemes: list[dict] = []
+    for s in all_schemes:
+        reason = _validate_title(s["title"])
+        if reason:
+            log.info(f"  Skipped scheme: {reason} — {s['title'][:80]!r}")
+        else:
+            valid_schemes.append(s)
+    if len(valid_schemes) < len(all_schemes):
+        log.info(f"  Filtered out {len(all_schemes) - len(valid_schemes)} invalid scheme titles")
+    all_schemes = valid_schemes
 
     unique_schemes: dict[str, dict] = {}
     for s in all_schemes:
