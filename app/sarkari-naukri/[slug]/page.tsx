@@ -33,15 +33,20 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     const job = await getJobBySlug(params.slug);
     if (!job) return { title: "Job Not Found" };
 
+    const post = job.postName || job.title;
+    const org = job.organization || "Government of India";
+    const salaryPart = job.salary ? ` Salary: ${job.salary}.` : "";
+    const description = `${job.title} - Apply for ${post} at ${org}.${salaryPart} Check eligibility, dates and how to apply at SarkariDarpan.`;
+
     return {
       title: job.title,
-      description: job.description || `${job.title} - Get complete details about this government job including eligibility, salary, application process, and important dates.`,
+      description,
       alternates: {
         canonical: `${SITE_URL}/sarkari-naukri/${params.slug}`,
       },
       openGraph: {
         title: `${job.title} | ${SITE_NAME}`,
-        description: job.description || `${job.title} - Complete details and application process.`,
+        description,
         url: `${SITE_URL}/sarkari-naukri/${params.slug}`,
         type: "article",
         publishedTime: job.publishedAt,
@@ -51,7 +56,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       twitter: {
         card: "summary_large_image",
         title: job.title,
-        description: job.description,
+        description,
       },
     };
   } catch {

@@ -12,7 +12,7 @@ import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDA
 export const revalidate = REVALIDATE_INTERVAL;
 
 export const metadata: Metadata = {
-  title: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana 2025`,
+  title: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana 2026`,
   description: SITE_DESCRIPTION,
   alternates: {
     canonical: SITE_URL,

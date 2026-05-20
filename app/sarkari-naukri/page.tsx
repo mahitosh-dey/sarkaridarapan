@@ -12,16 +12,16 @@ import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/
 export const revalidate = REVALIDATE_INTERVAL;
 
 export const metadata: Metadata = {
-  title: "Latest Sarkari Naukri 2025 - Government Jobs",
+  title: "Latest Sarkari Naukri 2026 - Government Jobs",
   description:
-    "Browse all latest Sarkari Naukri 2025 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, banking jobs, railway jobs, and more.",
+    "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, banking jobs, railway jobs, and more.",
   alternates: {
     canonical: `${SITE_URL}/sarkari-naukri`,
   },
   openGraph: {
-    title: `Latest Sarkari Naukri 2025 - Government Jobs | ${SITE_NAME}`,
+    title: `Latest Sarkari Naukri 2026 - Government Jobs | ${SITE_NAME}`,
     description:
-      "Browse all latest Sarkari Naukri 2025 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, and more.",
+      "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, and more.",
     url: `${SITE_URL}/sarkari-naukri`,
     type: "website",
   },
@@ -63,7 +63,7 @@ export default async function SarkariNaukriPage({ searchParams }: SarkariNaukriP
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
-          Latest Sarkari Naukri 2025
+          Latest Sarkari Naukri 2026
         </h1>
         <p className="text-gray-600 text-lg">
           Find the latest government job notifications across all departments and states.

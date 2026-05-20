@@ -26,13 +26,13 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   if (!categoryData) return { title: "Category Not Found" };
 
   return {
-    title: `${categoryData.name} Jobs 2025 - Government Job Vacancies`,
-    description: `Latest ${categoryData.name} government job vacancies 2025. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`,
+    title: `${categoryData.name} Jobs 2026 - Government Job Vacancies`,
+    description: `Latest ${categoryData.name} government job vacancies 2026. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`,
     alternates: {
       canonical: `${SITE_URL}/category/${params.category}`,
     },
     openGraph: {
-      title: `${categoryData.name} Jobs 2025 | ${SITE_NAME}`,
+      title: `${categoryData.name} Jobs 2026 | ${SITE_NAME}`,
       description: `Latest ${categoryData.name} government job vacancies and notifications.`,
       url: `${SITE_URL}/category/${params.category}`,
       type: "website",
@@ -73,7 +73,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
-          {categoryData.name} Government Jobs 2025
+          {categoryData.name} Government Jobs 2026
         </h1>
         <p className="text-gray-600 text-lg">
           Browse all latest {categoryData.name.toLowerCase()} government job notifications, vacancies, and recruitment updates.

@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
-            <strong>Last Updated:</strong> May 18, 2025
+            <strong>Last Updated:</strong> May 20, 2026
           </p>
 
           <p className="mt-4 text-gray-700 leading-relaxed">

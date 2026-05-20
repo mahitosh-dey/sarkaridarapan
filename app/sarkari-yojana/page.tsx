@@ -12,16 +12,16 @@ import { SITE_NAME, SITE_URL, SCHEME_CATEGORIES, REVALIDATE_INTERVAL } from "@/l
 export const revalidate = REVALIDATE_INTERVAL;
 
 export const metadata: Metadata = {
-  title: "Sarkari Yojana 2025 - Government Schemes List",
+  title: "Sarkari Yojana 2026 - Government Schemes List",
   description:
-    "Complete list of Sarkari Yojana 2025 - Central and State Government Schemes. Find eligibility, benefits, application process for PM Yojana, state schemes, and more.",
+    "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes. Find eligibility, benefits, application process for PM Yojana, state schemes, and more.",
   alternates: {
     canonical: `${SITE_URL}/sarkari-yojana`,
   },
   openGraph: {
-    title: `Sarkari Yojana 2025 - Government Schemes List | ${SITE_NAME}`,
+    title: `Sarkari Yojana 2026 - Government Schemes List | ${SITE_NAME}`,
     description:
-      "Complete list of Sarkari Yojana 2025 - Central and State Government Schemes for all citizens.",
+      "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes for all citizens.",
     url: `${SITE_URL}/sarkari-yojana`,
     type: "website",
   },
@@ -63,7 +63,7 @@ export default async function SarkariYojanaPage({ searchParams }: SarkariYojanaL
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
-          Sarkari Yojana 2025 - Government Schemes
+          Sarkari Yojana 2026 - Government Schemes
         </h1>
         <p className="text-gray-600 text-lg">
           Explore all central and state government schemes with eligibility details, benefits, and application process.

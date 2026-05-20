@@ -15,7 +15,7 @@ export default function DisclaimerPage() {
       <article className="mx-auto max-w-4xl">
         <h1 className="mb-6 text-3xl font-bold text-gray-900">Disclaimer</h1>
         <p className="mb-8 text-sm text-gray-500">
-          Last Updated: January 1, 2025
+          Last Updated: May 20, 2026
         </p>
 
         <div className="space-y-8 text-gray-700 leading-relaxed">

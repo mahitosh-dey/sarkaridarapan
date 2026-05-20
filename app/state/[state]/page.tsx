@@ -25,13 +25,13 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   if (!stateData) return { title: "State Not Found" };
 
   return {
-    title: `${stateData.name} Government Jobs & Schemes 2025`,
+    title: `${stateData.name} Government Jobs & Schemes 2026`,
     description: `Latest government jobs and sarkari yojana in ${stateData.name}. Find state government vacancies, central govt jobs, and government schemes available in ${stateData.name}.`,
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
     openGraph: {
-      title: `${stateData.name} Government Jobs & Schemes 2025 | ${SITE_NAME}`,
+      title: `${stateData.name} Government Jobs & Schemes 2026 | ${SITE_NAME}`,
       description: `Latest government jobs and sarkari yojana in ${stateData.name}.`,
       url: `${SITE_URL}/state/${params.state}`,
       type: "website",
