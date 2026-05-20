@@ -3,4 +3,3 @@ beautifulsoup4>=4.12
 supabase>=2.0
 python-dotenv>=1.0
 groq>=0.9
-playwright>=1.40

@@ -6,6 +6,8 @@ checks Supabase for duplicates, and inserts new entries as unpublished
 drafts (is_active=false) for AI rewriting before publication.
 """
 
+from __future__ import annotations
+
 import os
 import re
 import sys
@@ -18,12 +20,6 @@ import urllib3
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from supabase import create_client, Client
-
-try:
-    from playwright.sync_api import sync_playwright
-    HAS_PLAYWRIGHT = True
-except ImportError:
-    HAS_PLAYWRIGHT = False
 
 # Suppress InsecureRequestWarning — government sites often have broken SSL certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -111,27 +107,19 @@ def _parse_date(text: str) -> str:
     return m.group(0) if m else ""
 
 
-_BAD_TITLE_PATTERNS = ["{{", "translate", "loading"]
+# ---------------------------------------------------------------------------
+# Title Validation
+# ---------------------------------------------------------------------------
 
-# Minimum number of alphabetic words (3+ letters each) a title must contain
-_MIN_REAL_WORDS = 2
-
-
-def _validate_title(title: str) -> str | None:
-    """Validate a scraped title. Returns a reason string if invalid, None if OK."""
-    stripped = title.strip()
-    if not stripped:
-        return "empty"
-    lower = stripped.lower()
-    for pat in _BAD_TITLE_PATTERNS:
-        if pat in lower:
-            return f"contains '{pat}'"
-    if len(stripped) > 200:
-        return f"too long ({len(stripped)} chars)"
-    real_words = [w for w in re.findall(r"[a-zA-Z]{3,}", stripped)]
-    if len(real_words) < _MIN_REAL_WORDS:
-        return "no real words (only symbols/codes)"
-    return None
+def is_valid_title(title):
+    """Validate a scraped title before saving. Returns True if title is OK."""
+    bad_patterns = ["{{", "translate", "Loading...", "undefined", "null"]
+    if not title or len(title) < 10:
+        return False
+    for pattern in bad_patterns:
+        if pattern in title:
+            return False
+    return True
 
 
 def _make_job(
@@ -186,7 +174,7 @@ def _make_scheme(
 
 
 # ---------------------------------------------------------------------------
-# Job Scrapers
+# Job Scrapers (SSC + IBPS only — static HTML sites)
 # ---------------------------------------------------------------------------
 
 def scrape_ssc() -> list[dict]:
@@ -215,6 +203,9 @@ def scrape_ssc() -> list[dict]:
 
         # Filter to recruitment-related links
         if not text or len(text) < 15:
+            continue
+        if not is_valid_title(text):
+            log.info(f"    Skipped (SSC): invalid title — {text[:80]!r}")
             continue
         keywords = ["recruitment", "vacancy", "examination", "notification",
                      "admit card", "result", "apply", "cgl", "chsl", "mts",
@@ -270,6 +261,9 @@ def scrape_ibps() -> list[dict]:
 
         if not text or len(text) < 15:
             continue
+        if not is_valid_title(text):
+            log.info(f"    Skipped (IBPS): invalid title — {text[:80]!r}")
+            continue
         keywords = ["clerk", "po", "so", "rrb", "recruitment", "notification",
                      "vacancy", "apply", "examination", "cwe", "officer",
                      "probationary", "specialist"]
@@ -293,309 +287,6 @@ def scrape_ibps() -> list[dict]:
             category="Banking",
             official_link=href,
             last_date=last_date,
-        ))
-
-    return jobs
-
-
-def scrape_railways() -> list[dict]:
-    """Scrape latest notifications from Indian Railways recruitment page."""
-    jobs: list[dict] = []
-    url = (
-        "https://indianrailways.gov.in/railwayboard/"
-        "view_section.jsp?lang=0&id=0,7,1281"
-    )
-    session = _session()
-
-    try:
-        resp = session.get(url, timeout=30)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        log.warning(f"  Could not reach Indian Railways: {e}")
-        return jobs
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    links = soup.find_all("a", href=True)
-    seen_titles: set[str] = set()
-
-    for link in links:
-        text = link.get_text(strip=True)
-        href = link["href"]
-
-        if not text or len(text) < 15:
-            continue
-        keywords = ["recruitment", "vacancy", "notification", "rrb", "rrc",
-                     "ntpc", "group d", "alp", "technician", "apprentice",
-                     "apply", "engagement"]
-        if not any(kw in text.lower() for kw in keywords):
-            continue
-
-        norm = text.lower().strip()
-        if norm in seen_titles:
-            continue
-        seen_titles.add(norm)
-
-        # Railway site uses relative paths with different patterns
-        if href.startswith("/"):
-            href = "https://indianrailways.gov.in" + href
-        elif not href.startswith("http"):
-            href = (
-                "https://indianrailways.gov.in/railwayboard/" + href
-            )
-
-        last_date = _parse_date(text)
-        jobs.append(_make_job(
-            title=text,
-            organization="Indian Railways",
-            category="Railway",
-            official_link=href,
-            last_date=last_date,
-        ))
-
-    return jobs
-
-
-def scrape_upsc() -> list[dict]:
-    """Scrape latest notifications from UPSC (upsc.gov.in)."""
-    jobs: list[dict] = []
-    url = "https://www.upsc.gov.in"
-    notices_url = f"{url}/notices"
-    session = _session()
-
-    try:
-        resp = session.get(notices_url, timeout=30)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        log.warning(f"  Could not reach UPSC: {e}")
-        return jobs
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    links = soup.find_all("a", href=True)
-    seen_titles: set[str] = set()
-
-    for link in links:
-        text = link.get_text(strip=True)
-        href = link["href"]
-
-        if not text or len(text) < 15:
-            continue
-        keywords = ["recruitment", "vacancy", "examination", "notification",
-                     "advt", "apply", "civil services", "ies", "ifs", "nda",
-                     "cds", "capf", "epfo", "cms", "geo-scientist",
-                     "engineering", "medical", "combined", "lateral"]
-        if not any(kw in text.lower() for kw in keywords):
-            continue
-
-        norm = text.lower().strip()
-        if norm in seen_titles:
-            continue
-        seen_titles.add(norm)
-
-        if href.startswith("/"):
-            href = url + href
-        elif not href.startswith("http"):
-            href = url + "/" + href
-
-        last_date = _parse_date(text)
-        jobs.append(_make_job(
-            title=text,
-            organization="Union Public Service Commission (UPSC)",
-            category="UPSC",
-            official_link=href,
-            last_date=last_date,
-        ))
-
-    return jobs
-
-
-def scrape_nta() -> list[dict]:
-    """Scrape latest exam notifications from NTA (nta.ac.in)."""
-    jobs: list[dict] = []
-    url = "https://www.nta.ac.in"
-    session = _session()
-
-    try:
-        resp = session.get(url, timeout=30)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        log.warning(f"  Could not reach NTA: {e}")
-        return jobs
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    links = soup.find_all("a", href=True)
-    seen_titles: set[str] = set()
-
-    for link in links:
-        text = link.get_text(strip=True)
-        href = link["href"]
-
-        if not text or len(text) < 15:
-            continue
-        keywords = ["neet", "jee", "cuet", "ugc net", "csir net", "gate",
-                     "cmat", "gpat", "icar", "duet", "examination",
-                     "notification", "registration", "admit card", "result",
-                     "apply", "exam", "test"]
-        if not any(kw in text.lower() for kw in keywords):
-            continue
-
-        norm = text.lower().strip()
-        if norm in seen_titles:
-            continue
-        seen_titles.add(norm)
-
-        if href.startswith("/"):
-            href = url + href
-        elif not href.startswith("http"):
-            href = url + "/" + href
-
-        last_date = _parse_date(text)
-        jobs.append(_make_job(
-            title=text,
-            organization="National Testing Agency (NTA)",
-            category="Entrance Exam",
-            official_link=href,
-            last_date=last_date,
-        ))
-
-    return jobs
-
-
-def scrape_bpsc() -> list[dict]:
-    """Scrape latest notifications from BPSC (bpsc.bih.nic.in)."""
-    jobs: list[dict] = []
-    url = "https://www.bpsc.bih.nic.in"
-    session = _session()
-
-    try:
-        resp = session.get(url, timeout=30)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        log.warning(f"  Could not reach BPSC: {e}")
-        return jobs
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    links = soup.find_all("a", href=True)
-    seen_titles: set[str] = set()
-
-    for link in links:
-        text = link.get_text(strip=True)
-        href = link["href"]
-
-        if not text or len(text) < 15:
-            continue
-        keywords = ["recruitment", "vacancy", "examination", "notification",
-                     "advt", "advertisement", "apply", "admit card", "result",
-                     "combined", "teacher", "judicial", "pcs", "engineer",
-                     "professor", "lecturer", "assistant"]
-        if not any(kw in text.lower() for kw in keywords):
-            continue
-
-        norm = text.lower().strip()
-        if norm in seen_titles:
-            continue
-        seen_titles.add(norm)
-
-        if href.startswith("/"):
-            href = url + href
-        elif not href.startswith("http"):
-            href = url + "/" + href
-
-        last_date = _parse_date(text)
-        jobs.append(_make_job(
-            title=text,
-            organization="Bihar Public Service Commission (BPSC)",
-            category="State PSC",
-            official_link=href,
-            last_date=last_date,
-            state="bihar",
-        ))
-
-    return jobs
-
-
-def scrape_uppsc() -> list[dict]:
-    """Scrape latest notifications from UPPSC (uppsc.up.nic.in).
-
-    UPPSC uses AngularJS for rendering so a plain HTTP GET returns template
-    strings like ``{{'Examinations_HM' | translate}}``.  We use Playwright
-    (headless Chromium) to let JavaScript execute before reading the DOM.
-    """
-    jobs: list[dict] = []
-    url = "https://uppsc.up.nic.in"
-
-    if not HAS_PLAYWRIGHT:
-        log.warning("  Playwright not installed — skipping UPPSC (pip install playwright && playwright install chromium)")
-        return jobs
-
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page(
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                ),
-                ignore_https_errors=True,
-            )
-            page.goto(url, wait_until="networkidle", timeout=60000)
-            # Wait for Angular to finish rendering
-            page.wait_for_timeout(3000)
-
-            # Extract all links from the rendered DOM
-            link_data = page.evaluate("""() => {
-                return Array.from(document.querySelectorAll('a[href]')).map(a => ({
-                    text: a.innerText.trim(),
-                    href: a.href,
-                }));
-            }""")
-
-            browser.close()
-    except Exception as e:
-        log.warning(f"  Playwright error scraping UPPSC: {e}")
-        return jobs
-
-    seen_titles: set[str] = set()
-    keywords = ["recruitment", "vacancy", "examination", "notification",
-                 "advt", "advertisement", "apply", "admit card", "result",
-                 "combined", "pcs", "ro", "aro", "review officer",
-                 "lecturer", "medical", "dental", "engineer", "teacher"]
-
-    for item in link_data:
-        text = item.get("text", "")
-        href = item.get("href", "")
-
-        if not text or len(text) < 15:
-            continue
-        reason = _validate_title(text)
-        if reason:
-            log.info(f"    Skipped (UPPSC): {reason} — {text[:80]!r}")
-            continue
-        if not any(kw in text.lower() for kw in keywords):
-            continue
-
-        norm = text.lower().strip()
-        if norm in seen_titles:
-            continue
-        seen_titles.add(norm)
-
-        if href.startswith("/"):
-            href = url + href
-        elif not href.startswith("http"):
-            href = url + "/" + href
-
-        last_date = _parse_date(text)
-        jobs.append(_make_job(
-            title=text,
-            organization="Uttar Pradesh Public Service Commission (UPPSC)",
-            category="State PSC",
-            official_link=href,
-            last_date=last_date,
-            state="uttar-pradesh",
         ))
 
     return jobs
@@ -628,6 +319,9 @@ def scrape_myscheme() -> list[dict]:
         href = link["href"]
 
         if not text or len(text) < 10:
+            continue
+        if not is_valid_title(text):
+            log.info(f"    Skipped (MyScheme): invalid title — {text[:80]!r}")
             continue
         keywords = ["scheme", "yojana", "mission", "programme", "program",
                      "abhiyan", "pension", "scholarship", "subsidy",
@@ -678,6 +372,9 @@ def scrape_pmindia() -> list[dict]:
         href = link["href"]
 
         if not text or len(text) < 10:
+            continue
+        if not is_valid_title(text):
+            log.info(f"    Skipped (PMIndia): invalid title — {text[:80]!r}")
             continue
         keywords = ["yojana", "mission", "scheme", "programme", "abhiyan",
                      "initiative", "pradhan mantri", "digital india",
@@ -730,6 +427,9 @@ def scrape_india_gov_schemes() -> list[dict]:
 
         if not text or len(text) < 10:
             continue
+        if not is_valid_title(text):
+            log.info(f"    Skipped (India.gov): invalid title — {text[:80]!r}")
+            continue
         keywords = ["scheme", "yojana", "mission", "programme", "pension",
                      "insurance", "scholarship", "subsidy", "welfare",
                      "benefit", "employment", "housing", "health",
@@ -765,15 +465,10 @@ def main():
     load_env()
     client = get_supabase()
 
-    # ── Jobs ───────────────────────────────────────────────────────────────
+    # ── Jobs (SSC + IBPS only) ─────────────────────────────────────────────
     job_scrapers = [
         ("SSC", scrape_ssc),
         ("IBPS", scrape_ibps),
-        ("Indian Railways", scrape_railways),
-        ("UPSC", scrape_upsc),
-        ("NTA", scrape_nta),
-        ("BPSC", scrape_bpsc),
-        ("UPPSC", scrape_uppsc),
     ]
 
     all_jobs: list[dict] = []
@@ -788,14 +483,13 @@ def main():
         log.info(f"  Found {len(found)} notifications")
         all_jobs.extend(found)
 
-    # Validate all titles before saving
+    # Final validation pass — reject anything that slipped through
     valid_jobs: list[dict] = []
     for j in all_jobs:
-        reason = _validate_title(j["title"])
-        if reason:
-            log.info(f"  Skipped job: {reason} — {j['title'][:80]!r}")
-        else:
+        if is_valid_title(j["title"]):
             valid_jobs.append(j)
+        else:
+            log.info(f"  Skipped job (final filter): {j['title'][:80]!r}")
     if len(valid_jobs) < len(all_jobs):
         log.info(f"  Filtered out {len(all_jobs) - len(valid_jobs)} invalid job titles")
     all_jobs = valid_jobs
@@ -836,14 +530,13 @@ def main():
         log.info(f"  Found {len(found)} schemes")
         all_schemes.extend(found)
 
-    # Validate all scheme titles before saving
+    # Final validation pass for schemes
     valid_schemes: list[dict] = []
     for s in all_schemes:
-        reason = _validate_title(s["title"])
-        if reason:
-            log.info(f"  Skipped scheme: {reason} — {s['title'][:80]!r}")
-        else:
+        if is_valid_title(s["title"]):
             valid_schemes.append(s)
+        else:
+            log.info(f"  Skipped scheme (final filter): {s['title'][:80]!r}")
     if len(valid_schemes) < len(all_schemes):
         log.info(f"  Filtered out {len(all_schemes) - len(valid_schemes)} invalid scheme titles")
     all_schemes = valid_schemes

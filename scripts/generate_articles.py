@@ -10,6 +10,8 @@ content.  The prompts instruct the model to produce fully rewritten, unique
 articles from the raw scraped metadata.
 """
 
+from __future__ import annotations
+
 import os
 import re
 import sys
