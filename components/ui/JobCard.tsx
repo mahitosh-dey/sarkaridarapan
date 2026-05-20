@@ -73,40 +73,48 @@ export default function JobCard({ job }: JobCardProps) {
           </Link>
         </h3>
 
-        <p className="text-sm text-gray-500 mb-3">
-          Post: {job.postName}
-        </p>
+        {job.postName && (
+          <p className="text-sm text-gray-500 mb-3">
+            Post: {job.postName}
+          </p>
+        )}
 
-        {/* Quick Info Grid */}
+        {/* Quick Info Grid — only show fields that have real data */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-4">
-          <div>
-            <span className="block text-xs text-gray-400 uppercase tracking-wider">
-              Vacancies
-            </span>
-            <span className="font-semibold text-gray-800">
-              {job.vacancies.toLocaleString("en-IN")}
-            </span>
-          </div>
-          <div>
-            <span className="block text-xs text-gray-400 uppercase tracking-wider">
-              Salary
-            </span>
-            <span className="font-semibold text-gray-800 truncate block">
-              {job.salary}
-            </span>
-          </div>
-          <div>
-            <span className="block text-xs text-gray-400 uppercase tracking-wider">
-              Last Date
-            </span>
-            <span
-              className={`font-semibold ${
-                job.isActive ? "text-red-600" : "text-gray-500"
-              }`}
-            >
-              {lastDate}
-            </span>
-          </div>
+          {job.vacancies > 0 && (
+            <div>
+              <span className="block text-xs text-gray-400 uppercase tracking-wider">
+                Vacancies
+              </span>
+              <span className="font-semibold text-gray-800">
+                {job.vacancies.toLocaleString("en-IN")}
+              </span>
+            </div>
+          )}
+          {job.salary && (
+            <div>
+              <span className="block text-xs text-gray-400 uppercase tracking-wider">
+                Salary
+              </span>
+              <span className="font-semibold text-gray-800 truncate block">
+                {job.salary}
+              </span>
+            </div>
+          )}
+          {job.importantDates.lastDate && (
+            <div>
+              <span className="block text-xs text-gray-400 uppercase tracking-wider">
+                Last Date
+              </span>
+              <span
+                className={`font-semibold ${
+                  job.isActive ? "text-red-600" : "text-gray-500"
+                }`}
+              >
+                {lastDate}
+              </span>
+            </div>
+          )}
           <div>
             <span className="block text-xs text-gray-400 uppercase tracking-wider">
               Category

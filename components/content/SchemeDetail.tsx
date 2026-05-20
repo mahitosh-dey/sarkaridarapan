@@ -205,6 +205,40 @@ export default function SchemeDetail({ scheme }: SchemeDetailProps) {
         </div>
       </section>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* Frequently Asked Questions */}
+      {/* ------------------------------------------------------------------ */}
+      {scheme.faqs && scheme.faqs.length > 0 && (
+        <>
+          <hr className="mb-8 border-gray-200" />
+
+          <section id="faqs" className="mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-sarkari-green" aria-hidden="true">
+                <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3.75 3.75 0 0 1 5.304 0l.893.893a3.75 3.75 0 0 1-.464 5.535l-.445.334a2.25 2.25 0 0 0-.9 1.8v.068a.75.75 0 0 1-1.5 0v-.068a3.75 3.75 0 0 1 1.5-3.001l.445-.334a2.25 2.25 0 0 0 .278-3.321l-.893-.893A2.25 2.25 0 0 0 8.94 6.94ZM10 15a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" clipRule="evenodd" />
+              </svg>
+              Frequently Asked Questions
+            </h2>
+            <div className="overflow-hidden rounded-lg border border-gray-200">
+              <table className="w-full text-sm">
+                <tbody>
+                  {scheme.faqs.map((faq, index) => (
+                    <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                      <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4 align-top">
+                        {faq.question}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {faq.answer}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
+      )}
+
       <hr className="mb-8 border-gray-200" />
 
       {/* ------------------------------------------------------------------ */}
