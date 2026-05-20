@@ -28,6 +28,7 @@ export default function AdBanner({
 
   useEffect(() => {
     if (isAdPushed.current) return;
+    if (adRef.current?.getAttribute("data-adsbygoogle-status")) return;
 
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});

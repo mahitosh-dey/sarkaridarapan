@@ -12,7 +12,7 @@ import type { JobPost, SchemePost } from "./types";
 // Row → Interface mappers (snake_case DB → camelCase TypeScript)
 // =============================================================================
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
 
 function mapJobRow(row: any): JobPost {
   return {
@@ -70,10 +70,10 @@ function mapSchemeRow(row: any): SchemePost {
   };
 }
 
-/* eslint-enable @typescript-eslint/no-explicit-any */
+/* eslint-enable */
 
 // =============================================================================
-// Job Posts
+// Job Posts — filtered by is_active=true (column exists on jobs table)
 // =============================================================================
 
 export const getJobPosts = unstable_cache(
@@ -81,6 +81,7 @@ export const getJobPosts = unstable_cache(
     const { data, error } = await supabase
       .from("jobs")
       .select("*")
+      .eq("is_active", true)
       .order("published_at", { ascending: false });
 
     if (error) {
@@ -99,6 +100,7 @@ export async function getJobBySlug(slug: string): Promise<JobPost | null> {
     .from("jobs")
     .select("*")
     .eq("slug", slug)
+    .eq("is_active", true)
     .single();
 
   if (error || !data) return null;
@@ -107,7 +109,7 @@ export async function getJobBySlug(slug: string): Promise<JobPost | null> {
 }
 
 // =============================================================================
-// Scheme Posts
+// Scheme Posts — filtered by is_active=true
 // =============================================================================
 
 export const getSchemePosts = unstable_cache(
@@ -115,6 +117,7 @@ export const getSchemePosts = unstable_cache(
     const { data, error } = await supabase
       .from("schemes")
       .select("*")
+      .eq("is_active", true)
       .order("published_at", { ascending: false });
 
     if (error) {
@@ -135,6 +138,7 @@ export async function getSchemeBySlug(
     .from("schemes")
     .select("*")
     .eq("slug", slug)
+    .eq("is_active", true)
     .single();
 
   if (error || !data) return null;
@@ -150,6 +154,7 @@ export async function getJobsByCategory(category: string): Promise<JobPost[]> {
   const { data, error } = await supabase
     .from("jobs")
     .select("*")
+    .eq("is_active", true)
     .ilike("category", category)
     .order("published_at", { ascending: false });
 
@@ -165,6 +170,7 @@ export async function getJobsByState(state: string): Promise<JobPost[]> {
   const { data, error } = await supabase
     .from("jobs")
     .select("*")
+    .eq("is_active", true)
     .ilike("state", state)
     .order("published_at", { ascending: false });
 
@@ -182,6 +188,7 @@ export async function getSchemesByCategory(
   const { data, error } = await supabase
     .from("schemes")
     .select("*")
+    .eq("is_active", true)
     .ilike("category", category)
     .order("published_at", { ascending: false });
 
@@ -199,6 +206,7 @@ export async function getSchemesByState(
   const { data, error } = await supabase
     .from("schemes")
     .select("*")
+    .eq("is_active", true)
     .ilike("state", state)
     .order("published_at", { ascending: false });
 
@@ -219,8 +227,8 @@ export async function getAllCategories(): Promise<{
   schemes: string[];
 }> {
   const [jobsRes, schemesRes] = await Promise.all([
-    supabase.from("jobs").select("category").order("category"),
-    supabase.from("schemes").select("category").order("category"),
+    supabase.from("jobs").select("category").eq("is_active", true).order("category"),
+    supabase.from("schemes").select("category").eq("is_active", true).order("category"),
   ]);
 
   const jobCategories = [
@@ -240,8 +248,8 @@ export async function getAllCategories(): Promise<{
 
 export async function getActiveStates(): Promise<string[]> {
   const [jobsRes, schemesRes] = await Promise.all([
-    supabase.from("jobs").select("state"),
-    supabase.from("schemes").select("state"),
+    supabase.from("jobs").select("state").eq("is_active", true),
+    supabase.from("schemes").select("state").eq("is_active", true),
   ]);
 
   const states = new Set<string>();
@@ -271,32 +279,36 @@ export async function searchContent(query: string): Promise<
   const trimmed = query.trim();
   if (!trimmed) return [];
 
-  // Try full-text search via RPC first
+  // Try full-text search via RPC first.
+  // The RPC may not filter by is_active internally, so we filter client-side
+  // as a safety net to prevent draft content from leaking into results.
   const { data: rpcData, error: rpcError } = await supabase.rpc(
     "search_content",
     { search_query: trimmed }
   );
 
   if (!rpcError && rpcData && rpcData.length > 0) {
-    return rpcData.map(
-      (r: {
-        type: string;
-        slug: string;
-        title: string;
-        description: string;
-        category: string;
-        state: string;
-        published_at: string;
-      }) => ({
-        type: r.type as "job" | "scheme",
-        slug: r.slug,
-        title: r.title,
-        description: r.description,
-        category: r.category,
-        state: r.state,
-        publishedAt: r.published_at,
-      })
-    );
+    return rpcData
+      .filter((r: { is_active?: boolean }) => r.is_active !== false)
+      .map(
+        (r: {
+          type: string;
+          slug: string;
+          title: string;
+          description: string;
+          category: string;
+          state: string;
+          published_at: string;
+        }) => ({
+          type: r.type as "job" | "scheme",
+          slug: r.slug,
+          title: r.title,
+          description: r.description,
+          category: r.category,
+          state: r.state,
+          publishedAt: r.published_at,
+        })
+      );
   }
 
   // Fallback: ILIKE search for partial word matches
@@ -306,6 +318,7 @@ export async function searchContent(query: string): Promise<
     supabase
       .from("jobs")
       .select("slug, title, description, category, state, published_at")
+      .eq("is_active", true)
       .or(
         `title.ilike.${pattern},description.ilike.${pattern},organization.ilike.${pattern},post_name.ilike.${pattern}`
       )
@@ -313,6 +326,7 @@ export async function searchContent(query: string): Promise<
     supabase
       .from("schemes")
       .select("slug, title, description, category, state, published_at")
+      .eq("is_active", true)
       .or(
         `title.ilike.${pattern},description.ilike.${pattern},ministry.ilike.${pattern}`
       )

@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import JobDetail from "@/components/content/JobDetail";
+import MarkdownContent from "@/components/content/MarkdownContent";
 import JobCard from "@/components/ui/JobCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
-
-const Sidebar = dynamic(() => import("@/components/layout/Sidebar"), {
-  loading: () => <div className="w-full lg:w-80 animate-pulse bg-gray-100 rounded-lg min-h-[400px]" />,
-});
+import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getJobPosts, getJobBySlug } from "@/lib/content";
@@ -140,6 +138,13 @@ export default async function JobPage({ params }: JobPageProps) {
             <div className="p-6 md:p-8">
               <JobDetail job={job} />
 
+              {/* AI-generated article content */}
+              {job.content && job.content.trim() !== "" && (
+                <section className="mt-8 border-t border-gray-200 pt-8">
+                  <MarkdownContent content={job.content} />
+                </section>
+              )}
+
               {/* In-Article Ad */}
               <InArticleAd className="my-8" />
             </div>
@@ -160,7 +165,9 @@ export default async function JobPage({ params }: JobPageProps) {
 
         {/* Sidebar */}
         <aside className="w-full lg:w-80 shrink-0">
-          <Sidebar />
+          <Suspense fallback={<div className="w-full animate-pulse bg-gray-100 rounded-lg min-h-[400px]" />}>
+            <Sidebar />
+          </Suspense>
         </aside>
       </div>
     </div>

@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import SearchBar from "@/components/ui/SearchBar";
-
-const Sidebar = dynamic(() => import("@/components/layout/Sidebar"), {
-  loading: () => <div className="w-full lg:w-80 animate-pulse bg-gray-100 rounded-lg min-h-[400px]" />,
-});
+import Sidebar from "@/components/layout/Sidebar";
 import { searchContent } from "@/lib/content";
 
 interface SearchPageProps {
@@ -282,7 +279,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {/* Sidebar */}
         <aside className="w-full shrink-0 lg:w-80">
-          <Sidebar />
+          <Suspense fallback={<div className="w-full animate-pulse bg-gray-100 rounded-lg min-h-[400px]" />}>
+            <Sidebar />
+          </Suspense>
         </aside>
       </div>
     </div>

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import SchemeDetail from "@/components/content/SchemeDetail";
 import SchemeCard from "@/components/ui/SchemeCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
-
-const Sidebar = dynamic(() => import("@/components/layout/Sidebar"), {
-  loading: () => <div className="w-full lg:w-80 animate-pulse bg-gray-100 rounded-lg min-h-[400px]" />,
-});
+import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getSchemePosts, getSchemeBySlug } from "@/lib/content";
@@ -166,7 +163,9 @@ export default async function SchemePage({ params }: SchemePageProps) {
 
         {/* Sidebar */}
         <aside className="w-full lg:w-80 shrink-0">
-          <Sidebar />
+          <Suspense fallback={<div className="w-full animate-pulse bg-gray-100 rounded-lg min-h-[400px]" />}>
+            <Sidebar />
+          </Suspense>
         </aside>
       </div>
     </div>

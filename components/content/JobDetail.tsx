@@ -38,6 +38,13 @@ export default function JobDetail({ job }: JobDetailProps) {
     ? { general: job.applicationFee, obc: null, sc_st: null, women: null, ph: null }
     : job.applicationFee;
 
+  // Determine which sections have data to show
+  const hasAppFee = appFee.general && appFee.general.trim() !== "";
+  const hasAnyDate = job.importantDates.startDate || job.importantDates.lastDate || job.importantDates.examDate;
+  const hasEligibility = (job.eligibility.age && job.eligibility.age.trim() !== "")
+    || (job.eligibility.education && job.eligibility.education.trim() !== "");
+  const hasHowToApply = job.howToApply && job.howToApply.trim() !== "";
+
   async function handleCopyLink() {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -104,22 +111,28 @@ export default function JobDetail({ job }: JobDetailProps) {
         <div className="overflow-hidden rounded-lg border border-gray-200">
           <table className="w-full text-sm">
             <tbody>
-              <tr className="bg-gray-50">
-                <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Post Name</td>
-                <td className="px-4 py-3 text-gray-900">{job.postName}</td>
-              </tr>
+              {job.postName && (
+                <tr className="bg-gray-50">
+                  <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Post Name</td>
+                  <td className="px-4 py-3 text-gray-900">{job.postName}</td>
+                </tr>
+              )}
+              {job.vacancies > 0 && (
+                <tr className="bg-white">
+                  <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Total Vacancies</td>
+                  <td className="px-4 py-3 text-gray-900 font-semibold text-primary-700">
+                    {job.vacancies.toLocaleString("en-IN")}
+                  </td>
+                </tr>
+              )}
+              {job.salary && (
+                <tr className="bg-gray-50">
+                  <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Salary</td>
+                  <td className="px-4 py-3 text-gray-900">{job.salary}</td>
+                </tr>
+              )}
               <tr className="bg-white">
-                <td className="px-4 py-3 font-semibold text-gray-700">Total Vacancies</td>
-                <td className="px-4 py-3 text-gray-900 font-semibold text-primary-700">
-                  {job.vacancies.toLocaleString("en-IN")}
-                </td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-4 py-3 font-semibold text-gray-700">Salary</td>
-                <td className="px-4 py-3 text-gray-900">{job.salary}</td>
-              </tr>
-              <tr className="bg-white">
-                <td className="px-4 py-3 font-semibold text-gray-700">Organization</td>
+                <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Organization</td>
                 <td className="px-4 py-3 text-gray-900">{job.organization}</td>
               </tr>
             </tbody>
@@ -130,148 +143,168 @@ export default function JobDetail({ job }: JobDetailProps) {
       {/* ------------------------------------------------------------------ */}
       {/* Application Fee */}
       {/* ------------------------------------------------------------------ */}
-      <section id="application-fee" className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
-            <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.315.612-.648.612-.875 0-.227-.13-.56-.612-.875a3.13 3.13 0 0 0-1.138-.432ZM8.33 8.62c.053.055.115.11.184.164.208.16.46.284.736.363V6.603a2.45 2.45 0 0 0-.35.13c-.14.065-.27.143-.386.233-.377.292-.514.627-.514.854 0 .228.137.562.514.854.075.058.155.112.24.16l-.424-.214Z" />
-            <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM11 6.025a3.375 3.375 0 0 1 0 6.45v.75a.75.75 0 0 1-1.5 0v-.75a3.375 3.375 0 0 1 0-6.45v-.75a.75.75 0 0 1 1.5 0v.75Z" clipRule="evenodd" />
-          </svg>
-          Application Fee
-        </h2>
-        <div className="overflow-hidden rounded-lg border border-gray-200">
-          <table className="w-full text-sm">
-            <tbody>
-              <tr className="bg-gray-50">
-                <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">
-                  {appFee.obc ? "General" : "Application Fee"}
-                </td>
-                <td className="px-4 py-3 text-gray-900">{appFee.general}</td>
-              </tr>
-              {appFee.obc && (
-                <tr className="bg-white">
-                  <td className="px-4 py-3 font-semibold text-gray-700">OBC</td>
-                  <td className="px-4 py-3 text-gray-900">{appFee.obc}</td>
-                </tr>
-              )}
-              {appFee.sc_st && (
+      {hasAppFee && (
+        <section id="application-fee" className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
+              <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.315.612-.648.612-.875 0-.227-.13-.56-.612-.875a3.13 3.13 0 0 0-1.138-.432ZM8.33 8.62c.053.055.115.11.184.164.208.16.46.284.736.363V6.603a2.45 2.45 0 0 0-.35.13c-.14.065-.27.143-.386.233-.377.292-.514.627-.514.854 0 .228.137.562.514.854.075.058.155.112.24.16l-.424-.214Z" />
+              <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM11 6.025a3.375 3.375 0 0 1 0 6.45v.75a.75.75 0 0 1-1.5 0v-.75a3.375 3.375 0 0 1 0-6.45v-.75a.75.75 0 0 1 1.5 0v.75Z" clipRule="evenodd" />
+            </svg>
+            Application Fee
+          </h2>
+          <div className="overflow-hidden rounded-lg border border-gray-200">
+            <table className="w-full text-sm">
+              <tbody>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-3 font-semibold text-gray-700">SC / ST</td>
-                  <td className="px-4 py-3 text-gray-900">{appFee.sc_st}</td>
+                  <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">
+                    {appFee.obc ? "General" : "Application Fee"}
+                  </td>
+                  <td className="px-4 py-3 text-gray-900">{appFee.general}</td>
                 </tr>
-              )}
-              {appFee.women && (
-                <tr className="bg-white">
-                  <td className="px-4 py-3 font-semibold text-gray-700">Women</td>
-                  <td className="px-4 py-3 text-gray-900">{appFee.women}</td>
-                </tr>
-              )}
-              {appFee.ph && (
-                <tr className="bg-gray-50">
-                  <td className="px-4 py-3 font-semibold text-gray-700">PH / Divyang</td>
-                  <td className="px-4 py-3 text-gray-900">{appFee.ph}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+                {appFee.obc && (
+                  <tr className="bg-white">
+                    <td className="px-4 py-3 font-semibold text-gray-700">OBC</td>
+                    <td className="px-4 py-3 text-gray-900">{appFee.obc}</td>
+                  </tr>
+                )}
+                {appFee.sc_st && (
+                  <tr className="bg-gray-50">
+                    <td className="px-4 py-3 font-semibold text-gray-700">SC / ST</td>
+                    <td className="px-4 py-3 text-gray-900">{appFee.sc_st}</td>
+                  </tr>
+                )}
+                {appFee.women && (
+                  <tr className="bg-white">
+                    <td className="px-4 py-3 font-semibold text-gray-700">Women</td>
+                    <td className="px-4 py-3 text-gray-900">{appFee.women}</td>
+                  </tr>
+                )}
+                {appFee.ph && (
+                  <tr className="bg-gray-50">
+                    <td className="px-4 py-3 font-semibold text-gray-700">PH / Divyang</td>
+                    <td className="px-4 py-3 text-gray-900">{appFee.ph}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Important Dates */}
       {/* ------------------------------------------------------------------ */}
-      <section id="important-dates" className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
-            <path fillRule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clipRule="evenodd" />
-          </svg>
-          Important Dates
-        </h2>
-        <div className="overflow-hidden rounded-lg border border-gray-200">
-          <table className="w-full text-sm">
-            <tbody>
-              <tr className="bg-gray-50">
-                <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Start Date</td>
-                <td className="px-4 py-3 text-gray-900">{formatDate(job.importantDates.startDate)}</td>
-              </tr>
-              <tr className="bg-white">
-                <td className="px-4 py-3 font-semibold text-gray-700">Last Date</td>
-                <td className="px-4 py-3 font-semibold text-red-600">{formatDate(job.importantDates.lastDate)}</td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-4 py-3 font-semibold text-gray-700">Exam Date</td>
-                <td className="px-4 py-3 text-gray-900">{formatDate(job.importantDates.examDate)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {hasAnyDate && (
+        <section id="important-dates" className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
+              <path fillRule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clipRule="evenodd" />
+            </svg>
+            Important Dates
+          </h2>
+          <div className="overflow-hidden rounded-lg border border-gray-200">
+            <table className="w-full text-sm">
+              <tbody>
+                {job.importantDates.startDate && (
+                  <tr className="bg-gray-50">
+                    <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Start Date</td>
+                    <td className="px-4 py-3 text-gray-900">{formatDate(job.importantDates.startDate)}</td>
+                  </tr>
+                )}
+                {job.importantDates.lastDate && (
+                  <tr className="bg-white">
+                    <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Last Date</td>
+                    <td className="px-4 py-3 font-semibold text-red-600">{formatDate(job.importantDates.lastDate)}</td>
+                  </tr>
+                )}
+                {job.importantDates.examDate && (
+                  <tr className="bg-gray-50">
+                    <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Exam Date</td>
+                    <td className="px-4 py-3 text-gray-900">{formatDate(job.importantDates.examDate)}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Eligibility */}
       {/* ------------------------------------------------------------------ */}
-      <section id="eligibility" className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
-            <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-          </svg>
-          Eligibility
-        </h2>
-        <div className="overflow-hidden rounded-lg border border-gray-200">
-          <table className="w-full text-sm">
-            <tbody>
-              <tr className="bg-gray-50">
-                <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Age Limit</td>
-                <td className="px-4 py-3 text-gray-900">{job.eligibility.age}</td>
-              </tr>
-              <tr className="bg-white">
-                <td className="px-4 py-3 font-semibold text-gray-700">Education</td>
-                <td className="px-4 py-3 text-gray-900">{job.eligibility.education}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {hasEligibility && (
+        <section id="eligibility" className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
+              <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+            </svg>
+            Eligibility
+          </h2>
+          <div className="overflow-hidden rounded-lg border border-gray-200">
+            <table className="w-full text-sm">
+              <tbody>
+                {job.eligibility.age && job.eligibility.age.trim() !== "" && (
+                  <tr className="bg-gray-50">
+                    <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Age Limit</td>
+                    <td className="px-4 py-3 text-gray-900">{job.eligibility.age}</td>
+                  </tr>
+                )}
+                {job.eligibility.education && job.eligibility.education.trim() !== "" && (
+                  <tr className="bg-white">
+                    <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Education</td>
+                    <td className="px-4 py-3 text-gray-900">{job.eligibility.education}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Selection Process */}
       {/* ------------------------------------------------------------------ */}
-      <section id="selection-process" className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
-            <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
-          </svg>
-          Selection Process
-        </h2>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
-          <ol className="space-y-3">
-            {selectionSteps.map((step, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
-                  {index + 1}
-                </span>
-                <span className="text-sm text-gray-800 pt-1">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      {selectionSteps.length > 0 && (
+        <section id="selection-process" className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
+              <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+            </svg>
+            Selection Process
+          </h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
+            <ol className="space-y-3">
+              {selectionSteps.map((step, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
+                    {index + 1}
+                  </span>
+                  <span className="text-sm text-gray-800 pt-1">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* How to Apply */}
       {/* ------------------------------------------------------------------ */}
-      <section id="how-to-apply" className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
-            <path fillRule="evenodd" d="M4.5 2A1.5 1.5 0 0 0 3 3.5v13A1.5 1.5 0 0 0 4.5 18h11a1.5 1.5 0 0 0 1.5-1.5V7.621a1.5 1.5 0 0 0-.44-1.06l-4.12-4.122A1.5 1.5 0 0 0 11.378 2H4.5ZM10 8a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0v-1.5h-1.5a.75.75 0 0 1 0-1.5h1.5v-1.5A.75.75 0 0 1 10 8Z" clipRule="evenodd" />
-          </svg>
-          How to Apply
-        </h2>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
-          <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed whitespace-pre-line">
-            {job.howToApply}
+      {hasHowToApply && (
+        <section id="how-to-apply" className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
+              <path fillRule="evenodd" d="M4.5 2A1.5 1.5 0 0 0 3 3.5v13A1.5 1.5 0 0 0 4.5 18h11a1.5 1.5 0 0 0 1.5-1.5V7.621a1.5 1.5 0 0 0-.44-1.06l-4.12-4.122A1.5 1.5 0 0 0 11.378 2H4.5ZM10 8a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0v-1.5h-1.5a.75.75 0 0 1 0-1.5h1.5v-1.5A.75.75 0 0 1 10 8Z" clipRule="evenodd" />
+            </svg>
+            How to Apply
+          </h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
+            <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed whitespace-pre-line">
+              {job.howToApply}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Official Links */}

@@ -19,6 +19,7 @@ export default function InArticleAd({ adSlot = "0000000000", className = "" }: I
 
   useEffect(() => {
     if (isAdPushed.current) return;
+    if (adRef.current?.getAttribute("data-adsbygoogle-status")) return;
 
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
