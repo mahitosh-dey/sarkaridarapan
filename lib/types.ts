@@ -50,6 +50,7 @@ export interface JobPost {
   lastDate?: string;
   qualification?: string;
   employmentType?: string;
+  completenessScore?: number;
 }
 
 // -----------------------------------------------------------------------------

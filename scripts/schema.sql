@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   last_date TEXT DEFAULT '',
   qualification TEXT DEFAULT '',
   employment_type TEXT DEFAULT '',
+  completeness_score REAL DEFAULT 0,
   search_vector TSVECTOR GENERATED ALWAYS AS (
     setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
     setweight(to_tsvector('english', coalesce(organization, '')), 'B') ||

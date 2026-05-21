@@ -8,13 +8,16 @@ drafts (is_active=false) for AI rewriting before publication.
 
 from __future__ import annotations
 
+import io
 import os
 import re
 import sys
+import time
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pdfplumber
 import requests
 import urllib3
 from bs4 import BeautifulSoup
@@ -218,6 +221,527 @@ def _parse_salary(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# PDF Processing
+# ---------------------------------------------------------------------------
+
+MAX_PDFS_PER_SCRAPER = 10
+_PDF_DOWNLOAD_DELAY = 2  # seconds between PDF downloads
+
+
+def _find_pdf_links(soup: BeautifulSoup, base_url: str) -> list[str]:
+    """Scan page for PDF links, prioritising notification/advertisement PDFs.
+
+    Returns at most 3 deduplicated, absolute URLs.
+    """
+    priority: list[str] = []
+    others: list[str] = []
+    seen: set[str] = set()
+
+    for a in soup.find_all("a", href=True):
+        href = a["href"].strip()
+        text = a.get_text(strip=True).lower()
+
+        # Resolve relative URLs
+        if href.startswith("/"):
+            href = base_url.rstrip("/") + href
+        elif not href.startswith("http"):
+            href = base_url.rstrip("/") + "/" + href
+
+        if href in seen:
+            continue
+
+        is_pdf_url = href.lower().endswith(".pdf")
+        has_keyword = any(kw in text for kw in ("notification", "advertisement", "download"))
+
+        if is_pdf_url or has_keyword:
+            seen.add(href)
+            if has_keyword:
+                priority.append(href)
+            else:
+                others.append(href)
+
+    combined = priority + others
+    return combined[:3]
+
+
+def _download_pdf(session: requests.Session, url: str, max_size_mb: int = 15) -> bytes | None:
+    """Download a PDF after checking size and content type.
+
+    Returns PDF bytes, or None on any failure.
+    """
+    try:
+        head = session.head(url, timeout=30, allow_redirects=True)
+        content_type = head.headers.get("Content-Type", "")
+        content_length = int(head.headers.get("Content-Length", 0))
+
+        if content_length > max_size_mb * 1024 * 1024:
+            log.info(f"    PDF too large ({content_length / 1024 / 1024:.1f} MB): {url}")
+            return None
+        if content_type and "pdf" not in content_type.lower() and "octet-stream" not in content_type.lower():
+            log.info(f"    Not a PDF (Content-Type: {content_type}): {url}")
+            return None
+
+        resp = session.get(url, timeout=(60, 120), stream=True)
+        resp.raise_for_status()
+
+        chunks = []
+        downloaded = 0
+        for chunk in resp.iter_content(chunk_size=65536):
+            chunks.append(chunk)
+            downloaded += len(chunk)
+            if downloaded > max_size_mb * 1024 * 1024:
+                log.info(f"    PDF exceeded {max_size_mb} MB during download: {url}")
+                return None
+
+        return b"".join(chunks)
+    except requests.RequestException as e:
+        log.info(f"    PDF download failed ({url}): {e}")
+        return None
+
+
+def _is_text_pdf(pdf_bytes: bytes) -> bool:
+    """Check whether a PDF contains extractable text (not scanned/image)."""
+    try:
+        with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+            text = ""
+            for page in pdf.pages[:3]:
+                text += page.extract_text() or ""
+                if len(text) >= 50:
+                    return True
+            return len(text) >= 50
+    except Exception:
+        return False
+
+
+# -- PDF sub-extractors (regex-based) --
+
+
+def _extract_post_name(text: str) -> str:
+    """Extract post/designation name from notification text."""
+    patterns = [
+        r"(?:Name\s+of\s+(?:the\s+)?Post|Post\s+Name|Designation)\s*[:\-–]\s*(.+?)(?:\n|$)",
+        r"(?:Name\s+of\s+Post)\s*(.+?)(?:\n|$)",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.I)
+        if m:
+            val = m.group(1).strip().strip(":-–").strip()
+            if len(val) > 5:
+                return val[:200]
+    return ""
+
+
+def _extract_qualification(text: str) -> str:
+    """Extract educational qualification section."""
+    patterns = [
+        r"(?:Educational\s+Qualification|Qualification\s+Required|Essential\s+Qualification)\s*[:\-–]\s*(.+?)(?:\n\n|\n(?=[A-Z\d]))",
+        r"(?:Qualification)\s*[:\-–]\s*(.+?)(?:\n\n|\n(?=[A-Z\d]))",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.I | re.DOTALL)
+        if m:
+            val = m.group(1).strip()
+            if len(val) > 10:
+                return val[:500]
+    return ""
+
+
+def _extract_age_limit(text: str) -> str:
+    """Extract age limit with category relaxations."""
+    patterns = [
+        r"(?:Age\s+Limit|Age\s+as\s+on)\s*[:\-–]\s*(.+?)(?:\n\n|\n(?=[A-Z][a-z]))",
+        r"(?:Age\s+Limit)\s*(.+?)(?:\n\n)",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.I | re.DOTALL)
+        if m:
+            val = m.group(1).strip()
+            if len(val) > 5:
+                return val[:300]
+    return ""
+
+
+def _extract_fee_from_text(text: str) -> dict:
+    """Extract application fee breakdown by category from text."""
+    fee: dict = {}
+    section_match = re.search(
+        r"(?:Application\s+Fee|Examination\s+Fee|Fee\s+Details?)\s*[:\-–]\s*(.+?)(?:\n\n|\n(?=[A-Z][a-z]{3}))",
+        text, re.I | re.DOTALL,
+    )
+    if not section_match:
+        return fee
+
+    section = section_match.group(1)
+
+    # Pattern: "General/OBC: Rs. 100" or "SC/ST: Rs. 0/-"
+    for m in re.finditer(
+        r"((?:General|UR|OBC|SC|ST|EWS|PwD|PH|Women|Female|Ex-?Servicem[ae]n)[/\w\s]*?)\s*[:\-–]\s*(?:Rs\.?\s*)?([\d,]+)",
+        section, re.I,
+    ):
+        category = m.group(1).strip()
+        amount = m.group(2).replace(",", "")
+        fee[category] = f"Rs. {amount}"
+
+    # Fallback: single fee for all
+    if not fee:
+        m = re.search(r"(?:Rs\.?\s*)([\d,]+)", section)
+        if m:
+            fee["all"] = f"Rs. {m.group(1).replace(',', '')}"
+
+    return fee
+
+
+def _extract_fee_from_tables(tables: list) -> dict:
+    """Extract application fee from parsed PDF tables."""
+    fee: dict = {}
+    for table in tables:
+        if not table:
+            continue
+        header_row = " ".join(str(cell) for cell in table[0] if cell).lower()
+        if "fee" not in header_row and "amount" not in header_row:
+            continue
+        for row in table[1:]:
+            cells = [str(c).strip() for c in row if c]
+            if len(cells) >= 2:
+                category = cells[0]
+                amount_match = re.search(r"(\d[\d,]+)", cells[-1])
+                if amount_match and len(category) > 1:
+                    fee[category] = f"Rs. {amount_match.group(1).replace(',', '')}"
+    return fee
+
+
+def _extract_dates_from_pdf(text: str) -> dict:
+    """Extract important dates (start, last, exam) from text."""
+    dates: dict = {}
+    MONTHS = (
+        "january|february|march|april|may|june|july|august|"
+        "september|october|november|december|"
+        "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
+    )
+    date_pat = rf"(\d{{1,2}}[/\-\.]\d{{1,2}}[/\-\.]\d{{4}}|\d{{1,2}}(?:st|nd|rd|th)?\s+(?:{MONTHS})\s+\d{{4}})"
+
+    patterns = {
+        "start_date": [
+            rf"(?:Starting\s+Date|Date\s+of\s+(?:Opening|Commencement)|Apply\s+From)\s*[:\-–]\s*{date_pat}",
+        ],
+        "last_date": [
+            rf"(?:Last\s+Date|Closing\s+Date|End\s+Date|Last\s+Date\s+(?:to|of|for)\s+(?:Apply|Submission|Receipt))\s*[:\-–]\s*{date_pat}",
+        ],
+        "exam_date": [
+            rf"(?:Date\s+of\s+(?:Exam|Examination|Test|CBT|Written\s+Test)|Exam\s+Date)\s*[:\-–]\s*{date_pat}",
+        ],
+    }
+
+    for key, pats in patterns.items():
+        for pat in pats:
+            m = re.search(pat, text, re.I)
+            if m:
+                dates[key] = m.group(1).strip()
+                break
+
+    return dates
+
+
+def _extract_selection_process(text: str) -> list[str]:
+    """Extract selection process steps."""
+    m = re.search(
+        r"(?:Selection\s+Process|Mode\s+of\s+Selection|Scheme\s+of\s+(?:Exam|Selection))\s*[:\-–]\s*(.+?)(?:\n\n|\n(?=[A-Z][a-z]{4}))",
+        text, re.I | re.DOTALL,
+    )
+    if not m:
+        return []
+
+    section = m.group(1).strip()
+    steps: list[str] = []
+
+    for line in section.split("\n"):
+        line = re.sub(r"^[\s\d\.\)\-•]+", "", line).strip()
+        if len(line) > 5:
+            steps.append(line)
+
+    return steps[:10]
+
+
+def _extract_how_to_apply(text: str) -> str:
+    """Extract how-to-apply instructions."""
+    m = re.search(
+        r"(?:How\s+to\s+Apply|Mode\s+of\s+Application|Application\s+Procedure)\s*[:\-–]\s*(.+?)(?:\n\n|\n(?=[A-Z][a-z]{4}))",
+        text, re.I | re.DOTALL,
+    )
+    if m:
+        val = m.group(1).strip()
+        if len(val) > 20:
+            return val[:1000]
+    return ""
+
+
+def _extract_vacancies_from_tables(tables: list) -> int:
+    """Sum vacancies from PDF tables (look for 'Total' row or vacancy columns)."""
+    for table in tables:
+        if not table:
+            continue
+        header_row = " ".join(str(cell) for cell in table[0] if cell).lower()
+        if not any(kw in header_row for kw in ("vacanc", "post", "total")):
+            continue
+        # Check for a "Total" row
+        for row in reversed(table):
+            cells = [str(c).strip() for c in row if c]
+            row_text = " ".join(cells).lower()
+            if "total" in row_text:
+                for cell in reversed(cells):
+                    num = re.search(r"(\d[\d,]+)", cell)
+                    if num:
+                        val = int(num.group(1).replace(",", ""))
+                        if val > 0:
+                            return val
+    return 0
+
+
+def _extract_pdf_data(pdf_bytes: bytes) -> dict:
+    """Extract structured data from a PDF notification.
+
+    Parses up to 20 pages of text and tables, then runs regex sub-extractors.
+    Returns a dict with only populated keys.
+    """
+    try:
+        with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+            all_text = ""
+            all_tables: list = []
+            for page in pdf.pages[:20]:
+                all_text += (page.extract_text() or "") + "\n"
+                tables = page.extract_tables()
+                if tables:
+                    all_tables.extend(tables)
+    except Exception as e:
+        log.warning(f"    pdfplumber parse error: {e}")
+        return {}
+
+    if len(all_text.strip()) < 50:
+        return {}
+
+    data: dict = {}
+
+    post_name = _extract_post_name(all_text)
+    if post_name:
+        data["post_name"] = post_name
+
+    qualification = _extract_qualification(all_text)
+    if qualification:
+        data["qualification"] = qualification
+
+    age_limit = _extract_age_limit(all_text)
+    if age_limit:
+        data["eligibility"] = {"age_limit": age_limit}
+
+    fee = _extract_fee_from_text(all_text)
+    if not fee:
+        fee = _extract_fee_from_tables(all_tables)
+    if fee:
+        data["application_fee"] = fee
+
+    dates = _extract_dates_from_pdf(all_text)
+    if dates:
+        data["important_dates"] = dates
+
+    selection = _extract_selection_process(all_text)
+    if selection:
+        data["selection_process"] = selection
+
+    how_to_apply = _extract_how_to_apply(all_text)
+    if how_to_apply:
+        data["how_to_apply"] = how_to_apply
+
+    vacancies = _extract_vacancies_from_tables(all_tables)
+    if vacancies <= 0:
+        vacancies = _parse_vacancies(all_text)
+    if vacancies > 0:
+        data["vacancies"] = vacancies
+
+    # Also extract salary and last_date from full text for merge
+    salary = _parse_salary(all_text)
+    if salary:
+        data["salary"] = salary
+
+    last_date = _parse_date(all_text)
+    if last_date:
+        data["last_date"] = last_date
+
+    return data
+
+
+def _merge_pdf_data(html_data: dict, pdf_data: dict) -> dict:
+    """Merge PDF-extracted data into HTML-extracted data.
+
+    PDF data takes precedence as the authoritative source,
+    but never overrides non-empty HTML values with empty PDF values.
+    """
+    merged = dict(html_data)
+
+    for key, pdf_val in pdf_data.items():
+        html_val = merged.get(key)
+
+        if isinstance(pdf_val, dict) and isinstance(html_val, dict):
+            # Merge key-by-key, PDF wins per-key
+            combined = dict(html_val)
+            for k, v in pdf_val.items():
+                if v:
+                    combined[k] = v
+            merged[key] = combined
+        elif isinstance(pdf_val, list):
+            if pdf_val:
+                merged[key] = pdf_val
+        elif isinstance(pdf_val, int):
+            if pdf_val > 0:
+                merged[key] = pdf_val
+        elif isinstance(pdf_val, str):
+            if pdf_val:
+                merged[key] = pdf_val
+
+    return merged
+
+
+def _process_notification_pdf(
+    session: requests.Session, page_url: str, base_url: str
+) -> dict:
+    """Full pipeline: find PDF -> download -> validate -> extract.
+
+    If page_url is itself a PDF, downloads it directly.
+    Otherwise visits the page and finds PDF links in the HTML.
+    Returns extracted data dict, or {} on any failure.
+    """
+    pdf_urls: list[str] = []
+
+    if page_url.lower().endswith(".pdf"):
+        pdf_urls = [page_url]
+    else:
+        try:
+            resp = session.get(page_url, timeout=30)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.text, "html.parser")
+            pdf_urls = _find_pdf_links(soup, base_url)
+        except requests.RequestException as e:
+            log.info(f"    Could not visit notification page ({page_url}): {e}")
+            return {}
+
+    for url in pdf_urls:
+        log.info(f"    Downloading PDF: {url}")
+        pdf_bytes = _download_pdf(session, url)
+        if pdf_bytes is None:
+            continue
+
+        if not _is_text_pdf(pdf_bytes):
+            log.info(f"    Skipped scanned/image PDF: {url}")
+            continue
+
+        data = _extract_pdf_data(pdf_bytes)
+        if data:
+            log.info(f"    Extracted PDF data: {list(data.keys())}")
+            time.sleep(_PDF_DOWNLOAD_DELAY)
+            return data
+
+        time.sleep(_PDF_DOWNLOAD_DELAY)
+
+    return {}
+
+
+# ---------------------------------------------------------------------------
+# Completeness Score
+# ---------------------------------------------------------------------------
+
+COMPLETENESS_THRESHOLD = 70  # minimum score to send to Groq
+
+
+def _is_filled(value) -> bool:
+    """Check whether a value counts as 'filled' for scoring purposes."""
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return value.strip() not in ("", "0", '""')
+    if isinstance(value, (list, dict)):
+        return len(value) > 0
+    if isinstance(value, (int, float)):
+        return value > 0
+    return bool(value)
+
+
+def _calculate_completeness_score(job: dict) -> float:
+    """Calculate a completeness score (0-100) based on 9 key fields.
+
+    Fields checked (mapped to DB schema):
+      1. vacancies           — job["vacancies"] > 0
+      2. application_start_date — important_dates.startDate or .start_date
+      3. application_end_date   — important_dates.lastDate or .last_date, or top-level last_date
+      4. exam_date              — important_dates.examDate or .exam_date
+      5. age_limit              — eligibility.age or .age_limit
+      6. qualification          — job["qualification"]
+      7. application_fee        — job["application_fee"] (non-empty dict)
+      8. salary                 — job["salary"]
+      9. selection_process      — job["selection_process"] (non-empty list/str)
+
+    Returns score as filled_fields / 9 * 100, rounded to 1 decimal.
+    """
+    filled = 0
+
+    # 1. vacancies
+    if _is_filled(job.get("vacancies")):
+        filled += 1
+
+    # 2. application_start_date  (inside important_dates JSONB)
+    dates = job.get("important_dates") or {}
+    if isinstance(dates, dict):
+        start = dates.get("startDate") or dates.get("start_date") or ""
+        if _is_filled(start):
+            filled += 1
+
+    # 3. application_end_date  (important_dates or top-level last_date)
+    if isinstance(dates, dict):
+        end = dates.get("lastDate") or dates.get("last_date") or ""
+    else:
+        end = ""
+    if not _is_filled(end):
+        end = job.get("last_date", "")
+    if _is_filled(end):
+        filled += 1
+
+    # 4. exam_date
+    if isinstance(dates, dict):
+        exam = dates.get("examDate") or dates.get("exam_date") or ""
+        if _is_filled(exam):
+            filled += 1
+
+    # 5. age_limit  (inside eligibility JSONB)
+    elig = job.get("eligibility") or {}
+    if isinstance(elig, dict):
+        age = elig.get("age") or elig.get("age_limit") or ""
+        if _is_filled(age):
+            filled += 1
+
+    # 6. qualification
+    if _is_filled(job.get("qualification")):
+        filled += 1
+
+    # 7. application_fee
+    fee = job.get("application_fee")
+    if isinstance(fee, dict) and len(fee) > 0:
+        filled += 1
+    elif isinstance(fee, str) and fee.strip() not in ("", '""'):
+        filled += 1
+
+    # 8. salary
+    if _is_filled(job.get("salary")):
+        filled += 1
+
+    # 9. selection_process
+    sp = job.get("selection_process")
+    if isinstance(sp, list) and len(sp) > 0:
+        filled += 1
+    elif isinstance(sp, str) and sp.strip() not in ("", '""'):
+        filled += 1
+
+    return round(filled / 9 * 100, 1)
+
+
+# ---------------------------------------------------------------------------
 # Title Validation
 # ---------------------------------------------------------------------------
 
@@ -257,6 +781,7 @@ def _make_job(
     last_date: str = "",
     salary: str = "",
     state: str = "all-india",
+    pdf_data: dict | None = None,
 ) -> dict:
     """Build a job dict matching the Supabase jobs table schema."""
     # Extract structured data from the raw title before cleaning it
@@ -267,7 +792,7 @@ def _make_job(
 
     title = clean_title(title)
     slug = generate_slug(title)
-    return {
+    job = {
         "slug": slug,
         "title": title,
         "organization": organization,
@@ -281,6 +806,15 @@ def _make_job(
         "description": (description or title)[:200],
         "notification_link": notification_link or official_link,
     }
+
+    # Merge PDF-extracted data if available
+    if pdf_data:
+        job = _merge_pdf_data(job, pdf_data)
+
+    # Calculate completeness score based on 9 key structured fields
+    job["completeness_score"] = _calculate_completeness_score(job)
+
+    return job
 
 
 def _make_scheme(
@@ -343,6 +877,7 @@ def scrape_ssc() -> list[dict]:
 
     links = soup.find_all("a", href=True)
     seen_titles: set[str] = set()
+    pdf_count = 0
 
     for link in links:
         text = link.get_text(strip=True)
@@ -371,12 +906,24 @@ def scrape_ssc() -> list[dict]:
             href = base + "/" + href
 
         last_date = _parse_date(text)
+
+        # Try PDF extraction
+        pdf_data: dict = {}
+        if pdf_count < MAX_PDFS_PER_SCRAPER:
+            try:
+                pdf_data = _process_notification_pdf(session, href, base)
+                if pdf_data:
+                    pdf_count += 1
+            except Exception as e:
+                log.info(f"    PDF processing failed for {href}: {e}")
+
         jobs.append(_make_job(
             title=text,
             organization="Staff Selection Commission (SSC)",
             category="SSC",
             official_link=href,
             last_date=last_date,
+            pdf_data=pdf_data,
         ))
 
     return jobs
@@ -399,6 +946,7 @@ def scrape_ibps() -> list[dict]:
 
     links = soup.find_all("a", href=True)
     seen_titles: set[str] = set()
+    pdf_count = 0
 
     for link in links:
         text = link.get_text(strip=True)
@@ -426,12 +974,24 @@ def scrape_ibps() -> list[dict]:
             href = url + "/" + href
 
         last_date = _parse_date(text)
+
+        # Try PDF extraction
+        pdf_data: dict = {}
+        if pdf_count < MAX_PDFS_PER_SCRAPER:
+            try:
+                pdf_data = _process_notification_pdf(session, href, url)
+                if pdf_data:
+                    pdf_count += 1
+            except Exception as e:
+                log.info(f"    PDF processing failed for {href}: {e}")
+
         jobs.append(_make_job(
             title=text,
             organization="IBPS",
             category="Banking",
             official_link=href,
             last_date=last_date,
+            pdf_data=pdf_data,
         ))
 
     return jobs
@@ -464,6 +1024,7 @@ def scrape_railways() -> list[dict]:
     # Only look for links whose href points to a CEN page (e.g. 2025-01-alp.php)
     # or whose text explicitly contains a CEN number with a position name.
     links = soup.find_all("a", href=True)
+    pdf_count = 0
     for link in links:
         text = link.get_text(strip=True)
         href = link["href"]
@@ -512,12 +1073,24 @@ def scrape_railways() -> list[dict]:
         title = f"RRB {text}" if not lower.startswith("rrb") else text
 
         last_date = _parse_date(text)
+
+        # Try PDF extraction
+        pdf_data: dict = {}
+        if pdf_count < MAX_PDFS_PER_SCRAPER:
+            try:
+                pdf_data = _process_notification_pdf(session, href, rrb_url)
+                if pdf_data:
+                    pdf_count += 1
+            except Exception as e:
+                log.info(f"    PDF processing failed for {href}: {e}")
+
         jobs.append(_make_job(
             title=title,
             organization="Railway Recruitment Board (RRB)",
             category="Railway",
             official_link=href,
             last_date=last_date,
+            pdf_data=pdf_data,
         ))
 
     return jobs
@@ -737,6 +1310,14 @@ def main():
     log.info(f"  {len(new_jobs)} new jobs to insert")
 
     if new_jobs:
+        # Log completeness score summary
+        above = [j for j in new_jobs if j.get("completeness_score", 0) > COMPLETENESS_THRESHOLD]
+        below = [j for j in new_jobs if j.get("completeness_score", 0) <= COMPLETENESS_THRESHOLD]
+        log.info(f"  Completeness scores: {len(above)} above {COMPLETENESS_THRESHOLD}%, "
+                 f"{len(below)} below (will stay draft)")
+        for j in new_jobs:
+            log.info(f"    {j['slug'][:60]:60s}  score={j.get('completeness_score', 0):.0f}%")
+
         log.info("Saving jobs to Supabase...")
         count = save_rows(client, "jobs", new_jobs)
         log.info(f"  Inserted {count} new jobs (is_active=false)")

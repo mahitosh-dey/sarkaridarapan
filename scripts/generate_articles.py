@@ -37,6 +37,7 @@ log = logging.getLogger(__name__)
 GROQ_MODEL = "llama-3.3-70b-versatile"
 RETRY_DELAY = 60          # seconds to wait on 429 rate-limit
 MAX_RETRIES = 2           # retry attempts per article
+COMPLETENESS_THRESHOLD = 70  # minimum score to send to Groq for rewriting
 
 # ---------------------------------------------------------------------------
 # Environment & Clients
@@ -75,11 +76,16 @@ def get_groq() -> Groq:
 # ---------------------------------------------------------------------------
 
 def fetch_pending_jobs(client: Client) -> list[dict]:
-    """Query jobs where is_active=false and content is null or empty."""
+    """Query jobs where is_active=false, content is empty, and score > threshold.
+
+    Jobs with completeness_score <= COMPLETENESS_THRESHOLD stay as drafts
+    and are not sent to Groq for rewriting.
+    """
     resp = (
         client.table("jobs")
         .select("*")
         .eq("is_active", False)
+        .gte("completeness_score", COMPLETENESS_THRESHOLD)
         .execute()
     )
     return [
@@ -467,9 +473,23 @@ def ping_search_engines():
 
 def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
     """Generate articles for all pending jobs. Returns (generated, failed)."""
-    log.info("Fetching pending jobs...")
+    log.info("Fetching pending jobs (completeness_score >= %d%%)...", COMPLETENESS_THRESHOLD)
     jobs = fetch_pending_jobs(supabase)
-    log.info(f"  Found {len(jobs)} jobs without content")
+    log.info(f"  Found {len(jobs)} jobs ready for article generation")
+
+    # Count low-score drafts for visibility
+    all_inactive = (
+        supabase.table("jobs")
+        .select("slug,completeness_score")
+        .eq("is_active", False)
+        .execute()
+    )
+    no_content = [j for j in all_inactive.data
+                  if not j.get("content") or str(j.get("content", "")).strip() == ""]
+    low_score = [j for j in no_content
+                 if (j.get("completeness_score") or 0) < COMPLETENESS_THRESHOLD]
+    if low_score:
+        log.info(f"  Skipped {len(low_score)} draft jobs with score below {COMPLETENESS_THRESHOLD}%%")
 
     generated = 0
     failed = 0
