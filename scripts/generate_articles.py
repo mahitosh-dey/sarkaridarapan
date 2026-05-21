@@ -156,176 +156,192 @@ def update_scheme(client: Client, slug: str, content: str, reading_time: str):
 # Prompt builders
 # ---------------------------------------------------------------------------
 
-def build_job_prompt(job: dict) -> str:
-    """Construct the Groq prompt for a job article.
+JOB_SYSTEM_PROMPT = """\
+You are a government job content writer for an Indian job portal.
+You must ONLY use the data provided. Never guess, assume, or invent any \
+information. If a field is missing, write 'Details awaited from official \
+notification' — never fabricate dates, salaries, or vacancy numbers."""
 
-    The prompt asks the AI to output a fenced ```json block with structured
-    fields first, then the full markdown article.  This lets us populate both
-    the structured database columns and the long-form content in one call.
+
+def _build_scraped_data_json(job: dict) -> str:
+    """Serialize the scraped job data into a clean JSON string for the prompt."""
+    data = {
+        "title": job.get("title", ""),
+        "organization": job.get("organization", ""),
+        "category": job.get("category", ""),
+        "description": job.get("description", ""),
+        "vacancies": job.get("vacancies", 0),
+        "last_date": job.get("last_date", ""),
+        "salary": job.get("salary", ""),
+        "official_link": job.get("official_link", ""),
+        "notification_link": job.get("notification_link", ""),
+        "state": job.get("state", ""),
+        "post_name": job.get("post_name", ""),
+        "qualification": job.get("qualification", ""),
+        "eligibility": job.get("eligibility", {}),
+        "application_fee": job.get("application_fee", {}),
+        "important_dates": job.get("important_dates", {}),
+        "selection_process": job.get("selection_process", []),
+        "how_to_apply": job.get("how_to_apply", ""),
+    }
+    # Drop empty values so the model sees only what we actually have
+    return json.dumps(
+        {k: v for k, v in data.items() if v and v != 0 and v != {} and v != []},
+        indent=2, ensure_ascii=False,
+    )
+
+
+def build_job_prompt(job: dict) -> tuple[str, str]:
+    """Construct the system + user prompts for a job article.
+
+    Returns (system_prompt, user_prompt).
+    The user prompt asks for a fenced ```json block with structured fields
+    followed by the full markdown article.
     """
-    title = job.get("title", "")
-    organization = job.get("organization", "")
-    category = job.get("category", "")
-    official_link = job.get("official_link", "")
-    description = job.get("description", "")
-    last_date = job.get("last_date", "")
-    vacancies = job.get("vacancies", 0)
-    notification_link = job.get("notification_link", "")
-    state = job.get("state", "")
+    scraped_json = _build_scraped_data_json(job)
 
-    return f"""You are an expert Indian government jobs content writer with 10 years of experience.
+    user_prompt = f"""Write a helpful job page using ONLY this data:
 
-Your task has TWO parts — output them in order:
+{scraped_json}
+
+STRICT RULES — read carefully:
+- Never invent dates not present in the data
+- Never invent salary figures not in the data
+- Never invent vacancy numbers not in the data
+- If application dates are unknown, say 'Application dates will be updated once official notification is released'
+- If salary is unknown, say 'Details awaited from official notification'
+- If vacancy count is 0 or missing, say 'Details awaited from official notification'
+- Keep tone simple and helpful for Indian government job seekers
+- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PART 1: Structured JSON block
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Output a fenced ```json block containing structured data about this job.
-Use this EXACT schema (all fields required — use null for genuinely unknown values):
+Use this EXACT schema (use null for any field NOT present in the data above):
 
 ```json
 {{
-  "post_name": "<specific post/position name, e.g. 'Combined Graduate Level Examination'>",
-  "qualification": "<minimum education required, e.g. 'Graduation from recognized university'>",
+  "post_name": "<from data or null>",
+  "qualification": "<from data or null>",
   "eligibility": {{
-    "age": "<age range with relaxations, e.g. '18-27 years (5 years relaxation for SC/ST)'>",
-    "education": "<education details, e.g. 'Bachelor's Degree from a recognized university'>"
+    "age": "<from data or null>",
+    "education": "<from data or null>"
   }},
-  "salary": "<pay scale or salary range, e.g. 'Rs. 25,500 - 81,100 (Pay Level 4-7)'>",
+  "salary": "<from data or null>",
   "application_fee": {{
-    "general": "<fee for General/OBC, e.g. 'Rs. 100'>",
-    "sc_st": "<fee for SC/ST, e.g. 'Nil' or 'Rs. 0'>",
-    "women": "<fee for women candidates, e.g. 'Nil' or null if same as general>",
-    "ph": "<fee for PH/Divyang, e.g. 'Nil' or null>"
+    "general": "<from data or null>",
+    "sc_st": "<from data or null>",
+    "women": "<from data or null>",
+    "ph": "<from data or null>"
   }},
   "important_dates": {{
-    "startDate": "<application start date in YYYY-MM-DD or null>",
-    "lastDate": "<last date to apply in YYYY-MM-DD or null>",
-    "examDate": "<exam date in YYYY-MM-DD or null>"
+    "startDate": "<from data in YYYY-MM-DD or null>",
+    "lastDate": "<from data in YYYY-MM-DD or null>",
+    "examDate": "<from data in YYYY-MM-DD or null>"
   }},
-  "selection_process": ["<step 1>", "<step 2>", "<step 3>"],
-  "how_to_apply": "<clear step-by-step instructions as a single string>"
+  "selection_process": ["<from data or empty array>"],
+  "how_to_apply": "<from data or null>"
 }}
 ```
 
 **JSON Rules:**
-- Use null for genuinely unknown fields — NEVER invent dates or vacancy numbers
-- For dates: ONLY use dates from the source data below. Unknown = null
-- For salary: Use realistic pay scales based on government pay commission norms for well-known positions
-- For application_fee: Use standard government exam fee norms if not explicitly provided
+- ONLY use values that appear in the scraped data above
+- Unknown fields = null. Do NOT guess or fill in from general knowledge
 - selection_process must be an array of strings
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PART 2: Markdown Article (1000 words)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-After the JSON block, write a 1000-word, 100% original, helpful article about {title} for Indian job seekers.
-
-**Source data (use these facts — but rewrite everything in your own words):**
-- Job Title: {title}
-- Organization: {organization}
-- Category: {category}
-- Description: {description}
-- Vacancies: {vacancies}
-- Last Date to Apply: {last_date}
-- Official Link: {official_link}
-- Notification Link: {notification_link}
-- State/Region: {state}
-
-**STRICT RULES:**
-- Write in a warm, helpful, human tone like you are advising a friend
-- Never copy any text from official sources
-- Include practical tips candidates actually need
-- Add realistic salary comparison with private sector
-- Mention specific documents needed
-- Write FAQ answers conversationally, not robotically
-- Vary sentence length — mix short punchy sentences with longer ones
-- Add one motivational line for candidates who are nervous about applying
-- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)
+After the JSON block, write a 1000-word original article for Indian job seekers.
 
 **Structure (use ## for section headings):**
-1. ## Overview — why this job matters, who should apply, what makes it worth pursuing
-2. ## Eligibility — clear simple language, age limits, education, category relaxations
-3. ## Salary & Benefits — with real context, compare with private sector, mention perks
-4. ## Important Dates — markdown table (Event | Date), with advice on preparation timeline
-5. ## How to Apply — step by step, practical, include the official website URL
-6. ## Selection Process — what to expect at each stage, ground-reality tips
-7. ## Preparation Tips — genuine advice from someone who knows the system
-8. ## Frequently Asked Questions — 5 Q&As, conversational answers not robotic
-9. ## Official Links — bullet list with markdown links
+1. ## Overview — why this job matters, who should apply
+2. ## Eligibility — age limits, education, category relaxations (ONLY from data)
+3. ## Salary & Benefits — ONLY mention salary if present in data, otherwise say 'Details awaited from official notification'
+4. ## Important Dates — markdown table (Event | Date). Use ONLY dates from the data. For missing dates write 'To be announced'
+5. ## How to Apply — step by step, include the official website URL from data
+6. ## Selection Process — ONLY from data, otherwise say 'Details awaited from official notification'
+7. ## Preparation Tips — genuine advice for government exam preparation
+8. ## Frequently Asked Questions — 5 Q&As, conversational tone
+9. ## Official Links — bullet list with markdown links from data
 10. *Disclaimer* — italic paragraph telling readers to verify on the official source
 
 **Output rules:**
-- Output ONLY the JSON block followed by the markdown body. No YAML frontmatter, no --- delimiters
+- Output ONLY the JSON block followed by the markdown body
 - Do NOT start the markdown with # (the page already has the h1 title). Start with ##
-- If any detail (salary, exam date, etc.) is unknown, write "To be announced"
-- Do NOT invent vacancy numbers or dates — use only what is provided above
+- No YAML frontmatter, no --- delimiters
 - Every sentence must be originally written — zero copy-paste from any source"""
 
+    return JOB_SYSTEM_PROMPT, user_prompt
 
-def build_scheme_prompt(scheme: dict) -> str:
-    """Construct the Groq prompt for a government scheme article."""
-    title = scheme.get("title", "")
-    ministry = scheme.get("ministry", "")
-    launched_by = scheme.get("launched_by", "")
-    objective = scheme.get("objective", "")
-    description = scheme.get("description", "")
-    category = scheme.get("category", "")
-    state = scheme.get("state", "")
-    official_portal = scheme.get("official_portal", "")
-    helpline = scheme.get("helpline_number", "")
-    eligibility = scheme.get("eligibility", [])
-    benefits = scheme.get("benefits", [])
-    documents = scheme.get("documents", [])
-    how_to_apply = scheme.get("how_to_apply", "")
 
-    return f"""You are an expert Indian government schemes content writer with 10 years of experience.
-Write a 1000-word, 100% original, helpful article about {title} for Indian citizens.
+SCHEME_SYSTEM_PROMPT = """\
+You are a government scheme content writer for an Indian government portal.
+You must ONLY use the data provided. Never guess, assume, or invent any \
+information. If a field is missing, write 'Details awaited from official \
+notification' — never fabricate amounts, dates, or eligibility criteria."""
 
-**Source data (use these facts — but rewrite everything in your own words):**
-- Scheme Name: {title}
-- Ministry/Department: {ministry}
-- Launched By: {launched_by}
-- Objective: {objective}
-- Description: {description}
-- Category: {category}
-- State/Region: {state}
-- Official Portal: {official_portal}
-- Helpline: {helpline}
-- Eligibility: {eligibility}
-- Benefits: {benefits}
-- Documents Required: {documents}
-- How to Apply: {how_to_apply}
 
-**STRICT RULES:**
-- Write in a warm, helpful, human tone like you are advising a friend
-- Never copy any text from official sources
-- Include practical tips citizens actually need to apply successfully
-- Explain benefits in real terms people can understand (monthly amounts, what it covers)
-- Mention specific documents needed and where to get them
-- Write FAQ answers conversationally, not robotically
-- Vary sentence length — mix short punchy sentences with longer ones
-- Add one encouraging line for people who find government processes intimidating
+def build_scheme_prompt(scheme: dict) -> tuple[str, str]:
+    """Construct the system + user prompts for a government scheme article.
+
+    Returns (system_prompt, user_prompt).
+    """
+    data = {
+        "title": scheme.get("title", ""),
+        "ministry": scheme.get("ministry", ""),
+        "launched_by": scheme.get("launched_by", ""),
+        "objective": scheme.get("objective", ""),
+        "description": scheme.get("description", ""),
+        "category": scheme.get("category", ""),
+        "state": scheme.get("state", ""),
+        "official_portal": scheme.get("official_portal", ""),
+        "helpline": scheme.get("helpline_number", ""),
+        "eligibility": scheme.get("eligibility", []),
+        "benefits": scheme.get("benefits", []),
+        "documents": scheme.get("documents", []),
+        "how_to_apply": scheme.get("how_to_apply", ""),
+    }
+    scraped_json = json.dumps(
+        {k: v for k, v in data.items() if v and v != [] and v != {}},
+        indent=2, ensure_ascii=False,
+    )
+
+    user_prompt = f"""Write a helpful scheme page using ONLY this data:
+
+{scraped_json}
+
+STRICT RULES:
+- Never invent eligibility criteria not present in the data
+- Never invent benefit amounts not in the data
+- Never invent dates or deadlines not in the data
+- If any detail is unknown, say 'Details awaited from official notification'
+- Keep tone simple and helpful for Indian citizens
 - Use Hindi-English terms naturally (yojana, sarkar, aadhaar, panchayat, etc.)
+
+Write a 1000-word original article.
 
 **Structure (use ## for section headings):**
 1. ## Overview — what this scheme does, who it helps, why it matters
-2. ## Eligibility — clear simple language, who qualifies, income limits if any
-3. ## Benefits — what the beneficiary actually gets, in real practical terms
-4. ## Documents Required — bullet list, mention where to get each document
-5. ## How to Apply — step by step, practical, include the official portal URL
+2. ## Eligibility — clear simple language, who qualifies, income limits if any (ONLY from data)
+3. ## Benefits — what the beneficiary actually gets (ONLY from data)
+4. ## Documents Required — bullet list (ONLY from data, otherwise say 'Check official portal')
+5. ## How to Apply — step by step, include the official portal URL from data
 6. ## Important Details — markdown table (Detail | Information)
 7. ## Preparation Tips — genuine advice on making the application process smooth
-8. ## Frequently Asked Questions — 5 Q&As, conversational answers not robotic
-9. ## Official Links — bullet list with markdown links
+8. ## Frequently Asked Questions — 5 Q&As, conversational tone
+9. ## Official Links — bullet list with markdown links from data
 10. *Disclaimer* — italic paragraph telling readers to verify on the official source
 
 **Output rules:**
 - Output ONLY the markdown body. No YAML frontmatter, no --- delimiters
 - Do NOT start with # (the page already has the h1 title). Start with ##
-- If any detail is unknown, write "To be announced" or "Check official portal"
 - Every sentence must be originally written — zero copy-paste from any source"""
+
+    return SCHEME_SYSTEM_PROMPT, user_prompt
 
 
 # ---------------------------------------------------------------------------
@@ -362,76 +378,75 @@ def parse_structured_response(raw_content: str) -> tuple[dict, str]:
     return structured, markdown
 
 
-def build_backfill_prompt(job: dict) -> str:
+def build_backfill_prompt(job: dict) -> tuple[str, str]:
     """Build a shorter extraction-only prompt for backfilling structured fields.
 
     Used with --backfill to populate structured columns for jobs that already
     have article content but empty structured fields.
+    Returns (system_prompt, user_prompt).
     """
-    title = job.get("title", "")
-    organization = job.get("organization", "")
-    category = job.get("category", "")
-    description = job.get("description", "")
-    last_date = job.get("last_date", "")
-    vacancies = job.get("vacancies", 0)
-    state = job.get("state", "")
+    scraped_json = _build_scraped_data_json(job)
 
-    return f"""You are an expert on Indian government jobs. Based on the metadata below,
-output ONLY a fenced ```json block with structured data. No markdown, no explanation.
+    system = JOB_SYSTEM_PROMPT
 
-**Job metadata:**
-- Title: {title}
-- Organization: {organization}
-- Category: {category}
-- Description: {description}
-- Vacancies: {vacancies}
-- Last Date: {last_date}
-- State: {state}
+    user = f"""Extract structured data from this job metadata. Output ONLY a
+fenced ```json block. No markdown, no explanation.
 
-Output this EXACT JSON schema (use null for genuinely unknown values):
+Job data:
+{scraped_json}
+
+Output this EXACT JSON schema. Use ONLY values present in the data above.
+If a field is not in the data, use null — never guess or invent values:
 
 ```json
 {{
-  "post_name": "<specific post/position name>",
-  "qualification": "<minimum education required>",
+  "post_name": "<from data or null>",
+  "qualification": "<from data or null>",
   "eligibility": {{
-    "age": "<age range with relaxations>",
-    "education": "<education details>"
+    "age": "<from data or null>",
+    "education": "<from data or null>"
   }},
-  "salary": "<pay scale or salary range>",
+  "salary": "<from data or null>",
   "application_fee": {{
-    "general": "<fee for General/OBC>",
-    "sc_st": "<fee for SC/ST>",
-    "women": "<fee for women or null>",
-    "ph": "<fee for PH/Divyang or null>"
+    "general": "<from data or null>",
+    "sc_st": "<from data or null>",
+    "women": "<from data or null>",
+    "ph": "<from data or null>"
   }},
   "important_dates": {{
-    "startDate": null,
-    "lastDate": "{last_date or 'null'}",
-    "examDate": null
+    "startDate": "<from data in YYYY-MM-DD or null>",
+    "lastDate": "<from data in YYYY-MM-DD or null>",
+    "examDate": "<from data in YYYY-MM-DD or null>"
   }},
-  "selection_process": ["<step 1>", "<step 2>"],
-  "how_to_apply": "<step-by-step instructions>"
+  "selection_process": ["<from data or empty array>"],
+  "how_to_apply": "<from data or null>"
 }}
 ```
 
 Rules:
-- ONLY use dates from the metadata above. Unknown dates = null
-- Use realistic salary/fee based on standard government norms for this type of position
-- Never invent vacancy numbers"""
+- ONLY use values from the data above — never invent dates, salaries, fees, or vacancy numbers
+- Unknown fields = null"""
+
+    return system, user
 
 
 # ---------------------------------------------------------------------------
 # Generation with retry
 # ---------------------------------------------------------------------------
 
-def call_groq(groq_client: Groq, prompt: str) -> str:
-    """Call Groq with automatic retry on rate-limit (429) errors."""
+def call_groq(groq_client: Groq, user_prompt: str,
+              system_prompt: str = "") -> str:
+    """Call Groq with system + user messages and retry on rate-limit (429)."""
+    messages: list[dict] = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": user_prompt})
+
     for attempt in range(MAX_RETRIES + 1):
         try:
             response = groq_client.chat.completions.create(
                 model=GROQ_MODEL,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
             )
             return response.choices[0].message.content
         except Exception as e:
@@ -500,8 +515,8 @@ def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
         log.info(f'Generating job article {i}/{len(jobs)}: "{title}"...')
 
         try:
-            prompt = build_job_prompt(job)
-            raw_content = call_groq(groq_client, prompt)
+            system_prompt, user_prompt = build_job_prompt(job)
+            raw_content = call_groq(groq_client, user_prompt, system_prompt)
         except Exception as e:
             log.error(f"  Groq API error: {e}")
             failed += 1
@@ -541,8 +556,8 @@ def process_schemes(supabase: Client, groq_client: Groq) -> tuple[int, int]:
         log.info(f'Generating scheme article {i}/{len(schemes)}: "{title}"...')
 
         try:
-            prompt = build_scheme_prompt(scheme)
-            content = call_groq(groq_client, prompt)
+            system_prompt, user_prompt = build_scheme_prompt(scheme)
+            content = call_groq(groq_client, user_prompt, system_prompt)
         except Exception as e:
             log.error(f"  Groq API error: {e}")
             failed += 1
@@ -619,8 +634,8 @@ def backfill_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
         log.info(f'Backfilling {i}/{len(jobs)}: "{title}"...')
 
         try:
-            prompt = build_backfill_prompt(job)
-            raw_content = call_groq(groq_client, prompt)
+            system_prompt, user_prompt = build_backfill_prompt(job)
+            raw_content = call_groq(groq_client, user_prompt, system_prompt)
         except Exception as e:
             log.error(f"  Groq API error: {e}")
             failed += 1
