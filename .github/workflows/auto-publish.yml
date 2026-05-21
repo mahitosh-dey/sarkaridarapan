@@ -18,6 +18,8 @@ env:
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
   GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
 jobs:
   scrape-and-publish:
@@ -71,19 +73,22 @@ jobs:
           # Parse counts from generator log
           jobs_gen=$(grep -oP 'Jobs generated: \K\d+' generator.log || echo "0")
           jobs_fail=$(grep -oP 'failed: \K\d+' generator.log | head -1 || echo "0")
+          jobs_flagged=$(grep -oP 'flagged: \K\d+' generator.log | head -1 || echo "0")
           schemes_gen=$(grep -oP 'Schemes generated: \K\d+' generator.log || echo "0")
           schemes_fail=$(grep -oP 'failed: \K\d+' generator.log | tail -1 || echo "0")
           if [ "$jobs_gen" = "" ]; then jobs_gen=0; fi
           if [ "$jobs_fail" = "" ]; then jobs_fail=0; fi
+          if [ "$jobs_flagged" = "" ]; then jobs_flagged=0; fi
           if [ "$schemes_gen" = "" ]; then schemes_gen=0; fi
           if [ "$schemes_fail" = "" ]; then schemes_fail=0; fi
 
           echo "jobs_generated=$jobs_gen" >> "$GITHUB_OUTPUT"
           echo "jobs_failed=$jobs_fail" >> "$GITHUB_OUTPUT"
+          echo "jobs_flagged=$jobs_flagged" >> "$GITHUB_OUTPUT"
           echo "schemes_generated=$schemes_gen" >> "$GITHUB_OUTPUT"
           echo "schemes_failed=$schemes_fail" >> "$GITHUB_OUTPUT"
           echo "### Article Generator Results" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Jobs published: **$jobs_gen** (failed: $jobs_fail)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Jobs published: **$jobs_gen** (failed: $jobs_fail, flagged: $jobs_flagged)" >> "$GITHUB_STEP_SUMMARY"
           echo "- Schemes published: **$schemes_gen** (failed: $schemes_fail)" >> "$GITHUB_STEP_SUMMARY"
 
       # ── Summary ───────────────────────────────────────────────────────────
@@ -96,6 +101,7 @@ jobs:
           echo " Scraped:   ${{ steps.scrape.outputs.new_jobs }} jobs, ${{ steps.scrape.outputs.new_schemes }} schemes"
           echo " Published: ${{ steps.generate.outputs.jobs_generated }} jobs, ${{ steps.generate.outputs.schemes_generated }} schemes"
           echo " Failed:    ${{ steps.generate.outputs.jobs_failed }} jobs, ${{ steps.generate.outputs.schemes_failed }} schemes"
+          echo " Flagged:   ${{ steps.generate.outputs.jobs_flagged }} jobs"
           echo "============================================"
 
       # ── Failure Notification ──────────────────────────────────────────────

@@ -22,6 +22,8 @@ import logging
 import argparse
 from pathlib import Path
 
+from urllib.parse import urlparse
+
 import requests
 from dotenv import load_dotenv
 from supabase import create_client, Client
@@ -38,6 +40,13 @@ GROQ_MODEL = "llama-3.3-70b-versatile"
 RETRY_DELAY = 60          # seconds to wait on 429 rate-limit
 MAX_RETRIES = 2           # retry attempts per article
 COMPLETENESS_THRESHOLD = 70  # minimum score to send to Groq for rewriting
+
+VAGUE_PHRASES = [
+    "to be announced", "will be announced",
+    "certain date", "may vary",
+    "likely to be", "expected to be",
+]
+MIN_WORD_COUNT = 400
 
 # ---------------------------------------------------------------------------
 # Environment & Clients
@@ -483,11 +492,140 @@ def ping_search_engines():
 
 
 # ---------------------------------------------------------------------------
+# Quality gate
+# ---------------------------------------------------------------------------
+
+def _extract_numbers(text: str) -> set[int]:
+    """Extract all integers > 100 from a string (likely salary figures)."""
+    return {int(n) for n in re.findall(r"\d+", text) if int(n) > 100}
+
+
+def check_content_quality(content: str, structured_data: dict,
+                          original_job: dict) -> list[str]:
+    """Validate Groq output against the original scraped data.
+
+    Returns a list of flag reasons (empty list means the article passed).
+    """
+    flags: list[str] = []
+    content_lower = content.lower()
+
+    # 1. Vague phrases
+    for phrase in VAGUE_PHRASES:
+        if phrase in content_lower:
+            flags.append(f"vague_phrase: '{phrase}'")
+
+    # 2. Salary hallucination
+    groq_salary = str(structured_data.get("salary") or "")
+    original_salary = str(original_job.get("salary") or "")
+
+    groq_nums = _extract_numbers(groq_salary)
+    original_nums = _extract_numbers(original_salary)
+
+    if groq_nums and not original_salary.strip():
+        flags.append(
+            f"hallucinated_salary: Groq wrote '{groq_salary}' "
+            f"but original had no salary"
+        )
+    elif groq_nums:
+        invented = groq_nums - original_nums
+        if invented:
+            flags.append(
+                f"salary_mismatch: Groq introduced numbers {invented} "
+                f"not in original '{original_salary}'"
+            )
+
+    # 3. Word count
+    word_count = len(content.split())
+    if word_count < MIN_WORD_COUNT:
+        flags.append(f"word_count_below_{MIN_WORD_COUNT}: {word_count}")
+
+    # 4. Official link missing from article body
+    official_link = original_job.get("official_link", "")
+    if official_link:
+        # Check full URL or at least the domain
+        domain = urlparse(official_link).netloc
+        if official_link not in content and (not domain or domain not in content):
+            flags.append(f"official_link_not_in_article: {official_link}")
+
+    return flags
+
+
+def send_telegram_alert(flags: list[str], job: dict) -> None:
+    """Send a Telegram message listing quality flag reasons for a job.
+
+    Silently returns if credentials are missing — never breaks the pipeline.
+    """
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        log.warning("  Telegram credentials missing — skipping alert")
+        return
+
+    title = job.get("title", "Unknown")
+    slug = job.get("slug", "")
+    org = job.get("organization", "")
+    score = job.get("completeness_score", 0)
+
+    reasons = "\n".join(f"• {f}" for f in flags)
+    text = (
+        f"⚠️ *Quality Flag*\n\n"
+        f"*Title:* {title}\n"
+        f"*Slug:* `{slug}`\n"
+        f"*Org:* {org}\n"
+        f"*Score:* {score}\n\n"
+        f"*Reasons:*\n{reasons}"
+    )
+
+    try:
+        resp = requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            log.info("  Telegram alert sent")
+        else:
+            log.warning(f"  Telegram alert failed: {resp.status_code} {resp.text}")
+    except requests.RequestException as e:
+        log.warning(f"  Telegram alert error: {e}")
+
+
+def update_job_flagged(client: Client, slug: str, content: str,
+                       reading_time: str, structured_data: dict | None,
+                       flags: list[str]):
+    """Save generated content but keep the job unpublished with quality flags."""
+    payload: dict = {
+        "content": content,
+        "reading_time": reading_time,
+        "is_active": False,
+        "quality_flag": flags,
+    }
+
+    if structured_data:
+        field_map = {
+            "post_name": "post_name",
+            "qualification": "qualification",
+            "eligibility": "eligibility",
+            "salary": "salary",
+            "application_fee": "application_fee",
+            "important_dates": "important_dates",
+            "selection_process": "selection_process",
+            "how_to_apply": "how_to_apply",
+        }
+        for src_key, db_col in field_map.items():
+            value = structured_data.get(src_key)
+            if value is not None and value != "" and value != []:
+                payload[db_col] = value
+
+    client.table("jobs").update(payload).eq("slug", slug).execute()
+
+
+# ---------------------------------------------------------------------------
 # Processing loops
 # ---------------------------------------------------------------------------
 
-def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
-    """Generate articles for all pending jobs. Returns (generated, failed)."""
+def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int, int]:
+    """Generate articles for all pending jobs. Returns (generated, failed, flagged)."""
     log.info("Fetching pending jobs (completeness_score >= %d%%)...", COMPLETENESS_THRESHOLD)
     jobs = fetch_pending_jobs(supabase)
     log.info(f"  Found {len(jobs)} jobs ready for article generation")
@@ -508,6 +646,7 @@ def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
 
     generated = 0
     failed = 0
+    flagged = 0
 
     for i, job in enumerate(jobs, 1):
         title = job.get("title", job.get("slug", "unknown"))
@@ -530,6 +669,22 @@ def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
         reading_time = calculate_reading_time(content)
         log.info(f"  Generated {word_count} words ({reading_time})")
 
+        # Quality gate — check before publishing
+        flags = check_content_quality(content, structured_data, job)
+
+        if flags:
+            log.warning(f"  Quality flags: {flags}")
+            try:
+                update_job_flagged(supabase, slug, content, reading_time,
+                                   structured_data, flags)
+                log.info("  Saved as draft (flagged, not published).")
+                flagged += 1
+            except Exception as e:
+                log.error(f"  Supabase update error: {e}")
+                failed += 1
+            send_telegram_alert(flags, job)
+            continue
+
         try:
             update_job(supabase, slug, content, reading_time, structured_data)
             log.info("  Saved and published.")
@@ -538,7 +693,7 @@ def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int]:
             log.error(f"  Supabase update error: {e}")
             failed += 1
 
-    return generated, failed
+    return generated, failed, flagged
 
 
 def process_schemes(supabase: Client, groq_client: Groq) -> tuple[int, int]:
@@ -682,7 +837,7 @@ def main():
         log.info(f"Backfill done. Updated: {updated}, failed: {failed}")
         return
 
-    jobs_gen, jobs_fail = process_jobs(supabase, groq_client)
+    jobs_gen, jobs_fail, jobs_flagged = process_jobs(supabase, groq_client)
     schemes_gen, schemes_fail = process_schemes(supabase, groq_client)
 
     total_gen = jobs_gen + schemes_gen
@@ -692,9 +847,9 @@ def main():
         log.info("Pinging search engines...")
         ping_search_engines()
 
-    log.info(f"Done. Jobs generated: {jobs_gen}, failed: {jobs_fail}")
+    log.info(f"Done. Jobs generated: {jobs_gen}, failed: {jobs_fail}, flagged: {jobs_flagged}")
     log.info(f"      Schemes generated: {schemes_gen}, failed: {schemes_fail}")
-    log.info(f"      Total: {total_gen} generated, {total_fail} failed")
+    log.info(f"      Total: {total_gen} generated, {total_fail} failed, {jobs_flagged} flagged")
 
 
 if __name__ == "__main__":

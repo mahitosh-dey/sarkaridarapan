@@ -51,6 +51,7 @@ export interface JobPost {
   qualification?: string;
   employmentType?: string;
   completenessScore?: number;
+  qualityFlag?: string[] | null;
 }
 
 // -----------------------------------------------------------------------------

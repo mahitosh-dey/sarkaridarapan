@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   qualification TEXT DEFAULT '',
   employment_type TEXT DEFAULT '',
   completeness_score REAL DEFAULT 0,
+  quality_flag JSONB DEFAULT NULL,
   search_vector TSVECTOR GENERATED ALWAYS AS (
     setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
     setweight(to_tsvector('english', coalesce(organization, '')), 'B') ||
