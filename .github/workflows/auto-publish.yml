@@ -91,6 +91,11 @@ jobs:
           echo "- Jobs published: **$jobs_gen** (failed: $jobs_fail, flagged: $jobs_flagged)" >> "$GITHUB_STEP_SUMMARY"
           echo "- Schemes published: **$schemes_gen** (failed: $schemes_fail)" >> "$GITHUB_STEP_SUMMARY"
 
+      # ── Quality Digest ────────────────────────────────────────────────────
+      - name: Send daily quality digest
+        if: always()
+        run: python scripts/generate_articles.py --digest
+
       # ── Summary ───────────────────────────────────────────────────────────
       - name: Print summary
         if: always()

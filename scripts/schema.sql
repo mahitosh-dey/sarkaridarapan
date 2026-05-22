@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   employment_type TEXT DEFAULT '',
   completeness_score REAL DEFAULT 0,
   quality_flag JSONB DEFAULT NULL,
+  reviewed_at TIMESTAMPTZ DEFAULT NULL,
   search_vector TSVECTOR GENERATED ALWAYS AS (
     setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
     setweight(to_tsvector('english', coalesce(organization, '')), 'B') ||
@@ -87,6 +88,10 @@ CREATE INDEX IF NOT EXISTS idx_jobs_slug ON jobs (slug);
 CREATE INDEX IF NOT EXISTS idx_jobs_category ON jobs (category);
 CREATE INDEX IF NOT EXISTS idx_jobs_state ON jobs (state);
 CREATE INDEX IF NOT EXISTS idx_jobs_published_at ON jobs (published_at DESC);
+
+-- Partial index for pending quality-flagged jobs
+CREATE INDEX IF NOT EXISTS idx_jobs_quality_flag_pending
+  ON jobs (is_active, reviewed_at) WHERE quality_flag IS NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_schemes_slug ON schemes (slug);
 CREATE INDEX IF NOT EXISTS idx_schemes_category ON schemes (category);

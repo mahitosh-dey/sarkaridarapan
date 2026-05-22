@@ -1,0 +1,41 @@
+# =============================================================================
+# SarkariDarapan — Daily Quality Digest (Standalone)
+# Sends a Telegram summary of pending flagged jobs at 8:30 AM IST (03:00 UTC)
+# Runs independently as a backup — the main pipeline also sends a digest.
+# =============================================================================
+
+name: Daily Quality Digest
+
+on:
+  schedule:
+    # 8:30 AM IST = 03:00 UTC
+    - cron: "0 3 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Send quality digest
+        run: python scripts/generate_articles.py --digest

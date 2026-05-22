@@ -43,6 +43,7 @@ function mapJobRow(row: any): JobPost {
     qualification: row.qualification || undefined,
     employmentType: row.employment_type || undefined,
     qualityFlag: row.quality_flag || null,
+    reviewedAt: row.reviewed_at || null,
   };
 }
 

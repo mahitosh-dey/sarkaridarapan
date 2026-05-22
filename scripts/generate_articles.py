@@ -45,6 +45,7 @@ VAGUE_PHRASES = [
     "to be announced", "will be announced",
     "certain date", "may vary",
     "likely to be", "expected to be",
+    "tba",
 ]
 MIN_WORD_COUNT = 400
 
@@ -590,6 +591,65 @@ def send_telegram_alert(flags: list[str], job: dict) -> None:
         log.warning(f"  Telegram alert error: {e}")
 
 
+def send_daily_quality_digest(client: Client) -> None:
+    """Send a Telegram digest summarizing all pending flagged jobs.
+
+    Queries jobs where quality_flag IS NOT NULL and reviewed_at IS NULL,
+    then sends a summary message with counts and a link to the admin dashboard.
+    Silently returns if credentials are missing.
+    """
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        log.warning("Telegram credentials missing — skipping digest")
+        return
+
+    resp = (
+        client.table("jobs")
+        .select("title, organization, quality_flag")
+        .not_("quality_flag", "is", "null")
+        .is_("reviewed_at", "null")
+        .order("updated_at", desc=True)
+        .limit(20)
+        .execute()
+    )
+
+    pending_jobs = resp.data or []
+    if not pending_jobs:
+        log.info("No pending flagged jobs — skipping digest")
+        return
+
+    lines = []
+    for idx, job in enumerate(pending_jobs, 1):
+        title = (job.get("title") or "Untitled")[:40]
+        flags = job.get("quality_flag") or []
+        flag_count = len(flags) if isinstance(flags, list) else 0
+        lines.append(f"{idx}. {title}... ({flag_count} flag{'s' if flag_count != 1 else ''})")
+
+    total_text = f"{len(pending_jobs)} job{'s' if len(pending_jobs) != 1 else ''} pending review"
+    job_list = "\n".join(lines)
+
+    text = (
+        f"📋 *Daily Quality Report*\n\n"
+        f"{total_text}:\n\n"
+        f"{job_list}\n\n"
+        f"🔗 [Review Dashboard](https://www.sarkaridarapan.info/admin/quality-check)"
+    )
+
+    try:
+        resp_tg = requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"},
+            timeout=10,
+        )
+        if resp_tg.status_code == 200:
+            log.info("Daily quality digest sent via Telegram")
+        else:
+            log.warning(f"Telegram digest failed: {resp_tg.status_code} {resp_tg.text}")
+    except requests.RequestException as e:
+        log.warning(f"Telegram digest error: {e}")
+
+
 def update_job_flagged(client: Client, slug: str, content: str,
                        reading_time: str, structured_data: dict | None,
                        flags: list[str]):
@@ -826,10 +886,20 @@ def main():
         action="store_true",
         help="Backfill structured fields for active jobs that already have content",
     )
+    parser.add_argument(
+        "--digest",
+        action="store_true",
+        help="Send daily quality digest via Telegram and exit",
+    )
     args = parser.parse_args()
 
     load_env()
     supabase = get_supabase()
+
+    if args.digest:
+        send_daily_quality_digest(supabase)
+        return
+
     groq_client = get_groq()
 
     if args.backfill:
@@ -850,6 +920,9 @@ def main():
     log.info(f"Done. Jobs generated: {jobs_gen}, failed: {jobs_fail}, flagged: {jobs_flagged}")
     log.info(f"      Schemes generated: {schemes_gen}, failed: {schemes_fail}")
     log.info(f"      Total: {total_gen} generated, {total_fail} failed, {jobs_flagged} flagged")
+
+    # Send daily digest at end of pipeline run
+    send_daily_quality_digest(supabase)
 
 
 if __name__ == "__main__":
