@@ -5,7 +5,7 @@ Disallow: /api/
 Disallow: /admin/
 
 # Host
-Host: https://govt-jobs-website-six.vercel.app
+Host: https://www.sarkaridarapan.info
 
 # Sitemaps
-Sitemap: https://govt-jobs-website-six.vercel.app/sitemap.xml
+Sitemap: https://www.sarkaridarapan.info/sitemap.xml
