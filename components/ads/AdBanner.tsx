@@ -24,36 +24,33 @@ export default function AdBanner({
   className = "",
 }: AdBannerProps) {
   const adRef = useRef<HTMLModElement>(null);
-  const isAdPushed = useRef(false);
 
   useEffect(() => {
-    if (isAdPushed.current) return;
-    if (adRef.current?.getAttribute("data-adsbygoogle-status")) return;
+    const el = adRef.current;
+    if (!el) return;
+    // Skip if AdSense already processed this element
+    if (el.getAttribute("data-adsbygoogle-status")) return;
+    if (el.firstChild) return;
 
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-      isAdPushed.current = true;
-    } catch (error) {
-      console.error("AdSense error:", error);
+    } catch {
+      // Ad already loaded for this slot — safe to ignore
     }
+
+    return () => {
+      // Clean up on unmount so remounting doesn't hit a stale element
+      el.removeAttribute("data-adsbygoogle-status");
+      el.innerHTML = "";
+    };
   }, []);
 
   if (process.env.NODE_ENV === "development") {
-    return (
-      <div className={`w-full my-4 ${className}`}>
-        <p className="text-xs text-gray-400 text-center mb-1">Advertisement</p>
-        <div className="w-full min-h-[250px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-          <span className="text-sm text-gray-400 font-medium">
-            Ad Space &middot; {adFormat} &middot; Slot: {adSlot}
-          </span>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div className={`w-full my-4 ${className}`}>
-      <p className="text-xs text-gray-400 text-center mb-1">Advertisement</p>
       <ins
         ref={adRef}
         className="adsbygoogle block"
