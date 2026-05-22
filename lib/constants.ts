@@ -81,6 +81,7 @@ export const JOB_CATEGORIES: CategoryEntry[] = [
   { slug: "psu", name: "PSU", icon: "\ud83c\udfed" },
   { slug: "healthcare", name: "Healthcare", icon: "\ud83c\udfe5" },
   { slug: "engineering", name: "Engineering", icon: "\u2699\ufe0f" },
+  { slug: "entrance-exams", name: "Entrance Exams", icon: "\ud83c\udfaf" },
 ];
 
 // -----------------------------------------------------------------------------

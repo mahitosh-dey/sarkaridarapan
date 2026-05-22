@@ -49,6 +49,13 @@ VAGUE_PHRASES = [
 ]
 MIN_WORD_COUNT = 400
 
+ENTRANCE_EXAM_KEYWORDS = re.compile(r"\b(JEE|NEET|CUET|CMAT)\b", re.IGNORECASE)
+
+
+def is_entrance_exam(job: dict) -> bool:
+    """Return True if the job title matches a known entrance exam."""
+    return bool(ENTRANCE_EXAM_KEYWORDS.search(job.get("title", "")))
+
 # ---------------------------------------------------------------------------
 # Environment & Clients
 # ---------------------------------------------------------------------------
@@ -170,7 +177,25 @@ JOB_SYSTEM_PROMPT = """\
 You are a government job content writer for an Indian job portal.
 You must ONLY use the data provided. Never guess, assume, or invent any \
 information. If a field is missing, write 'Details awaited from official \
-notification' — never fabricate dates, salaries, or vacancy numbers."""
+notification' — never fabricate dates, salaries, or vacancy numbers.
+
+BANNED PHRASES — never write any of these in the article:
+- 'certain date'
+- 'will be announced'
+- 'may vary'
+- 'to be announced'
+Instead, if a date is unknown write: 'Application dates not yet released. \
+Bookmark this page for updates.'
+
+ENTRANCE EXAMS (JEE, NEET, CUET, CMAT):
+- These are competitive entrance exams, NOT sarkari naukri (government jobs).
+- Never mention salary, pay scale, or compensation — entrance exams have none.
+- Do not write a Salary & Benefits section for entrance exams.
+
+FAQ RULES:
+- Only include a FAQ question if you can answer it factually from the data.
+- If the answer would be 'Details awaited' or unknown, omit that Q&A entirely.
+- It is better to have 3 good FAQs than 5 padded ones."""
 
 
 def _build_scraped_data_json(job: dict) -> str:
@@ -194,6 +219,11 @@ def _build_scraped_data_json(job: dict) -> str:
         "selection_process": job.get("selection_process", []),
         "how_to_apply": job.get("how_to_apply", ""),
     }
+
+    # Strip salary for entrance exams — they have no pay scale
+    if is_entrance_exam(job):
+        data.pop("salary", None)
+
     # Drop empty values so the model sees only what we actually have
     return json.dumps(
         {k: v for k, v in data.items() if v and v != 0 and v != {} and v != []},
@@ -210,7 +240,21 @@ def build_job_prompt(job: dict) -> tuple[str, str]:
     """
     scraped_json = _build_scraped_data_json(job)
 
-    user_prompt = f"""Write a helpful job page using ONLY this data:
+    exam = is_entrance_exam(job)
+
+    # Build entrance-exam-specific or regular job rules
+    if exam:
+        salary_rule = "- This is an entrance exam — do NOT write a Salary & Benefits section. Entrance exams have no salary."
+        salary_section = "3. ## Exam Pattern — marks, duration, sections, negative marking (ONLY from data)"
+        dates_missing_text = "Application dates not yet released. Bookmark this page for updates."
+        tone_note = "- Keep tone simple and helpful for Indian students and exam aspirants"
+    else:
+        salary_rule = "- If salary is unknown, say 'Details awaited from official notification'"
+        salary_section = "3. ## Salary & Benefits — ONLY mention salary if present in data, otherwise say 'Details awaited from official notification'"
+        dates_missing_text = "Application dates not yet released. Bookmark this page for updates."
+        tone_note = "- Keep tone simple and helpful for Indian government job seekers\n- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)"
+
+    user_prompt = f"""Write a helpful {"entrance exam" if exam else "job"} page using ONLY this data:
 
 {scraped_json}
 
@@ -218,17 +262,24 @@ STRICT RULES — read carefully:
 - Never invent dates not present in the data
 - Never invent salary figures not in the data
 - Never invent vacancy numbers not in the data
-- If application dates are unknown, say 'Application dates will be updated once official notification is released'
-- If salary is unknown, say 'Details awaited from official notification'
+{salary_rule}
+- If application dates are missing, write EXACTLY: '{dates_missing_text}'
 - If vacancy count is 0 or missing, say 'Details awaited from official notification'
-- Keep tone simple and helpful for Indian government job seekers
-- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)
+{tone_note}
+
+BANNED PHRASES — do NOT use any of these anywhere in the article:
+- 'certain date'
+- 'will be announced'
+- 'may vary'
+- 'to be announced'
+- 'TBA'
+If a date or detail is unknown, write 'Not yet released' or omit the row entirely.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PART 1: Structured JSON block
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Output a fenced ```json block containing structured data about this job.
+Output a fenced ```json block containing structured data about this {"exam" if exam else "job"}.
 Use this EXACT schema (use null for any field NOT present in the data above):
 
 ```json
@@ -239,7 +290,7 @@ Use this EXACT schema (use null for any field NOT present in the data above):
     "age": "<from data or null>",
     "education": "<from data or null>"
   }},
-  "salary": "<from data or null>",
+  "salary": {"null" if exam else '"<from data or null>"'},
   "application_fee": {{
     "general": "<from data or null>",
     "sc_st": "<from data or null>",
@@ -260,22 +311,23 @@ Use this EXACT schema (use null for any field NOT present in the data above):
 - ONLY use values that appear in the scraped data above
 - Unknown fields = null. Do NOT guess or fill in from general knowledge
 - selection_process must be an array of strings
+{"- salary MUST be null for entrance exams — they have no pay scale" if exam else ""}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PART 2: Markdown Article (1000 words)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-After the JSON block, write a 1000-word original article for Indian job seekers.
+After the JSON block, write a 1000-word original article for Indian {"exam aspirants" if exam else "job seekers"}.
 
 **Structure (use ## for section headings):**
-1. ## Overview — why this job matters, who should apply
+1. ## Overview — {"what this exam is, who should appear" if exam else "why this job matters, who should apply"}
 2. ## Eligibility — age limits, education, category relaxations (ONLY from data)
-3. ## Salary & Benefits — ONLY mention salary if present in data, otherwise say 'Details awaited from official notification'
-4. ## Important Dates — markdown table (Event | Date). Use ONLY dates from the data. For missing dates write 'To be announced'
+{salary_section}
+4. ## Important Dates — markdown table (Event | Date). Use ONLY dates from the data. For missing dates write 'Not yet released' or omit the row
 5. ## How to Apply — step by step, include the official website URL from data
 6. ## Selection Process — ONLY from data, otherwise say 'Details awaited from official notification'
-7. ## Preparation Tips — genuine advice for government exam preparation
-8. ## Frequently Asked Questions — 5 Q&As, conversational tone
+7. ## Preparation Tips — genuine advice for {"exam" if exam else "government exam"} preparation
+8. ## Frequently Asked Questions — 3 to 5 Q&As, conversational tone. ONLY include a Q&A if you can answer it factually from the data. If the answer would be unknown, OMIT that question entirely. Quality over quantity.
 9. ## Official Links — bullet list with markdown links from data
 10. *Disclaimer* — italic paragraph telling readers to verify on the official source
 
@@ -515,7 +567,16 @@ def check_content_quality(content: str, structured_data: dict,
         if phrase in content_lower:
             flags.append(f"vague_phrase: '{phrase}'")
 
-    # 2. Salary hallucination
+    # 2. Entrance exam salary check — exams should never have salary
+    if is_entrance_exam(original_job):
+        groq_salary_val = structured_data.get("salary")
+        if groq_salary_val and str(groq_salary_val).strip().lower() not in ("", "null", "none"):
+            flags.append(
+                f"entrance_exam_salary: Groq wrote salary '{groq_salary_val}' "
+                f"but entrance exams have no salary"
+            )
+
+    # 3. Salary hallucination
     groq_salary = str(structured_data.get("salary") or "")
     original_salary = str(original_job.get("salary") or "")
 
@@ -713,6 +774,16 @@ def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int, int]:
         slug = job.get("slug", "")
         log.info(f'Generating job article {i}/{len(jobs)}: "{title}"...')
 
+        # Auto-recategorize entrance exams
+        if is_entrance_exam(job) and job.get("category") != "entrance-exams":
+            old_cat = job.get("category", "")
+            log.info(f"  Recategorizing from '{old_cat}' → 'entrance-exams'")
+            try:
+                supabase.table("jobs").update({"category": "entrance-exams"}).eq("slug", slug).execute()
+                job["category"] = "entrance-exams"
+            except Exception as e:
+                log.warning(f"  Category update failed: {e}")
+
         try:
             system_prompt, user_prompt = build_job_prompt(job)
             raw_content = call_groq(groq_client, user_prompt, system_prompt)
@@ -722,6 +793,11 @@ def process_jobs(supabase: Client, groq_client: Groq) -> tuple[int, int, int]:
             continue
 
         structured_data, content = parse_structured_response(raw_content)
+
+        # Hard strip salary from entrance exams even if Groq returned one
+        if is_entrance_exam(job) and structured_data:
+            structured_data.pop("salary", None)
+
         if structured_data:
             log.info(f"  Extracted structured fields: {list(structured_data.keys())}")
 
