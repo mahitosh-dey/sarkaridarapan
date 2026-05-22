@@ -98,6 +98,7 @@ export default async function AdminPreviewPage({ params }: PreviewPageProps) {
             slug={job.slug}
             hasContent={hasContent}
             initialContent={job.content}
+            isActive={job.isActive}
           />
         </div>
       </div>

@@ -8,6 +8,7 @@ interface PreviewActionsProps {
   slug: string;
   hasContent: boolean;
   initialContent: string;
+  isActive: boolean;
 }
 
 export default function PreviewActions({
@@ -15,6 +16,7 @@ export default function PreviewActions({
   slug,
   hasContent,
   initialContent,
+  isActive,
 }: PreviewActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
@@ -113,6 +115,56 @@ export default function PreviewActions({
     }
   }
 
+  async function handleUnpublish() {
+    if (!confirm("Unpublish this job? It will be removed from the public site.")) {
+      return;
+    }
+
+    setLoading("unpublish");
+    try {
+      const res = await fetch("/api/admin/quality-check/unpublish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to unpublish");
+        return;
+      }
+      router.refresh();
+    } catch {
+      alert("Network error");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm("Delete this job permanently? This cannot be undone.")) {
+      return;
+    }
+
+    setLoading("delete");
+    try {
+      const res = await fetch("/api/admin/quality-check/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to delete");
+        return;
+      }
+      router.push("/admin/quality-check");
+    } catch {
+      alert("Network error");
+    } finally {
+      setLoading(null);
+    }
+  }
+
   async function handleGenerate() {
     setLoading("generate");
     try {
@@ -169,7 +221,34 @@ export default function PreviewActions({
           Back to Dashboard
         </a>
 
-        {!hasContent ? (
+        {isActive && hasContent ? (
+          <>
+            <button
+              onClick={() => {
+                setEditing(!editing);
+                setSaveMsg(null);
+              }}
+              disabled={loading !== null}
+              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              {editing ? "Cancel Edit" : "Edit Content"}
+            </button>
+            <button
+              onClick={handleUnpublish}
+              disabled={loading !== null}
+              className="px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-md transition-colors disabled:opacity-50"
+            >
+              {loading === "unpublish" ? "Unpublishing..." : "Unpublish"}
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={loading !== null}
+              className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
+            >
+              {loading === "delete" ? "Deleting..." : "Delete"}
+            </button>
+          </>
+        ) : !hasContent ? (
           <button
             onClick={handleGenerate}
             disabled={loading !== null}

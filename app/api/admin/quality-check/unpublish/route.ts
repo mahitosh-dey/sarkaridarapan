@@ -12,7 +12,11 @@ export async function POST(request: NextRequest) {
 
     const { error } = await supabaseAdmin
       .from("jobs")
-      .delete()
+      .update({
+        is_active: false,
+        published_at: null,
+        reviewed_at: null,
+      })
       .eq("id", jobId);
 
     if (error) {
