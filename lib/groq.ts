@@ -109,6 +109,26 @@ FAQ RULES:
 - It is better to have 3 good FAQs than 5 padded ones.`;
 
 /** Database row shape (snake_case columns from Supabase). */
+export interface ExamPatternSection {
+  name: string;
+  questions: number | null;
+  marks: number | null;
+  duration: string | null;
+}
+
+export interface ExamPattern {
+  sections: ExamPatternSection[];
+  total_marks: number | null;
+  total_duration: string | null;
+  negative_marking: string | null;
+}
+
+export interface VacancyBreakdown {
+  post_name: string;
+  pay_level: string | null;
+  count: number | null;
+}
+
 export interface JobRow {
   id: string;
   slug: string;
@@ -135,6 +155,8 @@ export interface JobRow {
   completeness_score: number | null;
   quality_flag: string[] | null;
   reviewed_at: string | null;
+  exam_pattern: ExamPattern | null;
+  vacancy_breakdown: VacancyBreakdown[] | null;
   [key: string]: unknown;
 }
 
@@ -143,7 +165,7 @@ function buildScrapedDataJson(job: JobRow): string {
     title: job.title || "",
     organization: job.organization || "",
     category: job.category || "",
-    description: job.description || "",
+    source_page_text: job.description || "",
     vacancies: job.vacancies || 0,
     last_date: job.last_date || "",
     salary: job.salary || "",
@@ -190,20 +212,55 @@ export function buildJobPrompt(job: JobRow): [string, string] {
     ? "- This is an entrance exam — do NOT write a Salary & Benefits section. Entrance exams have no salary."
     : "- If salary is unknown, say 'Details awaited from official notification'";
 
-  const salarySection = exam
-    ? "3. ## Exam Pattern — marks, duration, sections, negative marking (ONLY from data)"
-    : "3. ## Salary & Benefits — ONLY mention salary if present in data, otherwise say 'Details awaited from official notification'";
-
   const datesMissingText =
     "Application dates not yet released. Bookmark this page for updates.";
 
   const toneNote = exam
-    ? "- Keep tone simple and helpful for Indian students and exam aspirants"
-    : "- Keep tone simple and helpful for Indian government job seekers\n- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)";
+    ? `- Keep tone simple and helpful for Indian students and exam aspirants
+- Write like a mentor who's been through the process, not a Wikipedia article`
+    : `- Keep tone simple and helpful for Indian government job seekers
+- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)
+- Write like a mentor who's been through the process, not a Wikipedia article
+- Add candid, practical preparation advice and insider tips where appropriate`;
+
+  // Build article structure sections dynamically
+  const sections: string[] = [];
+  let sectionNum = 1;
+
+  sections.push(`${sectionNum++}. ## Overview — ${exam ? "what this exam is, who should appear" : "why this job matters, who should apply"}`);
+  sections.push(`${sectionNum++}. ## Eligibility — age limits, education, category relaxations (ONLY from data)`);
+
+  if (!exam) {
+    sections.push(`${sectionNum++}. ## Vacancy Breakdown — markdown table (Post Name | Pay Level | Vacancies). MANDATORY if post-wise vacancy data exists in source_page_text. If no breakdown available, write total vacancies only.`);
+    sections.push(`${sectionNum++}. ## Salary & Benefits — markdown table (Pay Level | Pay Scale | Approx. Gross Salary) if multiple pay levels exist. ONLY mention salary if present in data, otherwise say 'Details awaited from official notification'`);
+  }
+
+  sections.push(`${sectionNum++}. ## Application Fee — markdown table (Category | Amount). Include rows for General/OBC, SC/ST, Women, PH/EWS as available from data. If fee data is missing, say 'Details awaited from official notification'`);
+
+  sections.push(`${sectionNum++}. ## Exam Pattern — markdown table (Section | Questions | Marks | Duration). Include total marks, total duration, and negative marking details. ${exam ? "ONLY from data" : "Include if exam pattern data exists in source_page_text"}`);
+
+  sections.push(`${sectionNum++}. ## Important Dates — markdown table (Event | Date). Use ONLY dates from the data. For missing dates write 'Not yet released' or omit the row`);
+  sections.push(`${sectionNum++}. ## How to Apply — step by step, include the official website URL from data`);
+  sections.push(`${sectionNum++}. ## Selection Process — ONLY from data, otherwise say 'Details awaited from official notification'`);
+  sections.push(`${sectionNum++}. ## Preparation Tips — genuine, practical advice for ${exam ? "exam" : "government exam"} preparation. Be specific — mention book names, previous year papers, time management strategies`);
+  sections.push(`${sectionNum++}. ## Frequently Asked Questions — 3 to 5 Q&As, conversational tone. ONLY include a Q&A if you can answer it factually from the data. If the answer would be unknown, OMIT that question entirely. Quality over quantity.`);
+  sections.push(`${sectionNum++}. ## Official Links — bullet list with markdown links from data`);
+  sections.push(`${sectionNum}. *Disclaimer* — italic paragraph telling readers to verify on the official source`);
+
+  const structureSections = sections.join("\n");
 
   const userPrompt = `Write a helpful ${exam ? "entrance exam" : "job"} page using ONLY this data:
 
 ${scrapedJson}
+
+IMPORTANT — MINING SOURCE TEXT:
+The source_page_text field contains raw text scraped from the official page. Extract any additional details from it even if they aren't in the structured fields:
+- Post-wise vacancy breakdowns (post names, number of vacancies per post, pay levels)
+- Salary tables (pay levels, pay scales, gross salary figures)
+- Category-wise application fees
+- Exam pattern details (sections, questions per section, marks, duration, negative marking)
+- Age relaxations by category
+- Any other structured data that would make the article more useful
 
 STRICT RULES — read carefully:
 - Never invent dates not present in the data
@@ -221,6 +278,15 @@ BANNED PHRASES — do NOT use any of these anywhere in the article:
 - 'to be announced'
 - 'TBA'
 If a date or detail is unknown, write 'Not yet released' or omit the row entirely.
+
+TABLE FORMATTING:
+When the data supports it, use markdown tables for maximum clarity:
+- Vacancy Breakdown: | Post Name | Pay Level | Vacancies |
+- Salary: | Pay Level | Pay Scale | Approx. Gross Salary |
+- Application Fee: | Category | Amount |
+- Exam Pattern: | Section | Questions | Marks | Duration |
+- Important Dates: | Event | Date |
+Only include a table if you have real data to populate it. Do NOT create tables with placeholder or unknown values.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PART 1: Structured JSON block
@@ -240,9 +306,11 @@ Use this EXACT schema (use null for any field NOT present in the data above):
   "salary": ${exam ? "null" : '"<from data or null>"'},
   "application_fee": {
     "general": "<from data or null>",
+    "obc": "<from data or null>",
     "sc_st": "<from data or null>",
     "women": "<from data or null>",
-    "ph": "<from data or null>"
+    "ph": "<from data or null>",
+    "ews": "<from data or null>"
   },
   "important_dates": {
     "startDate": "<from data in YYYY-MM-DD or null>",
@@ -250,39 +318,44 @@ Use this EXACT schema (use null for any field NOT present in the data above):
     "examDate": "<from data in YYYY-MM-DD or null>"
   },
   "selection_process": ["<from data or empty array>"],
-  "how_to_apply": "<from data or null>"
+  "how_to_apply": "<from data or null>",
+  "exam_pattern": {
+    "sections": [
+      {"name": "<section name>", "questions": "<number or null>", "marks": "<number or null>", "duration": "<duration or null>"}
+    ],
+    "total_marks": "<number or null>",
+    "total_duration": "<duration or null>",
+    "negative_marking": "<details or null>"
+  },
+  "vacancy_breakdown": [
+    {"post_name": "<name>", "pay_level": "<level or null>", "count": "<number or null>"}
+  ]
 }
 \`\`\`
 
 **JSON Rules:**
-- ONLY use values that appear in the scraped data above
+- ONLY use values that appear in the scraped data above (including source_page_text)
 - Unknown fields = null. Do NOT guess or fill in from general knowledge
 - selection_process must be an array of strings
+- exam_pattern: populate sections array from data; set entire object to null if no exam pattern data exists
+- vacancy_breakdown: populate from source_page_text if post-wise data exists; set to null if not available
 ${exam ? "- salary MUST be null for entrance exams — they have no pay scale" : ""}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PART 2: Markdown Article (1000 words)
+PART 2: Markdown Article (1500 words)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-After the JSON block, write a 1000-word original article for Indian ${exam ? "exam aspirants" : "job seekers"}.
+After the JSON block, write a 1500-word original article for Indian ${exam ? "exam aspirants" : "job seekers"}.
 
 **Structure (use ## for section headings):**
-1. ## Overview — ${exam ? "what this exam is, who should appear" : "why this job matters, who should apply"}
-2. ## Eligibility — age limits, education, category relaxations (ONLY from data)
-${salarySection}
-4. ## Important Dates — markdown table (Event | Date). Use ONLY dates from the data. For missing dates write 'Not yet released' or omit the row
-5. ## How to Apply — step by step, include the official website URL from data
-6. ## Selection Process — ONLY from data, otherwise say 'Details awaited from official notification'
-7. ## Preparation Tips — genuine advice for ${exam ? "exam" : "government exam"} preparation
-8. ## Frequently Asked Questions — 3 to 5 Q&As, conversational tone. ONLY include a Q&A if you can answer it factually from the data. If the answer would be unknown, OMIT that question entirely. Quality over quantity.
-9. ## Official Links — bullet list with markdown links from data
-10. *Disclaimer* — italic paragraph telling readers to verify on the official source
+${structureSections}
 
 **Output rules:**
 - Output ONLY the JSON block followed by the markdown body
 - Do NOT start the markdown with # (the page already has the h1 title). Start with ##
 - No YAML frontmatter, no --- delimiters
-- Every sentence must be originally written — zero copy-paste from any source`;
+- Every sentence must be originally written — zero copy-paste from any source
+- Aim for at least 1500 words — cover each section with real depth, not filler`;
 
   return [JOB_SYSTEM_PROMPT, userPrompt];
 }

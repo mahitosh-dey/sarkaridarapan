@@ -10,6 +10,7 @@ const nextConfig = {
       },
     ],
   },
+  serverExternalPackages: ['cheerio'],
   experimental: {
     optimizePackageImports: ['gray-matter', 'next-mdx-remote', 'remark-gfm', '@supabase/supabase-js'],
   },

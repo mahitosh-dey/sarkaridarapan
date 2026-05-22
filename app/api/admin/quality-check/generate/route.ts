@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       content,
       reading_time: readingTime,
       is_active: false, // stays draft until admin approves
-      quality_flag: flags.length > 0 ? flags : null,
+      quality_flag: flags.length > 0 ? flags : ["no_issues"],
     };
 
     // Map structured fields to DB columns

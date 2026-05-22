@@ -30,7 +30,9 @@ function FlagBadges({ flags }: { flags: string[] }) {
     <div className="flex flex-wrap gap-2 mt-3">
       {flags.map((flag, i) => {
         let color = "bg-yellow-100 text-yellow-800";
-        if (flag.includes("hallucinated") || flag.includes("salary_mismatch")) {
+        if (flag === "no_issues") {
+          color = "bg-green-100 text-green-800";
+        } else if (flag.includes("hallucinated") || flag.includes("salary_mismatch")) {
           color = "bg-red-100 text-red-800";
         } else if (flag.includes("word_count")) {
           color = "bg-orange-100 text-orange-800";
