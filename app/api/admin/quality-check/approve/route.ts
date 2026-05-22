@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(request: NextRequest) {
@@ -13,6 +14,7 @@ export async function POST(request: NextRequest) {
       .from("jobs")
       .update({
         is_active: true,
+        published_at: new Date().toISOString(),
         quality_flag: null,
         reviewed_at: new Date().toISOString(),
       })
@@ -21,6 +23,8 @@ export async function POST(request: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    revalidateTag("all-jobs");
 
     return NextResponse.json({ success: true });
   } catch {

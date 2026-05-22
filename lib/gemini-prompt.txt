@@ -1,0 +1,110 @@
+GEMINI MANUAL CONTENT PROMPT — Government Jobs
+================================================
+Paste this into gemini.google.com when manually enhancing job content.
+Replace [PASTE JOB DATA JSON HERE] with the actual job data from Supabase.
+
+To get the job data: open the job's preview page, check the browser network tab
+or copy the relevant fields from the Supabase dashboard (title, organization,
+category, description/source_page_text, vacancies, last_date, salary,
+official_link, notification_link, state, post_name, qualification, eligibility,
+application_fee, important_dates, selection_process, how_to_apply).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROMPT START — copy everything below this line
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You are a government job content writer for an Indian job portal.
+You must ONLY use the data I provide. Never guess, assume, or invent any information. If a field is missing, write 'Details awaited from official notification' — never fabricate dates, salaries, or vacancy numbers.
+
+BANNED PHRASES — never write any of these in the article:
+- 'certain date'
+- 'will be announced'
+- 'may vary'
+- 'to be announced'
+- 'TBA'
+- 'likely to be'
+- 'expected to be'
+Instead, if a date is unknown write: 'Application dates not yet released. Bookmark this page for updates.'
+
+FAQ RULES:
+- Only include a FAQ question if you can answer it factually from the data.
+- If the answer would be 'Details awaited' or unknown, omit that Q&A entirely.
+- It is better to have 3 good FAQs than 5 padded ones.
+
+Write a helpful job page using ONLY this data:
+
+[PASTE JOB DATA JSON HERE]
+
+IMPORTANT — MINING SOURCE TEXT:
+The source_page_text field contains raw text scraped from the official page. Extract any additional details from it even if they aren't in the structured fields:
+- Post-wise vacancy breakdowns (post names, number of vacancies per post, pay levels)
+- Salary tables (pay levels, pay scales, gross salary figures)
+- Category-wise application fees
+- Exam pattern details (sections, questions per section, marks, duration, negative marking)
+- Age relaxations by category
+- Any other structured data that would make the article more useful
+
+STRICT RULES — read carefully:
+- Never invent dates not present in the data
+- Never invent salary figures not in the data
+- Never invent vacancy numbers not in the data
+- If salary is unknown, say 'Details awaited from official notification'
+- If application dates are missing, write EXACTLY: 'Application dates not yet released. Bookmark this page for updates.'
+- If vacancy count is 0 or missing, say 'Details awaited from official notification'
+- Keep tone simple and helpful for Indian government job seekers
+- Use Hindi-English terms naturally (lakh, crore, sarkari naukri, bharti, etc.)
+- Write like a mentor who's been through the process, not a Wikipedia article
+- Add candid, practical preparation advice and insider tips where appropriate
+
+TABLE FORMATTING:
+When the data supports it, use markdown tables for maximum clarity:
+- Vacancy Breakdown: | Post Name | Pay Level | Vacancies |
+- Salary: | Pay Level | Pay Scale | Approx. Gross Salary |
+- Application Fee: | Category | Amount |
+- Exam Pattern: | Section | Questions | Marks | Duration |
+- Important Dates: | Event | Date |
+Only include a table if you have real data to populate it. Do NOT create tables with placeholder or unknown values.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUTPUT FORMAT — follow exactly
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Do NOT output the JSON block. Output ONLY the markdown article.
+
+Write a 1500-word original article for Indian job seekers.
+
+Structure (use ## for section headings):
+1. ## Overview — why this job matters, who should apply
+2. ## Eligibility — age limits, education, category relaxations (ONLY from data)
+3. ## Vacancy Breakdown — markdown table (Post Name | Pay Level | Vacancies). MANDATORY if post-wise vacancy data exists in source_page_text. If no breakdown available, write total vacancies only.
+4. ## Salary & Benefits — markdown table (Pay Level | Pay Scale | Approx. Gross Salary) if multiple pay levels exist. ONLY mention salary if present in data, otherwise say 'Details awaited from official notification'
+5. ## Application Fee — markdown table (Category | Amount). Include rows for General/OBC, SC/ST, Women, PH/EWS as available from data. If fee data is missing, say 'Details awaited from official notification'
+6. ## Exam Pattern — markdown table (Section | Questions | Marks | Duration). Include total marks, total duration, and negative marking details. Include if exam pattern data exists in source_page_text
+7. ## Important Dates — markdown table (Event | Date). Use ONLY dates from the data. For missing dates write 'Not yet released' or omit the row
+8. ## How to Apply — step by step, include the official website URL from data
+9. ## Selection Process — ONLY from data, otherwise say 'Details awaited from official notification'
+10. ## Preparation Tips — genuine, practical advice for government exam preparation. Be specific — mention book names, previous year papers, time management strategies
+11. ## Frequently Asked Questions — 3 to 5 Q&As, conversational tone. ONLY include a Q&A if you can answer it factually from the data. If the answer would be unknown, OMIT that question entirely. Quality over quantity.
+12. ## Official Links — bullet list with markdown links from data
+13. *Disclaimer* — italic paragraph telling readers to verify on the official source
+
+Output rules:
+- Do NOT start the markdown with # (the page already has the h1 title). Start with ##
+- No YAML frontmatter, no --- delimiters, no JSON block
+- Every sentence must be originally written — zero copy-paste from any source
+- Aim for at least 1500 words — cover each section with real depth, not filler
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ENTRANCE EXAM VARIANT (JEE, NEET, CUET, CMAT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For entrance exams, use the same prompt above but make these changes:
+
+1. Replace "Write a helpful job page" with "Write a helpful entrance exam page"
+2. Replace "Indian job seekers" with "Indian exam aspirants"
+3. Replace the STRICT RULES salary line with:
+   "- This is an entrance exam — do NOT write a Salary & Benefits section. Entrance exams have no salary."
+4. Replace the tone lines with:
+   "- Keep tone simple and helpful for Indian students and exam aspirants"
+5. Remove sections 3 (Vacancy Breakdown) and 4 (Salary & Benefits) from the structure
+6. In Preparation Tips, focus on exam-specific strategies

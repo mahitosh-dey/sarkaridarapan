@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface PreviewActionsProps {
   jobId: string;
@@ -21,6 +21,68 @@ export default function PreviewActions({
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(initialContent);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  function insertMarkdown(prefix: string, suffix: string, placeholder: string) {
+    const ta = textareaRef.current;
+    if (!ta) return;
+
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const selected = content.substring(start, end);
+
+    let newText: string;
+    let cursorStart: number;
+    let cursorEnd: number;
+
+    if (selected) {
+      newText = content.substring(0, start) + prefix + selected + suffix + content.substring(end);
+      cursorStart = start + prefix.length;
+      cursorEnd = cursorStart + selected.length;
+    } else {
+      newText = content.substring(0, start) + prefix + placeholder + suffix + content.substring(end);
+      cursorStart = start + prefix.length;
+      cursorEnd = cursorStart + placeholder.length;
+    }
+
+    setContent(newText);
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.setSelectionRange(cursorStart, cursorEnd);
+    });
+  }
+
+  function insertLinePrefix(prefix: string) {
+    const ta = textareaRef.current;
+    if (!ta) return;
+
+    const start = ta.selectionStart;
+    const lineStart = content.lastIndexOf("\n", start - 1) + 1;
+
+    const newText = content.substring(0, lineStart) + prefix + content.substring(lineStart);
+    const newCursor = start + prefix.length;
+
+    setContent(newText);
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.setSelectionRange(newCursor, newCursor);
+    });
+  }
+
+  function insertBlock(block: string) {
+    const ta = textareaRef.current;
+    if (!ta) return;
+
+    const start = ta.selectionStart;
+    const newText = content.substring(0, start) + block + content.substring(start);
+    const newCursor = start + block.length;
+
+    setContent(newText);
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.setSelectionRange(newCursor, newCursor);
+    });
+  }
 
   async function handlePublish() {
     if (!hasContent) {
@@ -157,7 +219,86 @@ export default function PreviewActions({
               {loading === "save" ? "Saving..." : "Save Changes"}
             </button>
           </div>
+          <div className="flex flex-wrap gap-1 px-3 py-2 bg-white border-b border-gray-200">
+            <button
+              type="button"
+              onClick={() => insertLinePrefix("## ")}
+              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Heading 2"
+            >
+              H2
+            </button>
+            <button
+              type="button"
+              onClick={() => insertLinePrefix("### ")}
+              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Heading 3"
+            >
+              H3
+            </button>
+            <button
+              type="button"
+              onClick={() => insertMarkdown("**", "**", "bold text")}
+              className="px-2 py-1 text-xs font-bold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Bold"
+            >
+              B
+            </button>
+            <button
+              type="button"
+              onClick={() => insertMarkdown("*", "*", "italic text")}
+              className="px-2 py-1 text-xs italic text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Italic"
+            >
+              I
+            </button>
+            <button
+              type="button"
+              onClick={() => insertMarkdown("[", "](url)", "link text")}
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Link"
+            >
+              Link
+            </button>
+            <button
+              type="button"
+              onClick={() => insertLinePrefix("- ")}
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Bullet List"
+            >
+              UL
+            </button>
+            <button
+              type="button"
+              onClick={() => insertLinePrefix("1. ")}
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Numbered List"
+            >
+              OL
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                insertBlock(
+                  "\n| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| Cell | Cell | Cell |\n"
+                )
+              }
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Table"
+            >
+              Table
+            </button>
+            <button
+              type="button"
+              onClick={() => insertBlock("\n---\n")}
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Horizontal Rule"
+            >
+              ---
+            </button>
+          </div>
           <textarea
+            ref={textareaRef}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="w-full min-h-[500px] p-4 text-sm font-mono text-gray-800 border-0 focus:ring-0 focus:outline-none resize-y"
