@@ -1,0 +1,64 @@
+# =============================================================================
+# SarkariDarapan — Single URL Scrape (Admin)
+# Manually triggered from GitHub Actions to scrape a single notification URL
+# and insert it as a draft job for review on the admin dashboard.
+# =============================================================================
+
+name: Scrape Single URL
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Notification URL (page or PDF)"
+        required: true
+        type: string
+      title:
+        description: "Job title"
+        required: true
+        type: string
+      org:
+        description: "Organization name"
+        required: true
+        type: string
+      category:
+        description: "Job category slug (ssc, upsc, railway, banking, defence, police, teaching, state-psc, psu, healthcare, engineering, entrance-exams)"
+        required: true
+        type: string
+      state:
+        description: "State slug (default: all-india)"
+        required: false
+        default: "all-india"
+        type: string
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+jobs:
+  scrape-single:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run single-URL scraper
+        run: |
+          python scripts/scrape_single.py \
+            --url "${{ github.event.inputs.url }}" \
+            --title "${{ github.event.inputs.title }}" \
+            --org "${{ github.event.inputs.org }}" \
+            --category "${{ github.event.inputs.category }}" \
+            --state "${{ github.event.inputs.state }}"
