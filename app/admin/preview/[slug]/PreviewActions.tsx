@@ -298,7 +298,16 @@ export default function PreviewActions({
               {loading === "save" ? "Saving..." : "Save Changes"}
             </button>
           </div>
-          <div className="flex flex-wrap gap-1 px-3 py-2 bg-white border-b border-gray-200">
+          <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-white border-b border-gray-200">
+            {/* Headings group */}
+            <button
+              type="button"
+              onClick={() => insertLinePrefix("# ")}
+              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Heading 1"
+            >
+              H1
+            </button>
             <button
               type="button"
               onClick={() => insertLinePrefix("## ")}
@@ -317,6 +326,18 @@ export default function PreviewActions({
             </button>
             <button
               type="button"
+              onClick={() => insertLinePrefix("#### ")}
+              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Heading 4"
+            >
+              H4
+            </button>
+
+            <div className="w-px h-5 bg-gray-300" />
+
+            {/* Inline formatting group */}
+            <button
+              type="button"
               onClick={() => insertMarkdown("**", "**", "bold text")}
               className="px-2 py-1 text-xs font-bold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
               title="Bold"
@@ -331,6 +352,78 @@ export default function PreviewActions({
             >
               I
             </button>
+            <button
+              type="button"
+              onClick={() => insertMarkdown("~~", "~~", "strikethrough text")}
+              className="px-2 py-1 text-xs line-through text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Strikethrough"
+            >
+              S
+            </button>
+
+            <div className="w-px h-5 bg-gray-300" />
+
+            {/* Text color group */}
+            <button
+              type="button"
+              onClick={() =>
+                insertMarkdown(
+                  '<span style="color:red">',
+                  "</span>",
+                  "red text"
+                )
+              }
+              className="px-2 py-1 text-xs font-semibold text-red-600 bg-white border border-gray-300 rounded-full hover:bg-red-50 transition-colors"
+              title="Red text"
+            >
+              Red
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                insertMarkdown(
+                  '<span style="color:green">',
+                  "</span>",
+                  "green text"
+                )
+              }
+              className="px-2 py-1 text-xs font-semibold text-green-600 bg-white border border-gray-300 rounded-full hover:bg-green-50 transition-colors"
+              title="Green text"
+            >
+              Green
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                insertMarkdown(
+                  '<span style="color:blue">',
+                  "</span>",
+                  "blue text"
+                )
+              }
+              className="px-2 py-1 text-xs font-semibold text-blue-600 bg-white border border-gray-300 rounded-full hover:bg-blue-50 transition-colors"
+              title="Blue text"
+            >
+              Blue
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                insertMarkdown(
+                  '<span style="color:orange">',
+                  "</span>",
+                  "orange text"
+                )
+              }
+              className="px-2 py-1 text-xs font-semibold text-orange-600 bg-white border border-gray-300 rounded-full hover:bg-orange-50 transition-colors"
+              title="Orange text"
+            >
+              Orange
+            </button>
+
+            <div className="w-px h-5 bg-gray-300" />
+
+            {/* Block/structure group */}
             <button
               type="button"
               onClick={() => insertMarkdown("[", "](url)", "link text")}
@@ -357,6 +450,14 @@ export default function PreviewActions({
             </button>
             <button
               type="button"
+              onClick={() => insertLinePrefix("> ")}
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Blockquote"
+            >
+              Quote
+            </button>
+            <button
+              type="button"
               onClick={() =>
                 insertBlock(
                   "\n| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| Cell | Cell | Cell |\n"
@@ -374,6 +475,18 @@ export default function PreviewActions({
               title="Horizontal Rule"
             >
               ---
+            </button>
+
+            <div className="w-px h-5 bg-gray-300" />
+
+            {/* Spacing group */}
+            <button
+              type="button"
+              onClick={() => insertBlock("\n&nbsp;\n")}
+              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+              title="Insert spacer (blank line)"
+            >
+              Spacer
             </button>
           </div>
           <textarea
