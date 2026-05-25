@@ -179,16 +179,42 @@ function getTableAndContentType(type: string): { table: string; contentType: Con
 }
 
 export default async function AdminPreviewPage({ params, searchParams }: PreviewPageProps) {
-  const type = searchParams.type || "job";
-  const { table, contentType } = getTableAndContentType(type);
+  let contentType: ContentType;
+  let data: Record<string, unknown> | null = null;
 
-  const { data, error } = await supabaseAdmin
-    .from(table)
-    .select("*")
-    .eq("slug", params.slug)
-    .single();
+  if (searchParams.type) {
+    // Explicit type provided — use it directly
+    const resolved = getTableAndContentType(searchParams.type);
+    contentType = resolved.contentType;
+    const res = await supabaseAdmin
+      .from(resolved.table)
+      .select("*")
+      .eq("slug", params.slug)
+      .single();
+    if (!res.error && res.data) data = res.data;
+  } else {
+    // No type param — auto-detect by checking all tables
+    contentType = "job";
+    const tables: { table: string; ct: ContentType }[] = [
+      { table: "jobs", ct: "job" },
+      { table: "schemes", ct: "scheme" },
+      { table: "entrance_exams", ct: "entrance-exam" },
+    ];
+    for (const { table, ct } of tables) {
+      const res = await supabaseAdmin
+        .from(table)
+        .select("*")
+        .eq("slug", params.slug)
+        .single();
+      if (!res.error && res.data) {
+        data = res.data;
+        contentType = ct;
+        break;
+      }
+    }
+  }
 
-  if (error || !data) {
+  if (!data) {
     notFound();
   }
 

@@ -4,9 +4,10 @@ import Link from "next/link";
 import SearchBar from "@/components/ui/SearchBar";
 import JobCard from "@/components/ui/JobCard";
 import SchemeCard from "@/components/ui/SchemeCard";
+import EntranceExamCard from "@/components/ui/EntranceExamCard";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
-import { getJobPosts, getSchemePosts } from "@/lib/content";
+import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -20,11 +21,15 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const jobs = await getJobPosts();
-  const schemes = await getSchemePosts();
+  const [jobs, schemes, entranceExams] = await Promise.all([
+    getJobPosts(),
+    getSchemePosts(),
+    getEntranceExamPosts(),
+  ]);
 
   const latestJobs = jobs.slice(0, 6);
   const latestSchemes = schemes.slice(0, 6);
+  const latestExams = entranceExams.slice(0, 6);
 
   return (
     <>
@@ -99,6 +104,32 @@ export default async function HomePage() {
               ) : (
                 <p className="text-gray-500 text-center py-8">
                   No scheme posts available at the moment. Check back soon!
+                </p>
+              )}
+            </section>
+
+            {/* Latest Entrance Exams */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  Latest Entrance Exams
+                </h2>
+                <Link
+                  href="/entrance-exams"
+                  className="text-blue-700 hover:text-blue-800 font-semibold text-sm whitespace-nowrap"
+                >
+                  View All &rarr;
+                </Link>
+              </div>
+              {latestExams.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {latestExams.map((exam) => (
+                    <EntranceExamCard key={exam.slug} exam={exam} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-8">
+                  No entrance exams available at the moment. Check back soon!
                 </p>
               )}
             </section>
