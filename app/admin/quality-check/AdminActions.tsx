@@ -2,44 +2,86 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { ContentType } from "@/lib/admin-utils";
 
 interface AdminActionsProps {
-  jobId: string;
+  itemId: string;
   slug: string;
   hasContent: boolean;
+  contentType?: ContentType;
 }
 
-export default function AdminActions({ jobId, slug, hasContent }: AdminActionsProps) {
+function getApiBase(contentType: ContentType): string {
+  switch (contentType) {
+    case "job":
+      return "/api/admin/quality-check";
+    case "scheme":
+      return "/api/admin/schemes";
+    case "entrance-exam":
+      return "/api/admin/entrance-exams";
+  }
+}
+
+function getIdKey(contentType: ContentType): string {
+  switch (contentType) {
+    case "job":
+      return "jobId";
+    case "scheme":
+      return "schemeId";
+    case "entrance-exam":
+      return "examId";
+  }
+}
+
+function getLabel(contentType: ContentType): string {
+  switch (contentType) {
+    case "job":
+      return "job";
+    case "scheme":
+      return "scheme";
+    case "entrance-exam":
+      return "exam";
+  }
+}
+
+export default function AdminActions({
+  itemId,
+  slug,
+  hasContent,
+  contentType = "job",
+}: AdminActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [generateResult, setGenerateResult] = useState<string | null>(null);
   const [enhanceResult, setEnhanceResult] = useState<string | null>(null);
 
-  async function handleAction(
-    action: "approve" | "dismiss" | "delete"
-  ) {
-    if (action === "delete" && !confirm("Permanently delete this job?")) {
+  const apiBase = getApiBase(contentType);
+  const idKey = getIdKey(contentType);
+  const label = getLabel(contentType);
+
+  async function handleAction(action: "approve" | "dismiss" | "delete") {
+    if (action === "delete" && !confirm(`Permanently delete this ${label}?`)) {
       return;
     }
 
     setLoading(action);
 
     try {
-      const res = await fetch(`/api/admin/quality-check/${action}`, {
+      const res = await fetch(`${apiBase}/${action}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || `Failed to ${action} job`);
+        alert(data.error || `Failed to ${action} ${label}`);
         return;
       }
 
       router.refresh();
     } catch {
-      alert(`Network error while trying to ${action} job`);
+      alert(`Network error while trying to ${action} ${label}`);
     } finally {
       setLoading(null);
     }
@@ -50,10 +92,10 @@ export default function AdminActions({ jobId, slug, hasContent }: AdminActionsPr
     setGenerateResult(null);
 
     try {
-      const res = await fetch("/api/admin/quality-check/generate", {
+      const res = await fetch(`${apiBase}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
 
       const data = await res.json();
@@ -78,10 +120,10 @@ export default function AdminActions({ jobId, slug, hasContent }: AdminActionsPr
     setEnhanceResult(null);
 
     try {
-      const res = await fetch("/api/admin/quality-check/enhance", {
+      const res = await fetch(`${apiBase}/enhance`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
 
       const data = await res.json();
@@ -101,7 +143,10 @@ export default function AdminActions({ jobId, slug, hasContent }: AdminActionsPr
     }
   }
 
-  const previewHref = `/admin/preview/${slug}`;
+  const previewHref =
+    contentType === "job"
+      ? `/admin/preview/${slug}`
+      : `/admin/preview/${slug}?type=${contentType}`;
 
   return (
     <div className="flex flex-col gap-2 shrink-0">

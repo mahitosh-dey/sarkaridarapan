@@ -102,6 +102,23 @@ export const SCHEME_CATEGORIES: CategoryEntry[] = [
 ];
 
 // -----------------------------------------------------------------------------
+// Entrance Exam Categories
+// -----------------------------------------------------------------------------
+
+export const ENTRANCE_EXAM_CATEGORIES: CategoryEntry[] = [
+  { slug: "engineering", name: "Engineering" },
+  { slug: "medical", name: "Medical" },
+  { slug: "management", name: "Management" },
+  { slug: "law", name: "Law" },
+  { slug: "science", name: "Science" },
+  { slug: "arts-humanities", name: "Arts & Humanities" },
+  { slug: "agriculture", name: "Agriculture" },
+  { slug: "defence", name: "Defence" },
+  { slug: "banking-finance", name: "Banking & Finance" },
+  { slug: "teaching", name: "Teaching" },
+];
+
+// -----------------------------------------------------------------------------
 // Navigation Links
 // -----------------------------------------------------------------------------
 

@@ -80,6 +80,41 @@ export interface SchemePost {
   readingTime?: string;
   image?: string;
   faqs?: FAQItem[];
+  isActive?: boolean;
+  qualityFlag?: string[] | null;
+  reviewedAt?: string | null;
+  completenessScore?: number;
+}
+
+// -----------------------------------------------------------------------------
+// Entrance Exam Post
+// -----------------------------------------------------------------------------
+
+export interface EntranceExamPost {
+  slug: string;
+  title: string;
+  conductingBody: string;
+  examDate: string;
+  applicationStart: string;
+  applicationEnd: string;
+  eligibility: string;
+  syllabus: string;
+  examPattern: Record<string, unknown> | null;
+  admitCardLink: string;
+  resultLink: string;
+  officialLink: string;
+  category: string;
+  state: string;
+  content: string;
+  description: string;
+  isActive: boolean;
+  publishedAt: string;
+  updatedAt: string;
+  readingTime?: string;
+  image?: string;
+  qualityFlag?: string[] | null;
+  reviewedAt?: string | null;
+  completenessScore?: number;
 }
 
 // -----------------------------------------------------------------------------

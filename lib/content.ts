@@ -6,7 +6,7 @@
 import { unstable_cache } from "next/cache";
 import { supabase } from "./supabase";
 import { REVALIDATE_INTERVAL } from "./constants";
-import type { JobPost, SchemePost } from "./types";
+import type { JobPost, SchemePost, EntranceExamPost } from "./types";
 
 // =============================================================================
 // Row → Interface mappers (snake_case DB → camelCase TypeScript)
@@ -69,6 +69,34 @@ function mapSchemeRow(row: any): SchemePost {
     readingTime: row.reading_time || "",
     image: row.image || undefined,
     faqs: row.faqs || undefined,
+  };
+}
+
+function mapEntranceExamRow(row: any): EntranceExamPost {
+  return {
+    slug: row.slug,
+    title: row.title,
+    conductingBody: row.conducting_body || "",
+    examDate: row.exam_date || "",
+    applicationStart: row.application_start || "",
+    applicationEnd: row.application_end || "",
+    eligibility: row.eligibility || "",
+    syllabus: row.syllabus || "",
+    examPattern: row.exam_pattern || null,
+    admitCardLink: row.admit_card_link || "",
+    resultLink: row.result_link || "",
+    officialLink: row.official_link || "",
+    category: row.category || "",
+    state: row.state || "",
+    content: row.content || "",
+    description: row.description || "",
+    isActive: row.is_active ?? true,
+    publishedAt: row.published_at || "",
+    updatedAt: row.updated_at || "",
+    readingTime: row.reading_time || "",
+    image: row.image || undefined,
+    qualityFlag: row.quality_flag || null,
+    reviewedAt: row.reviewed_at || null,
   };
 }
 
@@ -252,6 +280,74 @@ export async function getSchemesByState(
       return (data || []).map(mapSchemeRow);
     },
     [`schemes-state-${state}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
+}
+
+// =============================================================================
+// Entrance Exam Posts — filtered by is_active=true
+// =============================================================================
+
+export const getEntranceExamPosts = unstable_cache(
+  async (): Promise<EntranceExamPost[]> => {
+    const { data, error } = await supabase
+      .from("entrance_exams")
+      .select("*")
+      .eq("is_active", true)
+      .order("published_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching entrance exams:", error.message);
+      return [];
+    }
+
+    return (data || []).map(mapEntranceExamRow);
+  },
+  ["all-entrance-exams"],
+  { revalidate: REVALIDATE_INTERVAL }
+);
+
+export async function getEntranceExamBySlug(
+  slug: string
+): Promise<EntranceExamPost | null> {
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("entrance_exams")
+        .select("*")
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .single();
+
+      if (error || !data) return null;
+
+      return mapEntranceExamRow(data);
+    },
+    [`exam-${slug}`],
+    { revalidate: REVALIDATE_INTERVAL }
+  )();
+}
+
+export async function getEntranceExamsByCategory(
+  category: string
+): Promise<EntranceExamPost[]> {
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("entrance_exams")
+        .select("*")
+        .eq("is_active", true)
+        .ilike("category", category)
+        .order("published_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching exams by category:", error.message);
+        return [];
+      }
+
+      return (data || []).map(mapEntranceExamRow);
+    },
+    [`exams-category-${category}`],
     { revalidate: REVALIDATE_INTERVAL }
   )();
 }

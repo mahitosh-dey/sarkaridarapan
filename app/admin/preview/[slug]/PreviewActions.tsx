@@ -2,27 +2,78 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import type { ContentType } from "@/lib/admin-utils";
 
 interface PreviewActionsProps {
-  jobId: string;
+  itemId: string;
   slug: string;
   hasContent: boolean;
   initialContent: string;
   isActive: boolean;
+  contentType?: ContentType;
+}
+
+function getApiBase(contentType: ContentType): string {
+  switch (contentType) {
+    case "job":
+      return "/api/admin/quality-check";
+    case "scheme":
+      return "/api/admin/schemes";
+    case "entrance-exam":
+      return "/api/admin/entrance-exams";
+  }
+}
+
+function getIdKey(contentType: ContentType): string {
+  switch (contentType) {
+    case "job":
+      return "jobId";
+    case "scheme":
+      return "schemeId";
+    case "entrance-exam":
+      return "examId";
+  }
+}
+
+function getPublicPath(contentType: ContentType, slug: string): string {
+  switch (contentType) {
+    case "job":
+      return `/sarkari-naukri/${slug}`;
+    case "scheme":
+      return `/sarkari-yojana/${slug}`;
+    case "entrance-exam":
+      return `/entrance-exams/${slug}`;
+  }
+}
+
+function getLabel(contentType: ContentType): string {
+  switch (contentType) {
+    case "job":
+      return "job";
+    case "scheme":
+      return "scheme";
+    case "entrance-exam":
+      return "exam";
+  }
 }
 
 export default function PreviewActions({
-  jobId,
+  itemId,
   slug,
   hasContent,
   initialContent,
   isActive,
+  contentType = "job",
 }: PreviewActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [content, setContent] = useState(initialContent);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const apiBase = getApiBase(contentType);
+  const idKey = getIdKey(contentType);
+  const label = getLabel(contentType);
 
   function insertMarkdown(prefix: string, suffix: string, placeholder: string) {
     const ta = textareaRef.current;
@@ -90,23 +141,23 @@ export default function PreviewActions({
       alert("Generate content first before publishing.");
       return;
     }
-    if (!confirm("Publish this job? It will go live on the public site.")) {
+    if (!confirm(`Publish this ${label}? It will go live on the public site.`)) {
       return;
     }
 
     setLoading("publish");
     try {
-      const res = await fetch("/api/admin/quality-check/approve", {
+      const res = await fetch(`${apiBase}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "Failed to publish");
         return;
       }
-      router.push(`/sarkari-naukri/${slug}`);
+      router.push(getPublicPath(contentType, slug));
     } catch {
       alert("Network error");
     } finally {
@@ -115,16 +166,16 @@ export default function PreviewActions({
   }
 
   async function handleUnpublish() {
-    if (!confirm("Unpublish this job? It will be removed from the public site.")) {
+    if (!confirm(`Unpublish this ${label}? It will be removed from the public site.`)) {
       return;
     }
 
     setLoading("unpublish");
     try {
-      const res = await fetch("/api/admin/quality-check/unpublish", {
+      const res = await fetch(`${apiBase}/unpublish`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -140,16 +191,16 @@ export default function PreviewActions({
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this job permanently? This cannot be undone.")) {
+    if (!confirm(`Delete this ${label} permanently? This cannot be undone.`)) {
       return;
     }
 
     setLoading("delete");
     try {
-      const res = await fetch("/api/admin/quality-check/delete", {
+      const res = await fetch(`${apiBase}/delete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -167,10 +218,10 @@ export default function PreviewActions({
   async function handleGenerate() {
     setLoading("generate");
     try {
-      const res = await fetch("/api/admin/quality-check/generate", {
+      const res = await fetch(`${apiBase}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [idKey]: itemId }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -189,10 +240,10 @@ export default function PreviewActions({
     setLoading("save");
     setSaveMsg(null);
     try {
-      const res = await fetch("/api/admin/quality-check/edit", {
+      const res = await fetch(`${apiBase}/edit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId, content }),
+        body: JSON.stringify({ [idKey]: itemId, content }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
