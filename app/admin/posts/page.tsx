@@ -9,28 +9,103 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-interface PostJob {
+type ContentType = "job" | "scheme" | "entrance-exam";
+
+interface PostItem {
   id: string;
   slug: string;
   title: string;
-  organization: string;
+  subtitle: string;
   is_active: boolean;
   published_at: string | null;
   updated_at: string;
   category: string | null;
+  contentType: ContentType;
 }
 
 export default async function AllPostsPage() {
-  const { data: jobs, error } = await supabaseAdmin
-    .from("jobs")
-    .select(
-      "id, slug, title, organization, is_active, published_at, updated_at, category"
-    )
-    .order("updated_at", { ascending: false });
+  const [jobsRes, schemesRes, examsRes] = await Promise.all([
+    supabaseAdmin
+      .from("jobs")
+      .select(
+        "id, slug, title, organization, is_active, published_at, updated_at, category"
+      )
+      .order("updated_at", { ascending: false }),
+    supabaseAdmin
+      .from("schemes")
+      .select(
+        "id, slug, title, ministry, is_active, published_at, updated_at, category"
+      )
+      .order("updated_at", { ascending: false }),
+    supabaseAdmin
+      .from("entrance_exams")
+      .select(
+        "id, slug, title, conducting_body, is_active, published_at, updated_at, category"
+      )
+      .order("updated_at", { ascending: false }),
+  ]);
 
-  const allJobs: PostJob[] = (jobs as PostJob[]) || [];
-  const publishedCount = allJobs.filter((j) => j.is_active).length;
-  const draftCount = allJobs.filter((j) => !j.is_active).length;
+  const error = jobsRes.error || schemesRes.error || examsRes.error;
+
+  type DbRow = Record<string, string | boolean | null>;
+
+  const jobs: PostItem[] = (jobsRes.data || []).map((r: DbRow) => ({
+    id: r.id as string,
+    slug: r.slug as string,
+    title: r.title as string,
+    subtitle: (r.organization as string) || "No organization",
+    is_active: r.is_active as boolean,
+    published_at: r.published_at as string | null,
+    updated_at: r.updated_at as string,
+    category: r.category as string | null,
+    contentType: "job" as ContentType,
+  }));
+
+  const schemes: PostItem[] = (schemesRes.data || []).map((r: DbRow) => ({
+    id: r.id as string,
+    slug: r.slug as string,
+    title: r.title as string,
+    subtitle: (r.ministry as string) || "No ministry",
+    is_active: r.is_active as boolean,
+    published_at: r.published_at as string | null,
+    updated_at: r.updated_at as string,
+    category: r.category as string | null,
+    contentType: "scheme" as ContentType,
+  }));
+
+  const exams: PostItem[] = (examsRes.data || []).map((r: DbRow) => ({
+    id: r.id as string,
+    slug: r.slug as string,
+    title: r.title as string,
+    subtitle: (r.conducting_body as string) || "No conducting body",
+    is_active: r.is_active as boolean,
+    published_at: r.published_at as string | null,
+    updated_at: r.updated_at as string,
+    category: r.category as string | null,
+    contentType: "entrance-exam" as ContentType,
+  }));
+
+  const allPosts = [...jobs, ...schemes, ...exams].sort(
+    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  );
+
+  const publishedCount = allPosts.filter((p) => p.is_active).length;
+  const draftCount = allPosts.filter((p) => !p.is_active).length;
+
+  const typeBadge: Record<ContentType, { label: string; className: string }> = {
+    job: {
+      label: "Job",
+      className: "bg-primary-50 text-primary-700 ring-1 ring-inset ring-primary-600/20",
+    },
+    scheme: {
+      label: "Scheme",
+      className: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20",
+    },
+    "entrance-exam": {
+      label: "Exam",
+      className: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20",
+    },
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -42,7 +117,7 @@ export default async function AllPostsPage() {
               All Posts
             </h1>
             <p className="mt-1 text-gray-600">
-              {allJobs.length} total &middot;{" "}
+              {allPosts.length} total &middot;{" "}
               <span className="text-green-700">{publishedCount} published</span>{" "}
               &middot;{" "}
               <span className="text-yellow-700">{draftCount} drafts</span>
@@ -71,6 +146,9 @@ export default async function AllPostsPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Title
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                    Type
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                     Category
                   </th>
@@ -86,23 +164,32 @@ export default async function AllPostsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {allJobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-50">
+                {allPosts.map((post) => (
+                  <tr key={`${post.contentType}-${post.id}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                        {job.title}
+                        {post.title}
                       </div>
                       <div className="text-xs text-gray-500 mt-0.5 truncate">
-                        {job.organization || "No organization"}
+                        {post.subtitle}
                       </div>
+                      {/* Type badge on mobile */}
+                      <span className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium lg:hidden ${typeBadge[post.contentType].className}`}>
+                        {typeBadge[post.contentType].label}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 hidden lg:table-cell">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${typeBadge[post.contentType].className}`}>
+                        {typeBadge[post.contentType].label}
+                      </span>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
                       <span className="text-sm text-gray-600">
-                        {job.category || "—"}
+                        {post.category || "—"}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {job.is_active ? (
+                      {post.is_active ? (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           Published
                         </span>
@@ -113,7 +200,7 @@ export default async function AllPostsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
-                      {new Date(job.updated_at).toLocaleDateString("en-IN", {
+                      {new Date(post.updated_at).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -121,17 +208,18 @@ export default async function AllPostsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <PostActions
-                        jobId={job.id}
-                        slug={job.slug}
-                        isActive={job.is_active}
+                        itemId={post.id}
+                        slug={post.slug}
+                        isActive={post.is_active}
+                        contentType={post.contentType}
                       />
                     </td>
                   </tr>
                 ))}
-                {allJobs.length === 0 && (
+                {allPosts.length === 0 && (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="px-6 py-12 text-center text-gray-500"
                     >
                       No posts found.
