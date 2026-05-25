@@ -63,3 +63,9 @@
     text-wrap: balance;
   }
 }
+
+/* Colored text in markdown content via data-color attribute */
+[data-color="red"] { color: red; }
+[data-color="green"] { color: green; }
+[data-color="blue"] { color: blue; }
+[data-color="orange"] { color: orange; }

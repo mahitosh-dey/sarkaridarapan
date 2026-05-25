@@ -117,21 +117,29 @@ export default async function QualityCheckPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Quality Check Dashboard
-          </h1>
-          <p className="mt-2 text-gray-600">
-            {draftJobs.length} draft{draftJobs.length !== 1 ? "s" : ""} pending
-            content &middot; {flaggedJobs.length} flagged job
-            {flaggedJobs.length !== 1 ? "s" : ""} pending review
-          </p>
-          {error && (
-            <p className="mt-2 text-red-600 text-sm">
-              Error loading jobs: {error.message}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Quality Check Dashboard
+            </h1>
+            <p className="mt-2 text-gray-600">
+              {draftJobs.length} draft{draftJobs.length !== 1 ? "s" : ""} pending
+              content &middot; {flaggedJobs.length} flagged job
+              {flaggedJobs.length !== 1 ? "s" : ""} pending review
             </p>
-          )}
+          </div>
+          <a
+            href="/admin/posts"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            All Posts
+          </a>
         </div>
+        {error && (
+          <p className="mb-4 text-red-600 text-sm">
+            Error loading jobs: {error.message}
+          </p>
+        )}
 
         {/* Quick Entry Form */}
         <ManualJobForm />

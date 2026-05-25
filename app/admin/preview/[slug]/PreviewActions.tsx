@@ -20,7 +20,6 @@ export default function PreviewActions({
 }: PreviewActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
-  const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(initialContent);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -201,7 +200,6 @@ export default function PreviewActions({
         return;
       }
       setSaveMsg("Saved");
-      setEditing(false);
       router.refresh();
     } catch {
       alert("Network error");
@@ -209,6 +207,9 @@ export default function PreviewActions({
       setLoading(null);
     }
   }
+
+  const btnBase =
+    "px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors";
 
   return (
     <>
@@ -223,16 +224,6 @@ export default function PreviewActions({
 
         {isActive && hasContent ? (
           <>
-            <button
-              onClick={() => {
-                setEditing(!editing);
-                setSaveMsg(null);
-              }}
-              disabled={loading !== null}
-              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
-            >
-              {editing ? "Cancel Edit" : "Edit Content"}
-            </button>
             <button
               onClick={handleUnpublish}
               disabled={loading !== null}
@@ -257,25 +248,13 @@ export default function PreviewActions({
             {loading === "generate" ? "Generating..." : "Generate Content"}
           </button>
         ) : (
-          <>
-            <button
-              onClick={() => {
-                setEditing(!editing);
-                setSaveMsg(null);
-              }}
-              disabled={loading !== null}
-              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
-            >
-              {editing ? "Cancel Edit" : "Edit Content"}
-            </button>
-            <button
-              onClick={handlePublish}
-              disabled={loading !== null}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50"
-            >
-              {loading === "publish" ? "Publishing..." : "Publish"}
-            </button>
-          </>
+          <button
+            onClick={handlePublish}
+            disabled={loading !== null}
+            className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50"
+          >
+            {loading === "publish" ? "Publishing..." : "Publish"}
+          </button>
         )}
 
         {saveMsg && (
@@ -283,221 +262,66 @@ export default function PreviewActions({
         )}
       </div>
 
-      {/* Inline Content Editor */}
-      {editing && (
-        <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
-          <div className="flex items-center justify-between bg-gray-50 px-4 py-2 border-b border-gray-200">
-            <span className="text-sm font-medium text-gray-700">
-              Edit Markdown Content
-            </span>
-            <button
-              onClick={handleSaveContent}
-              disabled={loading !== null}
-              className="px-3 py-1 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
-            >
-              {loading === "save" ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-white border-b border-gray-200">
-            {/* Headings group */}
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("# ")}
-              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Heading 1"
-            >
-              H1
-            </button>
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("## ")}
-              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Heading 2"
-            >
-              H2
-            </button>
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("### ")}
-              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Heading 3"
-            >
-              H3
-            </button>
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("#### ")}
-              className="px-2 py-1 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Heading 4"
-            >
-              H4
-            </button>
-
-            <div className="w-px h-5 bg-gray-300" />
-
-            {/* Inline formatting group */}
-            <button
-              type="button"
-              onClick={() => insertMarkdown("**", "**", "bold text")}
-              className="px-2 py-1 text-xs font-bold text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Bold"
-            >
-              B
-            </button>
-            <button
-              type="button"
-              onClick={() => insertMarkdown("*", "*", "italic text")}
-              className="px-2 py-1 text-xs italic text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Italic"
-            >
-              I
-            </button>
-            <button
-              type="button"
-              onClick={() => insertMarkdown("~~", "~~", "strikethrough text")}
-              className="px-2 py-1 text-xs line-through text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Strikethrough"
-            >
-              S
-            </button>
-
-            <div className="w-px h-5 bg-gray-300" />
-
-            {/* Text color group */}
-            <button
-              type="button"
-              onClick={() =>
-                insertMarkdown(
-                  '<span style="color:red">',
-                  "</span>",
-                  "red text"
-                )
-              }
-              className="px-2 py-1 text-xs font-semibold text-red-600 bg-white border border-gray-300 rounded-full hover:bg-red-50 transition-colors"
-              title="Red text"
-            >
-              Red
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                insertMarkdown(
-                  '<span style="color:green">',
-                  "</span>",
-                  "green text"
-                )
-              }
-              className="px-2 py-1 text-xs font-semibold text-green-600 bg-white border border-gray-300 rounded-full hover:bg-green-50 transition-colors"
-              title="Green text"
-            >
-              Green
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                insertMarkdown(
-                  '<span style="color:blue">',
-                  "</span>",
-                  "blue text"
-                )
-              }
-              className="px-2 py-1 text-xs font-semibold text-blue-600 bg-white border border-gray-300 rounded-full hover:bg-blue-50 transition-colors"
-              title="Blue text"
-            >
-              Blue
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                insertMarkdown(
-                  '<span style="color:orange">',
-                  "</span>",
-                  "orange text"
-                )
-              }
-              className="px-2 py-1 text-xs font-semibold text-orange-600 bg-white border border-gray-300 rounded-full hover:bg-orange-50 transition-colors"
-              title="Orange text"
-            >
-              Orange
-            </button>
-
-            <div className="w-px h-5 bg-gray-300" />
-
-            {/* Block/structure group */}
-            <button
-              type="button"
-              onClick={() => insertMarkdown("[", "](url)", "link text")}
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Link"
-            >
-              Link
-            </button>
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("- ")}
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Bullet List"
-            >
-              UL
-            </button>
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("1. ")}
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Numbered List"
-            >
-              OL
-            </button>
-            <button
-              type="button"
-              onClick={() => insertLinePrefix("> ")}
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Blockquote"
-            >
-              Quote
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                insertBlock(
-                  "\n| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| Cell | Cell | Cell |\n"
-                )
-              }
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Table"
-            >
-              Table
-            </button>
-            <button
-              type="button"
-              onClick={() => insertBlock("\n---\n")}
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Horizontal Rule"
-            >
-              ---
-            </button>
-
-            <div className="w-px h-5 bg-gray-300" />
-
-            {/* Spacing group */}
-            <button
-              type="button"
-              onClick={() => insertBlock("\n&nbsp;\n")}
-              className="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-              title="Insert spacer (blank line)"
-            >
-              Spacer
-            </button>
-          </div>
-          <textarea
-            ref={textareaRef}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full min-h-[500px] p-4 text-sm font-mono text-gray-800 border-0 focus:ring-0 focus:outline-none resize-y"
-            spellCheck={false}
-          />
+      {/* Markdown Editor - always visible */}
+      <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="flex items-center justify-between bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <span className="text-sm font-medium text-gray-700">
+            Edit Markdown Content
+          </span>
+          <button
+            onClick={handleSaveContent}
+            disabled={loading !== null}
+            className="px-3 py-1 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
+          >
+            {loading === "save" ? "Saving..." : "Save Changes"}
+          </button>
         </div>
-      )}
+        <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-white border-b border-gray-200">
+          {/* Headings */}
+          <button type="button" onClick={() => insertLinePrefix("# ")} className={btnBase} title="Heading 1">H1</button>
+          <button type="button" onClick={() => insertLinePrefix("## ")} className={btnBase} title="Heading 2">H2</button>
+          <button type="button" onClick={() => insertLinePrefix("### ")} className={btnBase} title="Heading 3">H3</button>
+          <button type="button" onClick={() => insertLinePrefix("#### ")} className={btnBase} title="Heading 4">H4</button>
+
+          <div className="w-px h-5 bg-gray-300" />
+
+          {/* Inline formatting */}
+          <button type="button" onClick={() => insertMarkdown("**", "**", "bold text")} className={`${btnBase} font-bold`} title="Bold">B</button>
+          <button type="button" onClick={() => insertMarkdown("*", "*", "italic text")} className={`${btnBase} italic`} title="Italic">I</button>
+          <button type="button" onClick={() => insertMarkdown("~~", "~~", "strikethrough text")} className={`${btnBase} line-through`} title="Strikethrough">S</button>
+
+          <div className="w-px h-5 bg-gray-300" />
+
+          {/* Colors */}
+          <button type="button" onClick={() => insertMarkdown('<span data-color="red">', "</span>", "red text")} className={`${btnBase} text-red-600 hover:bg-red-50`} title="Red text">Red</button>
+          <button type="button" onClick={() => insertMarkdown('<span data-color="green">', "</span>", "green text")} className={`${btnBase} text-green-600 hover:bg-green-50`} title="Green text">Green</button>
+          <button type="button" onClick={() => insertMarkdown('<span data-color="blue">', "</span>", "blue text")} className={`${btnBase} text-blue-600 hover:bg-blue-50`} title="Blue text">Blue</button>
+          <button type="button" onClick={() => insertMarkdown('<span data-color="orange">', "</span>", "orange text")} className={`${btnBase} text-orange-600 hover:bg-orange-50`} title="Orange text">Orange</button>
+
+          <div className="w-px h-5 bg-gray-300" />
+
+          {/* Block / structure */}
+          <button type="button" onClick={() => insertMarkdown("[", "](url)", "link text")} className={btnBase} title="Link">Link</button>
+          <button type="button" onClick={() => insertLinePrefix("- ")} className={btnBase} title="Bullet List">UL</button>
+          <button type="button" onClick={() => insertLinePrefix("1. ")} className={btnBase} title="Numbered List">OL</button>
+          <button type="button" onClick={() => insertLinePrefix("> ")} className={btnBase} title="Blockquote">Quote</button>
+          <button type="button" onClick={() => insertBlock("\n| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| Cell | Cell | Cell |\n")} className={btnBase} title="Table">Table</button>
+          <button type="button" onClick={() => insertBlock("\n---\n")} className={btnBase} title="Horizontal Rule">---</button>
+
+          <div className="w-px h-5 bg-gray-300" />
+
+          {/* Spacing */}
+          <button type="button" onClick={() => insertBlock("\n&nbsp;\n")} className={btnBase} title="Insert spacer (blank line)">Spacer</button>
+        </div>
+        <textarea
+          ref={textareaRef}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full min-h-[500px] p-4 text-sm font-mono text-gray-800 border-0 focus:ring-0 focus:outline-none resize-y"
+          placeholder="Write your content in Markdown..."
+          spellCheck={false}
+        />
+      </div>
     </>
   );
 }
