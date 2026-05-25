@@ -4,7 +4,7 @@
 // =============================================================================
 
 import { unstable_cache } from "next/cache";
-import { supabase } from "./supabase";
+import { supabaseAdmin as supabase } from "./supabase-admin";
 import { REVALIDATE_INTERVAL } from "./constants";
 import type { JobPost, SchemePost, EntranceExamPost } from "./types";
 
