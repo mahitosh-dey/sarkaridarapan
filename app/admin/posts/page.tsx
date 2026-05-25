@@ -48,20 +48,12 @@ export default async function AllPostsPage() {
               <span className="text-yellow-700">{draftCount} drafts</span>
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <a
-              href="/admin/posts/new"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-            >
-              Write New Post
-            </a>
-            <a
-              href="/admin/quality-check"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Quality Check Dashboard
-            </a>
-          </div>
+          <a
+            href="/admin/quality-check"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            Quality Check Dashboard
+          </a>
         </div>
 
         {error && (
