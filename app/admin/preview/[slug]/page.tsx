@@ -230,8 +230,8 @@ export default async function AdminPreviewPage({ params, searchParams }: Preview
             </div>
           </div>
           <PreviewActions
-            itemId={data.id}
-            slug={data.slug}
+            itemId={String(data.id)}
+            slug={String(data.slug)}
             hasContent={hasContent}
             initialContent={content}
             isActive={isActive}
