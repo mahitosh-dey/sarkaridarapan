@@ -64,16 +64,10 @@ export default function NotFound() {
               - Government schemes and benefits
             </li>
             <li>
-              <Link href="/results" className="text-blue-700 hover:underline">
-                Results
+              <Link href="/entrance-exams" className="text-blue-700 hover:underline">
+                Entrance Exams
               </Link>{" "}
-              - Government exam results
-            </li>
-            <li>
-              <Link href="/admit-card" className="text-blue-700 hover:underline">
-                Admit Cards
-              </Link>{" "}
-              - Download exam hall tickets
+              - Exam dates, eligibility, syllabus, and results
             </li>
           </ul>
         </div>

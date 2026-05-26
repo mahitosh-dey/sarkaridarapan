@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import SchemeDetail from "@/components/content/SchemeDetail";
+import MarkdownContent from "@/components/content/MarkdownContent";
 import SchemeCard from "@/components/ui/SchemeCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
@@ -144,6 +145,13 @@ export default async function SchemePage({ params }: SchemePageProps) {
           <article className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-6 md:p-8">
               <SchemeDetail scheme={scheme} />
+
+              {/* AI-generated article content */}
+              {scheme.content && scheme.content.trim() !== "" && (
+                <section className="mt-8 border-t border-gray-200 pt-8">
+                  <MarkdownContent content={scheme.content} />
+                </section>
+              )}
 
               {/* In-Article Ad */}
               <InArticleAd className="my-8" />

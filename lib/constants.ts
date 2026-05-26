@@ -146,8 +146,14 @@ export const NAV_LINKS: NavLink[] = [
       href: `/sarkari-yojana?category=${cat.slug}`,
     })),
   },
-  { label: "Results", href: "/results" },
-  { label: "Admit Card", href: "/admit-card" },
+  {
+    label: "Entrance Exams",
+    href: "/entrance-exams",
+    children: ENTRANCE_EXAM_CATEGORIES.map((cat) => ({
+      label: cat.name,
+      href: `/entrance-exams?category=${cat.slug}`,
+    })),
+  },
   {
     label: "States",
     href: "#",

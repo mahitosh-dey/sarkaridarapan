@@ -273,24 +273,7 @@ export default function PreviewActions({
           Back to Dashboard
         </a>
 
-        {isActive && hasContent ? (
-          <>
-            <button
-              onClick={handleUnpublish}
-              disabled={loading !== null}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-md transition-colors disabled:opacity-50"
-            >
-              {loading === "unpublish" ? "Unpublishing..." : "Unpublish"}
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={loading !== null}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
-            >
-              {loading === "delete" ? "Deleting..." : "Delete"}
-            </button>
-          </>
-        ) : !hasContent ? (
+        {!hasContent && (
           <button
             onClick={handleGenerate}
             disabled={loading !== null}
@@ -298,7 +281,9 @@ export default function PreviewActions({
           >
             {loading === "generate" ? "Generating..." : "Generate Content"}
           </button>
-        ) : (
+        )}
+
+        {hasContent && !isActive && (
           <button
             onClick={handlePublish}
             disabled={loading !== null}
@@ -307,6 +292,24 @@ export default function PreviewActions({
             {loading === "publish" ? "Publishing..." : "Publish"}
           </button>
         )}
+
+        {isActive && (
+          <button
+            onClick={handleUnpublish}
+            disabled={loading !== null}
+            className="px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-md transition-colors disabled:opacity-50"
+          >
+            {loading === "unpublish" ? "Unpublishing..." : "Unpublish"}
+          </button>
+        )}
+
+        <button
+          onClick={handleDelete}
+          disabled={loading !== null}
+          className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
+        >
+          {loading === "delete" ? "Deleting..." : "Delete"}
+        </button>
 
         {saveMsg && (
           <span className="px-3 py-1.5 text-sm text-green-700">{saveMsg}</span>

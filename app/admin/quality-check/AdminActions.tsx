@@ -53,7 +53,7 @@ export default function AdminActions({
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [generateResult, setGenerateResult] = useState<string | null>(null);
-  const [enhanceResult, setEnhanceResult] = useState<string | null>(null);
+
 
   const apiBase = getApiBase(contentType);
   const idKey = getIdKey(contentType);
@@ -115,34 +115,6 @@ export default function AdminActions({
     }
   }
 
-  async function handleEnhance() {
-    setLoading("enhance");
-    setEnhanceResult(null);
-
-    try {
-      const res = await fetch(`${apiBase}/enhance`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [idKey]: itemId }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || "Failed to enhance content");
-        return;
-      }
-
-      const msg = `Enhanced: ${data.wordCount} words, ${data.readingTime}${data.flags ? ` | Flags: ${data.flags.length}` : ""}`;
-      setEnhanceResult(msg);
-      router.refresh();
-    } catch {
-      alert("Network error while enhancing content");
-    } finally {
-      setLoading(null);
-    }
-  }
-
   const previewHref =
     contentType === "job"
       ? `/admin/preview/${slug}`
@@ -179,13 +151,6 @@ export default function AdminActions({
               Preview
             </a>
             <button
-              onClick={handleEnhance}
-              disabled={loading !== null}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
-            >
-              {loading === "enhance" ? "Enhancing..." : "Enhance with Gemini"}
-            </button>
-            <button
               onClick={() => handleAction("approve")}
               disabled={loading !== null}
               className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50"
@@ -211,9 +176,6 @@ export default function AdminActions({
       </div>
       {generateResult && (
         <p className="text-xs text-gray-500">{generateResult}</p>
-      )}
-      {enhanceResult && (
-        <p className="text-xs text-blue-600">{enhanceResult}</p>
       )}
     </div>
   );

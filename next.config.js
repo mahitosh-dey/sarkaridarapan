@@ -11,9 +11,7 @@ const nextConfig = {
     ],
   },
   serverExternalPackages: ['cheerio'],
-  experimental: {
-    optimizePackageImports: ['gray-matter', 'next-mdx-remote', 'remark-gfm', '@supabase/supabase-js'],
-  },
+  experimental: {},
   // Compress responses for faster loading (helps Core Web Vitals)
   compress: true,
   // Powered by header removed for cleaner responses

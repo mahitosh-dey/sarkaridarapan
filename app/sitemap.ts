@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getJobPosts, getSchemePosts } from "@/lib/content";
+import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { SITE_URL, STATES, JOB_CATEGORIES } from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -24,13 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${SITE_URL}/results`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/admit-card`,
+      url: `${SITE_URL}/entrance-exams`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.8,
@@ -101,6 +95,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     schemePages = [];
   }
 
+  // Entrance exam pages
+  let examPages: MetadataRoute.Sitemap = [];
+  try {
+    const exams = await getEntranceExamPosts();
+    examPages = exams.map((exam) => ({
+      url: `${SITE_URL}/entrance-exams/${exam.slug}`,
+      lastModified: new Date(exam.updatedAt || exam.publishedAt),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+  } catch {
+    examPages = [];
+  }
+
   // State pages
   const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({
     url: `${SITE_URL}/state/${state.slug}`,
@@ -121,6 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...jobPages,
     ...schemePages,
+    ...examPages,
     ...statePages,
     ...categoryPages,
   ];

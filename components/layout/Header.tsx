@@ -17,8 +17,7 @@ const navLinks: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Sarkari Naukri", href: "/sarkari-naukri" },
   { label: "Sarkari Yojana", href: "/sarkari-yojana" },
-  { label: "Results", href: "/results" },
-  { label: "Admit Card", href: "/admit-card" },
+  { label: "Entrance Exams", href: "/entrance-exams" },
 ];
 
 const categories: CategoryItem[] = [
