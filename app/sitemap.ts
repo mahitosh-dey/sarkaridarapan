@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
+import { getAllGuides } from "@/lib/guides";
 import { SITE_URL, STATES, JOB_CATEGORIES } from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -109,6 +110,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     examPages = [];
   }
 
+  // Blog/Guide pages
+  const guides = getAllGuides();
+  const blogPages: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    },
+    ...guides.map((guide) => ({
+      url: `${SITE_URL}/blog/${guide.slug}`,
+      lastModified: new Date(guide.publishedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+  ];
+
   // State pages
   const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({
     url: `${SITE_URL}/state/${state.slug}`,
@@ -130,6 +148,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...jobPages,
     ...schemePages,
     ...examPages,
+    ...blogPages,
     ...statePages,
     ...categoryPages,
   ];

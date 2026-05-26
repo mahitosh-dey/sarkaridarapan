@@ -1,5 +1,6 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 
 /**
  * Convert legacy style="color:X" to data-color="X" so MDX/React
@@ -26,6 +27,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
         options={{
           mdxOptions: {
             remarkPlugins: [remarkGfm],
+            rehypePlugins: [rehypeSlug],
           },
         }}
       />

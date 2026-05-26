@@ -8,7 +8,9 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
+import GuideCard from "@/components/GuideCard";
 import { getJobPosts, getJobBySlug } from "@/lib/content";
+import { getRelatedGuidesForJob } from "@/lib/guides";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -87,6 +89,8 @@ export default async function JobPage({ params }: JobPageProps) {
     relatedJobs = [];
   }
 
+  const relatedGuides = getRelatedGuidesForJob(job.category);
+
   const breadcrumbs = [
     { label: "Sarkari Naukri", href: "/sarkari-naukri" },
     { label: job.title },
@@ -164,6 +168,18 @@ export default async function JobPage({ params }: JobPageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedJobs.map((relJob) => (
                   <JobCard key={relJob.slug} job={relJob} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Related Guides */}
+          {relatedGuides.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Guides & Articles</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedGuides.map((guide) => (
+                  <GuideCard key={guide.slug} guide={guide} />
                 ))}
               </div>
             </section>

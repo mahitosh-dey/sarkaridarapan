@@ -5,9 +5,12 @@ import SearchBar from "@/components/ui/SearchBar";
 import JobCard from "@/components/ui/JobCard";
 import SchemeCard from "@/components/ui/SchemeCard";
 import EntranceExamCard from "@/components/ui/EntranceExamCard";
+import GuideCard from "@/components/GuideCard";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
+import FAQSection from "@/components/FAQSection";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
+import { getAllGuides } from "@/lib/guides";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -27,9 +30,12 @@ export default async function HomePage() {
     getEntranceExamPosts(),
   ]);
 
+  const guides = getAllGuides();
+
   const latestJobs = jobs.slice(0, 6);
   const latestSchemes = schemes.slice(0, 6);
   const latestExams = entranceExams.slice(0, 6);
+  const latestGuides = guides.slice(0, 4);
 
   return (
     <>
@@ -134,6 +140,32 @@ export default async function HomePage() {
               )}
             </section>
 
+            {/* Latest Guides & Articles */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  Latest Guides &amp; Articles
+                </h2>
+                <Link
+                  href="/blog"
+                  className="text-blue-700 hover:text-blue-800 font-semibold text-sm whitespace-nowrap"
+                >
+                  View All &rarr;
+                </Link>
+              </div>
+              {latestGuides.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {latestGuides.map((guide) => (
+                    <GuideCard key={guide.slug} guide={guide} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-8">
+                  No guides available at the moment. Check back soon!
+                </p>
+              )}
+            </section>
+
             {/* Ad Banner */}
             <AdBanner className="mb-12" />
 
@@ -185,6 +217,9 @@ export default async function HomePage() {
           </aside>
         </div>
       </div>
+
+      {/* FAQ Section */}
+      <FAQSection />
     </>
   );
 }
