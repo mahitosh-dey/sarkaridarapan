@@ -267,6 +267,12 @@ export function PostRowActions({ post }: { post: BlogPost }) {
       >
         View
       </a>
+      <a
+        href={`/admin/blog/edit/${post.id}`}
+        className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
+      >
+        Edit
+      </a>
       {post.is_active ? (
         <button
           onClick={() => call("unpublish")}
