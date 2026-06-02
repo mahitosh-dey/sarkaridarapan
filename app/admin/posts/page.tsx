@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const PAGE_SIZE = 10;
+
 type ContentType = "job" | "scheme" | "entrance-exam";
 
 interface PostItem {
@@ -23,7 +25,14 @@ interface PostItem {
   contentType: ContentType;
 }
 
-export default async function AllPostsPage() {
+export default async function AllPostsPage({
+  searchParams,
+}: {
+  searchParams: { page?: string; q?: string };
+}) {
+  const query = (searchParams.q || "").trim().toLowerCase();
+  const page = Math.max(1, parseInt(searchParams.page || "1", 10));
+
   const [jobsRes, schemesRes, examsRes] = await Promise.all([
     supabaseAdmin
       .from("jobs")
@@ -89,8 +98,29 @@ export default async function AllPostsPage() {
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
 
+  const filteredPosts = query
+    ? allPosts.filter(
+        (p) =>
+          p.title.toLowerCase().includes(query) ||
+          p.subtitle.toLowerCase().includes(query) ||
+          (p.category || "").toLowerCase().includes(query) ||
+          p.slug.toLowerCase().includes(query)
+      )
+    : allPosts;
+
   const publishedCount = allPosts.filter((p) => p.is_active).length;
   const draftCount = allPosts.filter((p) => !p.is_active).length;
+
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedPosts = filteredPosts.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  // Build href for pagination links preserving the search query
+  const pageHref = (p: number) =>
+    query ? `?q=${encodeURIComponent(query)}&page=${p}` : `?page=${p}`;
 
   const typeBadge: Record<ContentType, { label: string; className: string }> = {
     job: {
@@ -131,6 +161,24 @@ export default async function AllPostsPage() {
           </a>
         </div>
 
+        {/* Search */}
+        <form method="GET" action="/admin/posts" className="mb-4">
+          <div className="relative max-w-md">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+            </div>
+            <input
+              type="search"
+              name="q"
+              defaultValue={query}
+              placeholder="Search by title, category, or slug…"
+              className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+            />
+          </div>
+        </form>
+
         {error && (
           <p className="mb-4 text-red-600 text-sm">
             Error loading posts: {error.message}
@@ -164,7 +212,7 @@ export default async function AllPostsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {allPosts.map((post) => (
+                {paginatedPosts.map((post) => (
                   <tr key={`${post.contentType}-${post.id}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
@@ -173,7 +221,6 @@ export default async function AllPostsPage() {
                       <div className="text-xs text-gray-500 mt-0.5 truncate">
                         {post.subtitle}
                       </div>
-                      {/* Type badge on mobile */}
                       <span className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium lg:hidden ${typeBadge[post.contentType].className}`}>
                         {typeBadge[post.contentType].label}
                       </span>
@@ -216,19 +263,83 @@ export default async function AllPostsPage() {
                     </td>
                   </tr>
                 ))}
-                {allPosts.length === 0 && (
+                {filteredPosts.length === 0 && (
                   <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-12 text-center text-gray-500"
-                    >
-                      No posts found.
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                      {query ? `No posts match "${query}".` : "No posts found."}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between flex-wrap gap-3">
+              <p className="text-sm text-gray-600">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1}–
+                {Math.min(currentPage * PAGE_SIZE, filteredPosts.length)} of{" "}
+                {filteredPosts.length}{query ? " results" : " posts"}
+              </p>
+              <div className="flex items-center gap-1">
+                <a
+                  href={pageHref(currentPage - 1)}
+                  aria-disabled={currentPage === 1}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                    currentPage === 1
+                      ? "border-gray-200 text-gray-300 pointer-events-none"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  ← Prev
+                </a>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(
+                    (p) =>
+                      p === 1 ||
+                      p === totalPages ||
+                      Math.abs(p - currentPage) <= 1
+                  )
+                  .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && (arr[idx - 1] as number) < p - 1)
+                      acc.push("…");
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, idx) =>
+                    p === "…" ? (
+                      <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 text-sm">
+                        …
+                      </span>
+                    ) : (
+                      <a
+                        key={p}
+                        href={pageHref(p as number)}
+                        className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                          p === currentPage
+                            ? "border-primary-600 bg-primary-50 text-primary-700 font-medium"
+                            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {p}
+                      </a>
+                    )
+                  )}
+                <a
+                  href={pageHref(currentPage + 1)}
+                  aria-disabled={currentPage === totalPages}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                    currentPage === totalPages
+                      ? "border-gray-200 text-gray-300 pointer-events-none"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Next →
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
