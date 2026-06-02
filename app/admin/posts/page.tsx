@@ -28,11 +28,15 @@ interface PostItem {
 export default async function AllPostsPage({
   searchParams,
 }: {
-  searchParams: { page?: string; q?: string; status?: string };
+  searchParams: { page?: string; q?: string; status?: string; type?: string };
 }) {
   const query = (searchParams.q || "").trim().toLowerCase();
   const status = searchParams.status === "published" ? "published"
     : searchParams.status === "draft" ? "draft"
+    : "all";
+  const typeFilter = searchParams.type === "job" ? "job"
+    : searchParams.type === "scheme" ? "scheme"
+    : searchParams.type === "entrance-exam" ? "entrance-exam"
     : "all";
   const page = Math.max(1, parseInt(searchParams.page || "1", 10));
 
@@ -104,6 +108,7 @@ export default async function AllPostsPage({
   const filteredPosts = allPosts.filter((p) => {
     if (status === "published" && !p.is_active) return false;
     if (status === "draft" && p.is_active) return false;
+    if (typeFilter !== "all" && p.contentType !== typeFilter) return false;
     if (query) {
       return (
         p.title.toLowerCase().includes(query) ||
@@ -130,6 +135,7 @@ export default async function AllPostsPage({
     const params = new URLSearchParams();
     if (query) params.set("q", query);
     if (status !== "all") params.set("status", status);
+    if (typeFilter !== "all") params.set("type", typeFilter);
     params.set("page", String(p));
     return `?${params.toString()}`;
   };
@@ -138,6 +144,15 @@ export default async function AllPostsPage({
     const params = new URLSearchParams();
     if (query) params.set("q", query);
     if (s !== "all") params.set("status", s);
+    if (typeFilter !== "all") params.set("type", typeFilter);
+    return `?${params.toString()}`;
+  };
+
+  const typeHref = (t: string) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (status !== "all") params.set("status", status);
+    if (t !== "all") params.set("type", t);
     return `?${params.toString()}`;
   };
 
@@ -226,6 +241,48 @@ export default async function AllPostsPage({
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border font-medium transition-colors ${colors[s]}`}
               >
                 {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? "bg-white/20" : "bg-gray-100 text-gray-500"}`}>
+                  {count}
+                </span>
+              </a>
+            );
+          })}
+        </div>
+
+        {/* Type filter */}
+        <div className="mb-4 flex items-center gap-2">
+          {([
+            { value: "all", label: "All Types" },
+            { value: "job", label: "Jobs" },
+            { value: "scheme", label: "Schemes" },
+            { value: "entrance-exam", label: "Exams" },
+          ] as const).map(({ value, label }) => {
+            const count =
+              value === "all"
+                ? allPosts.length
+                : allPosts.filter((p) => p.contentType === value).length;
+            const active = typeFilter === value;
+            const colors: Record<string, string> = {
+              all: active
+                ? "bg-gray-900 text-white border-gray-900"
+                : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50",
+              job: active
+                ? "bg-primary-700 text-white border-primary-700"
+                : "bg-white text-primary-700 border-primary-300 hover:bg-primary-50",
+              scheme: active
+                ? "bg-emerald-700 text-white border-emerald-700"
+                : "bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50",
+              "entrance-exam": active
+                ? "bg-blue-700 text-white border-blue-700"
+                : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50",
+            };
+            return (
+              <a
+                key={value}
+                href={typeHref(value)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border font-medium transition-colors ${colors[value]}`}
+              >
+                {label}
                 <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? "bg-white/20" : "bg-gray-100 text-gray-500"}`}>
                   {count}
                 </span>
