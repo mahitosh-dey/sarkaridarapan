@@ -122,7 +122,7 @@ export const getJobPosts = unstable_cache(
     return (data || []).map(mapJobRow);
   },
   ["all-jobs"],
-  { revalidate: REVALIDATE_INTERVAL }
+  { revalidate: REVALIDATE_INTERVAL, tags: ["jobs"] }
 );
 
 export async function getJobBySlug(slug: string): Promise<JobPost | null> {
@@ -164,7 +164,7 @@ export const getSchemePosts = unstable_cache(
     return (data || []).map(mapSchemeRow);
   },
   ["all-schemes"],
-  { revalidate: REVALIDATE_INTERVAL }
+  { revalidate: REVALIDATE_INTERVAL, tags: ["schemes"] }
 );
 
 export async function getSchemeBySlug(
@@ -304,7 +304,7 @@ export const getEntranceExamPosts = unstable_cache(
     return (data || []).map(mapEntranceExamRow);
   },
   ["all-entrance-exams"],
-  { revalidate: REVALIDATE_INTERVAL }
+  { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams"] }
 );
 
 export async function getEntranceExamBySlug(
