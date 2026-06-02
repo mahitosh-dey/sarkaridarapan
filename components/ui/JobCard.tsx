@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { JobPost } from "@/lib/types";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface JobCardProps {
   job: Pick<
@@ -19,19 +20,8 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job }: JobCardProps) {
-  const formattedDate = new Date(job.publishedAt).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
-  const lastDate = job.importantDates.lastDate
-    ? new Date(job.importantDates.lastDate).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "N/A";
+  const formattedDate = safeFormatDate(job.publishedAt, "—");
+  const lastDate = safeFormatDate(job.importantDates.lastDate, "N/A");
 
   return (
     <article

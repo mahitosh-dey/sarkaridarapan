@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { SchemePost } from "@/lib/types";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface SchemeDetailProps {
   scheme: SchemePost;
@@ -10,20 +11,8 @@ interface SchemeDetailProps {
 export default function SchemeDetail({ scheme }: SchemeDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const updatedDate = new Date(scheme.updatedAt).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  const publishedDate = new Date(scheme.publishedAt).toLocaleDateString(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  );
+  const updatedDate = safeFormatDate(scheme.updatedAt, "—", "long");
+  const publishedDate = safeFormatDate(scheme.publishedAt, "—", "long");
 
   async function handleCopyLink() {
     try {

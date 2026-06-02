@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SchemePost } from "@/lib/types";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface SchemeCardProps {
   scheme: Pick<
@@ -16,14 +17,7 @@ interface SchemeCardProps {
 }
 
 export default function SchemeCard({ scheme }: SchemeCardProps) {
-  const formattedDate = new Date(scheme.publishedAt).toLocaleDateString(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }
-  );
+  const formattedDate = safeFormatDate(scheme.publishedAt, "—");
 
   return (
     <article className="relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 border-l-4 border-l-sarkari-green overflow-hidden">

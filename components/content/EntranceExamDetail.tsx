@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { EntranceExamPost } from "@/lib/types";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface EntranceExamDetailProps {
   exam: EntranceExamPost;
@@ -10,29 +11,9 @@ interface EntranceExamDetailProps {
 export default function EntranceExamDetail({ exam }: EntranceExamDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const updatedDate = new Date(exam.updatedAt).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  const publishedDate = new Date(exam.publishedAt).toLocaleDateString(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  );
-
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return "TBA";
-    return new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+  const updatedDate = safeFormatDate(exam.updatedAt, "—", "long");
+  const publishedDate = safeFormatDate(exam.publishedAt, "—", "long");
+  const formatDate = (dateStr: string) => safeFormatDate(dateStr, "TBA", "long");
 
   async function handleCopyLink() {
     try {

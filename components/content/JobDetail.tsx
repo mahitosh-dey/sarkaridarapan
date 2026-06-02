@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { JobPost } from "@/lib/types";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface JobDetailProps {
   job: JobPost;
@@ -11,20 +12,9 @@ interface JobDetailProps {
 export default function JobDetail({ job }: JobDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const updatedDate = new Date(job.updatedAt).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  const formatDate = (dateStr: string | undefined) => {
-    if (!dateStr) return "To be announced";
-    return new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+  const updatedDate = safeFormatDate(job.updatedAt, "—", "long");
+  const formatDate = (dateStr: string | undefined) =>
+    safeFormatDate(dateStr, "To be announced", "long");
 
   // Normalize selectionProcess to always be an array
   const selectionSteps: string[] = Array.isArray(job.selectionProcess)

@@ -2,14 +2,10 @@ import Link from "next/link";
 import { getJobPosts, getSchemePosts } from "@/lib/content";
 import { JOB_CATEGORIES } from "@/lib/constants";
 import SidebarStates from "./SidebarStates";
+import { safeFormatDate } from "@/lib/date-utils";
 
 function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  return safeFormatDate(dateStr, "");
 }
 
 export default async function Sidebar() {

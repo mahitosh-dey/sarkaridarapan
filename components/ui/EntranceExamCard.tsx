@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { EntranceExamPost } from "@/lib/types";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface EntranceExamCardProps {
   exam: Pick<
@@ -16,27 +17,9 @@ interface EntranceExamCardProps {
 }
 
 export default function EntranceExamCard({ exam }: EntranceExamCardProps) {
-  const formattedDate = new Date(exam.publishedAt).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
-  const examDate = exam.examDate
-    ? new Date(exam.examDate).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "TBA";
-
-  const applicationEnd = exam.applicationEnd
-    ? new Date(exam.applicationEnd).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "N/A";
+  const formattedDate = safeFormatDate(exam.publishedAt, "—");
+  const examDate = safeFormatDate(exam.examDate, "TBA");
+  const applicationEnd = safeFormatDate(exam.applicationEnd, "N/A");
 
   const isDeadlineActive = exam.applicationEnd
     ? new Date(exam.applicationEnd) >= new Date()

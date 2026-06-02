@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Guide } from "@/lib/guides";
+import { safeFormatDate } from "@/lib/date-utils";
 
 interface GuideCardProps {
   guide: Pick<
@@ -9,14 +10,7 @@ interface GuideCardProps {
 }
 
 export default function GuideCard({ guide }: GuideCardProps) {
-  const formattedDate = new Date(guide.publishedAt).toLocaleDateString(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }
-  );
+  const formattedDate = safeFormatDate(guide.publishedAt, "—");
 
   return (
     <article className="relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 border-l-4 border-l-indigo-600 overflow-hidden">
