@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { JobPost } from "@/lib/types";
-import { safeFormatDate } from "@/lib/date-utils";
+import { safeFormatDate, isDatePast } from "@/lib/date-utils";
 
 interface JobCardProps {
   job: Pick<
@@ -23,10 +23,13 @@ export default function JobCard({ job }: JobCardProps) {
   const formattedDate = safeFormatDate(job.publishedAt, "—");
   const lastDate = safeFormatDate(job.importantDates.lastDate, "N/A");
 
+  // A job is closed if the DB marks it inactive OR if the last date has passed
+  const isClosed = !job.isActive || isDatePast(job.importantDates.lastDate);
+
   return (
     <article
       className={`relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 overflow-hidden ${
-        job.isActive ? "border-l-4 border-l-primary-600" : "border-l-4 border-l-gray-400"
+        isClosed ? "border-l-4 border-l-gray-400" : "border-l-4 border-l-primary-600"
       }`}
     >
       {/* Top Row: Organization + Badges */}
@@ -36,15 +39,15 @@ export default function JobCard({ job }: JobCardProps) {
             {job.organization}
           </span>
           <div className="flex items-center gap-2">
-            {job.isActive ? (
+            {isClosed ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-600 ring-1 ring-inset ring-gray-400/30">
+                <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                Closed
+              </span>
+            ) : (
               <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-600/20">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
                 Active
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-600/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-600" />
-                Expired
               </span>
             )}
             <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
@@ -98,7 +101,7 @@ export default function JobCard({ job }: JobCardProps) {
               </span>
               <span
                 className={`font-semibold ${
-                  job.isActive ? "text-red-600" : "text-gray-500"
+                  isClosed ? "text-gray-500" : "text-red-600"
                 }`}
               >
                 {lastDate}

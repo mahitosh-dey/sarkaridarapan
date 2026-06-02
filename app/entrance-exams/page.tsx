@@ -8,6 +8,7 @@ import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getEntranceExamPosts } from "@/lib/content";
 import { SITE_NAME, SITE_URL, ENTRANCE_EXAM_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { isDatePast } from "@/lib/date-utils";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -48,9 +49,16 @@ export default async function EntranceExamsPage({ searchParams }: EntranceExamsL
       ? allExams
       : allExams.filter((exam) => exam.category === activeCategory);
 
-  const totalPages = Math.ceil(filteredExams.length / postsPerPage);
+  // Active exams always appear before closed ones
+  const sortedExams = [...filteredExams].sort((a, b) => {
+    const aClosed = a.applicationEnd ? isDatePast(a.applicationEnd) : isDatePast(a.examDate);
+    const bClosed = b.applicationEnd ? isDatePast(b.applicationEnd) : isDatePast(b.examDate);
+    return aClosed === bClosed ? 0 : aClosed ? 1 : -1;
+  });
+
+  const totalPages = Math.ceil(sortedExams.length / postsPerPage);
   const startIndex = (currentPage - 1) * postsPerPage;
-  const paginatedExams = filteredExams.slice(startIndex, startIndex + postsPerPage);
+  const paginatedExams = sortedExams.slice(startIndex, startIndex + postsPerPage);
 
   const breadcrumbs = [
     { label: "Home", href: "/" },

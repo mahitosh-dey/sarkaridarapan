@@ -8,6 +8,7 @@ import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getJobPosts } from "@/lib/content";
 import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { isDatePast } from "@/lib/date-utils";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -48,9 +49,16 @@ export default async function SarkariNaukriPage({ searchParams }: SarkariNaukriP
       ? allJobs
       : allJobs.filter((job) => job.category === activeCategory);
 
-  const totalPages = Math.ceil(filteredJobs.length / postsPerPage);
+  // Active jobs (last date not past) always appear before closed ones
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
+    const aClosed = !a.isActive || isDatePast(a.importantDates.lastDate);
+    const bClosed = !b.isActive || isDatePast(b.importantDates.lastDate);
+    return aClosed === bClosed ? 0 : aClosed ? 1 : -1;
+  });
+
+  const totalPages = Math.ceil(sortedJobs.length / postsPerPage);
   const startIndex = (currentPage - 1) * postsPerPage;
-  const paginatedJobs = filteredJobs.slice(startIndex, startIndex + postsPerPage);
+  const paginatedJobs = sortedJobs.slice(startIndex, startIndex + postsPerPage);
 
   const breadcrumbs = [
     { label: "Home", href: "/" },

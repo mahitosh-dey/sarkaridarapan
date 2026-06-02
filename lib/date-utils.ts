@@ -41,6 +41,20 @@ function parseDate(raw: string): Date | null {
 }
 
 /**
+ * Returns true if the date string represents a date strictly before today (IST).
+ * Returns false for unparseable strings (e.g. "Not yet released") or empty values.
+ */
+export function isDatePast(dateStr: string | null | undefined): boolean {
+  if (!dateStr?.trim()) return false;
+  const parsed = parseDate(dateStr.trim());
+  if (!parsed) return false;
+  // Compare date-only strings in IST to avoid UTC midnight offset issues
+  const todayIST = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  const parsedIST = parsed.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  return parsedIST < todayIST;
+}
+
+/**
  * Safely formats a date string for display.
  *
  * - Returns `fallback` for null / undefined / empty strings.

@@ -11,6 +11,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import FAQSection from "@/components/FAQSection";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
+import { isDatePast } from "@/lib/date-utils";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -31,9 +32,21 @@ export default async function HomePage() {
     getPublishedDbPosts(),
   ]);
 
-  const latestJobs = jobs.slice(0, 6);
+  // Sort active items first within each section before slicing
+  const sortedJobs = [...jobs].sort((a, b) => {
+    const aClosed = !a.isActive || isDatePast(a.importantDates.lastDate);
+    const bClosed = !b.isActive || isDatePast(b.importantDates.lastDate);
+    return aClosed === bClosed ? 0 : aClosed ? 1 : -1;
+  });
+  const sortedExams = [...entranceExams].sort((a, b) => {
+    const aClosed = a.applicationEnd ? isDatePast(a.applicationEnd) : isDatePast(a.examDate);
+    const bClosed = b.applicationEnd ? isDatePast(b.applicationEnd) : isDatePast(b.examDate);
+    return aClosed === bClosed ? 0 : aClosed ? 1 : -1;
+  });
+
+  const latestJobs = sortedJobs.slice(0, 6);
   const latestSchemes = schemes.slice(0, 6);
-  const latestExams = entranceExams.slice(0, 6);
+  const latestExams = sortedExams.slice(0, 6);
   const latestGuides = guides.slice(0, 4);
 
   return (
