@@ -28,9 +28,12 @@ interface PostItem {
 export default async function AllPostsPage({
   searchParams,
 }: {
-  searchParams: { page?: string; q?: string };
+  searchParams: { page?: string; q?: string; status?: string };
 }) {
   const query = (searchParams.q || "").trim().toLowerCase();
+  const status = searchParams.status === "published" ? "published"
+    : searchParams.status === "draft" ? "draft"
+    : "all";
   const page = Math.max(1, parseInt(searchParams.page || "1", 10));
 
   const [jobsRes, schemesRes, examsRes] = await Promise.all([
@@ -98,15 +101,19 @@ export default async function AllPostsPage({
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
 
-  const filteredPosts = query
-    ? allPosts.filter(
-        (p) =>
-          p.title.toLowerCase().includes(query) ||
-          p.subtitle.toLowerCase().includes(query) ||
-          (p.category || "").toLowerCase().includes(query) ||
-          p.slug.toLowerCase().includes(query)
-      )
-    : allPosts;
+  const filteredPosts = allPosts.filter((p) => {
+    if (status === "published" && !p.is_active) return false;
+    if (status === "draft" && p.is_active) return false;
+    if (query) {
+      return (
+        p.title.toLowerCase().includes(query) ||
+        p.subtitle.toLowerCase().includes(query) ||
+        (p.category || "").toLowerCase().includes(query) ||
+        p.slug.toLowerCase().includes(query)
+      );
+    }
+    return true;
+  });
 
   const publishedCount = allPosts.filter((p) => p.is_active).length;
   const draftCount = allPosts.filter((p) => !p.is_active).length;
@@ -118,9 +125,21 @@ export default async function AllPostsPage({
     currentPage * PAGE_SIZE
   );
 
-  // Build href for pagination links preserving the search query
-  const pageHref = (p: number) =>
-    query ? `?q=${encodeURIComponent(query)}&page=${p}` : `?page=${p}`;
+  // Build href preserving search query and status filter
+  const pageHref = (p: number) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (status !== "all") params.set("status", status);
+    params.set("page", String(p));
+    return `?${params.toString()}`;
+  };
+
+  const statusHref = (s: string) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (s !== "all") params.set("status", s);
+    return `?${params.toString()}`;
+  };
 
   const typeBadge: Record<ContentType, { label: string; className: string }> = {
     job: {
@@ -178,6 +197,42 @@ export default async function AllPostsPage({
             />
           </div>
         </form>
+
+        {/* Status filter */}
+        <div className="mb-4 flex items-center gap-2">
+          {(["all", "published", "draft"] as const).map((s) => {
+            const count =
+              s === "all"
+                ? allPosts.length
+                : allPosts.filter((p) =>
+                    s === "published" ? p.is_active : !p.is_active
+                  ).length;
+            const active = status === s;
+            const colors: Record<string, string> = {
+              all: active
+                ? "bg-gray-900 text-white border-gray-900"
+                : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50",
+              published: active
+                ? "bg-green-700 text-white border-green-700"
+                : "bg-white text-green-700 border-green-300 hover:bg-green-50",
+              draft: active
+                ? "bg-yellow-500 text-white border-yellow-500"
+                : "bg-white text-yellow-700 border-yellow-300 hover:bg-yellow-50",
+            };
+            return (
+              <a
+                key={s}
+                href={statusHref(s)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border font-medium transition-colors ${colors[s]}`}
+              >
+                {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? "bg-white/20" : "bg-gray-100 text-gray-500"}`}>
+                  {count}
+                </span>
+              </a>
+            );
+          })}
+        </div>
 
         {error && (
           <p className="mb-4 text-red-600 text-sm">
