@@ -4,7 +4,7 @@
 
 export const SITE_NAME = "SarkariDarapan";
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://sarkaridarapan.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.sarkaridarapan.com";
 export const SITE_DESCRIPTION =
   "Latest Government Jobs, Sarkari Naukri, Government Schemes, Results, Admit Cards and more across India";
 

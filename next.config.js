@@ -82,13 +82,6 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      // www → non-www canonical redirect
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.sarkaridarapan.com' }],
-        destination: 'https://sarkaridarapan.com/:path*',
-        permanent: true,
-      },
       // Common misspellings and old URL patterns
       {
         source: '/sarkari-naukri.html',
