@@ -7,7 +7,10 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getAllGuides, GUIDE_CATEGORIES } from "@/lib/guides";
+import { getPublishedDbPosts } from "@/lib/blog-db";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+
+export const dynamic = "force-dynamic";
 
 const POSTS_PER_PAGE = 12;
 
@@ -31,11 +34,17 @@ interface BlogPageProps {
   searchParams: { page?: string; category?: string };
 }
 
-export default function BlogPage({ searchParams }: BlogPageProps) {
+export default async function BlogPage({ searchParams }: BlogPageProps) {
   const currentPage = Number(searchParams.page) || 1;
   const activeCategory = searchParams.category || "all";
 
-  const allGuides = getAllGuides();
+  // Merge Supabase posts (newest first) + hardcoded guides (deduped by slug)
+  const [dbPosts, hardcoded] = await Promise.all([
+    getPublishedDbPosts(),
+    Promise.resolve(getAllGuides()),
+  ]);
+  const dbSlugs = new Set(dbPosts.map((p) => p.slug));
+  const allGuides = [...dbPosts, ...hardcoded.filter((g) => !dbSlugs.has(g.slug))];
 
   const filteredGuides =
     activeCategory === "all"
@@ -44,10 +53,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
 
   const totalPages = Math.ceil(filteredGuides.length / POSTS_PER_PAGE);
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
-  const paginatedGuides = filteredGuides.slice(
-    startIndex,
-    startIndex + POSTS_PER_PAGE
-  );
+  const paginatedGuides = filteredGuides.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
@@ -108,7 +114,6 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                 ))}
               </div>
 
-              {/* Mid-page Ad */}
               {paginatedGuides.length > 6 && <AdBanner className="my-8" />}
 
               {paginatedGuides.length > 6 && (
@@ -131,7 +136,6 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-10">
               <Pagination

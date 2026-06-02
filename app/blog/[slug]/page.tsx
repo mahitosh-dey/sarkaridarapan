@@ -10,21 +10,29 @@ import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
+import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+
+export const dynamic = "force-dynamic";
 
 interface GuidePageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  const guides = getAllGuides();
-  return guides.map((guide) => ({
-    slug: guide.slug,
-  }));
+export async function generateStaticParams() {
+  const [dbPosts, hardcoded] = await Promise.all([
+    getPublishedDbPosts(),
+    Promise.resolve(getAllGuides()),
+  ]);
+  const dbSlugs = new Set(dbPosts.map((p) => p.slug));
+  return [
+    ...dbPosts.map((p) => ({ slug: p.slug })),
+    ...hardcoded.filter((g) => !dbSlugs.has(g.slug)).map((g) => ({ slug: g.slug })),
+  ];
 }
 
-export function generateMetadata({ params }: GuidePageProps): Metadata {
-  const guide = getGuideBySlug(params.slug);
+export async function generateMetadata({ params }: GuidePageProps): Promise<Metadata> {
+  const guide = (await getDbPostBySlug(params.slug)) || getGuideBySlug(params.slug);
   if (!guide) return { title: "Guide Not Found" };
 
   return {
@@ -50,8 +58,8 @@ export function generateMetadata({ params }: GuidePageProps): Metadata {
   };
 }
 
-export default function GuidePage({ params }: GuidePageProps) {
-  const guide = getGuideBySlug(params.slug);
+export default async function GuidePage({ params }: GuidePageProps) {
+  const guide = (await getDbPostBySlug(params.slug)) || getGuideBySlug(params.slug);
 
   if (!guide) {
     notFound();
@@ -60,7 +68,13 @@ export default function GuidePage({ params }: GuidePageProps) {
   const tocItems = extractTocItems(guide.content);
 
   // Related guides from the same category
-  const relatedGuides = getAllGuides()
+  const [dbPosts, hardcoded] = await Promise.all([
+    getPublishedDbPosts(),
+    Promise.resolve(getAllGuides()),
+  ]);
+  const dbSlugs = new Set(dbPosts.map((p) => p.slug));
+  const allGuides = [...dbPosts, ...hardcoded.filter((g) => !dbSlugs.has(g.slug))];
+  const relatedGuides = allGuides
     .filter((g) => g.category === guide.category && g.slug !== guide.slug)
     .slice(0, 3);
 

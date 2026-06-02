@@ -171,12 +171,20 @@ export default async function QualityCheckPage({ searchParams }: PageProps) {
               {flaggedItems.length !== 1 ? "s" : ""} pending review
             </p>
           </div>
-          <a
-            href="/admin/posts"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-          >
-            All Posts
-          </a>
+          <div className="flex gap-3">
+            <a
+              href="/admin/blog"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Blog / Guides
+            </a>
+            <a
+              href="/admin/posts"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              All Posts
+            </a>
+          </div>
         </div>
 
         {error && (

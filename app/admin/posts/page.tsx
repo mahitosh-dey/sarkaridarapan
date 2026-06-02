@@ -187,12 +187,20 @@ export default async function AllPostsPage({
               <span className="text-yellow-700">{draftCount} drafts</span>
             </p>
           </div>
-          <a
-            href="/admin/quality-check"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-          >
-            Quality Check Dashboard
-          </a>
+          <div className="flex gap-3">
+            <a
+              href="/admin/blog"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Blog / Guides
+            </a>
+            <a
+              href="/admin/quality-check"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Quality Check
+            </a>
+          </div>
         </div>
 
         {/* Search */}

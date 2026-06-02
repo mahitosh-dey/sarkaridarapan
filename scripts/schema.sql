@@ -77,6 +77,42 @@ CREATE TABLE IF NOT EXISTS schemes (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Blog Posts table
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  category TEXT NOT NULL DEFAULT '',
+  author TEXT NOT NULL DEFAULT 'SarkariDarapan Team',
+  tags TEXT[] DEFAULT '{}',
+  content TEXT NOT NULL DEFAULT '',
+  image TEXT DEFAULT NULL,
+  reading_time TEXT DEFAULT '',
+  is_active BOOLEAN DEFAULT false,
+  published_at TIMESTAMPTZ DEFAULT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER blog_posts_updated_at
+  BEFORE UPDATE ON blog_posts
+  FOR EACH ROW
+  EXECUTE FUNCTION set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts (slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts (published_at DESC) WHERE is_active = true;
+
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read on blog_posts"
+  ON blog_posts FOR SELECT TO anon, authenticated
+  USING (is_active = true);
+
+CREATE POLICY "Allow service role all on blog_posts"
+  ON blog_posts FOR ALL TO service_role
+  USING (true) WITH CHECK (true);
+
 -- ======================== INDEXES ========================
 
 -- Full-text search indexes
