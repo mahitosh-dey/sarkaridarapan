@@ -10,7 +10,7 @@ import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import FAQSection from "@/components/FAQSection";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
-import { getAllGuides } from "@/lib/guides";
+import { getPublishedDbPosts } from "@/lib/blog-db";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -24,13 +24,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [jobs, schemes, entranceExams] = await Promise.all([
+  const [jobs, schemes, entranceExams, guides] = await Promise.all([
     getJobPosts(),
     getSchemePosts(),
     getEntranceExamPosts(),
+    getPublishedDbPosts(),
   ]);
-
-  const guides = getAllGuides();
 
   const latestJobs = jobs.slice(0, 6);
   const latestSchemes = schemes.slice(0, 6);
@@ -141,30 +140,26 @@ export default async function HomePage() {
             </section>
 
             {/* Latest Guides & Articles */}
-            <section className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  Latest Guides &amp; Articles
-                </h2>
-                <Link
-                  href="/blog"
-                  className="text-blue-700 hover:text-blue-800 font-semibold text-sm whitespace-nowrap"
-                >
-                  View All &rarr;
-                </Link>
-              </div>
-              {latestGuides.length > 0 ? (
+            {latestGuides.length > 0 && (
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                    Latest Guides &amp; Articles
+                  </h2>
+                  <Link
+                    href="/blog"
+                    className="text-blue-700 hover:text-blue-800 font-semibold text-sm whitespace-nowrap"
+                  >
+                    View All &rarr;
+                  </Link>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {latestGuides.map((guide) => (
                     <GuideCard key={guide.slug} guide={guide} />
                   ))}
                 </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">
-                  No guides available at the moment. Check back soon!
-                </p>
-              )}
-            </section>
+              </section>
+            )}
 
             {/* Ad Banner */}
             <AdBanner className="mb-12" />
