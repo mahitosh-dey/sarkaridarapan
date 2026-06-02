@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 10;
 
-type ContentType = "job" | "scheme" | "entrance-exam";
+type ContentType = "job" | "scheme" | "entrance-exam" | "blog";
 
 interface PostItem {
   id: string;
@@ -37,27 +37,26 @@ export default async function AllPostsPage({
   const typeFilter = searchParams.type === "job" ? "job"
     : searchParams.type === "scheme" ? "scheme"
     : searchParams.type === "entrance-exam" ? "entrance-exam"
+    : searchParams.type === "blog" ? "blog"
     : "all";
   const page = Math.max(1, parseInt(searchParams.page || "1", 10));
 
-  const [jobsRes, schemesRes, examsRes] = await Promise.all([
+  const [jobsRes, schemesRes, examsRes, blogRes] = await Promise.all([
     supabaseAdmin
       .from("jobs")
-      .select(
-        "id, slug, title, organization, is_active, published_at, updated_at, category"
-      )
+      .select("id, slug, title, organization, is_active, published_at, updated_at, category")
       .order("updated_at", { ascending: false }),
     supabaseAdmin
       .from("schemes")
-      .select(
-        "id, slug, title, ministry, is_active, published_at, updated_at, category"
-      )
+      .select("id, slug, title, ministry, is_active, published_at, updated_at, category")
       .order("updated_at", { ascending: false }),
     supabaseAdmin
       .from("entrance_exams")
-      .select(
-        "id, slug, title, conducting_body, is_active, published_at, updated_at, category"
-      )
+      .select("id, slug, title, conducting_body, is_active, published_at, updated_at, category")
+      .order("updated_at", { ascending: false }),
+    supabaseAdmin
+      .from("blog_posts")
+      .select("id, slug, title, author, is_active, published_at, updated_at, category")
       .order("updated_at", { ascending: false }),
   ]);
 
@@ -101,7 +100,19 @@ export default async function AllPostsPage({
     contentType: "entrance-exam" as ContentType,
   }));
 
-  const allPosts = [...jobs, ...schemes, ...exams].sort(
+  const blogPosts: PostItem[] = (blogRes.data || []).map((r: DbRow) => ({
+    id: r.id as string,
+    slug: r.slug as string,
+    title: r.title as string,
+    subtitle: (r.author as string) || "SarkariDarapan Team",
+    is_active: r.is_active as boolean,
+    published_at: r.published_at as string | null,
+    updated_at: r.updated_at as string,
+    category: r.category as string | null,
+    contentType: "blog" as ContentType,
+  }));
+
+  const allPosts = [...jobs, ...schemes, ...exams, ...blogPosts].sort(
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
 
@@ -168,6 +179,10 @@ export default async function AllPostsPage({
     "entrance-exam": {
       label: "Exam",
       className: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20",
+    },
+    blog: {
+      label: "Blog",
+      className: "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-600/20",
     },
   };
 
@@ -264,6 +279,7 @@ export default async function AllPostsPage({
             { value: "job", label: "Jobs" },
             { value: "scheme", label: "Schemes" },
             { value: "entrance-exam", label: "Exams" },
+            { value: "blog", label: "Blog" },
           ] as const).map(({ value, label }) => {
             const count =
               value === "all"
@@ -283,6 +299,9 @@ export default async function AllPostsPage({
               "entrance-exam": active
                 ? "bg-blue-700 text-white border-blue-700"
                 : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50",
+              blog: active
+                ? "bg-indigo-700 text-white border-indigo-700"
+                : "bg-white text-indigo-700 border-indigo-300 hover:bg-indigo-50",
             };
             return (
               <a

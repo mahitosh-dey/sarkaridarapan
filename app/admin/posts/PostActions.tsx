@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type ContentType = "job" | "scheme" | "entrance-exam";
+type ContentType = "job" | "scheme" | "entrance-exam" | "blog";
 
 interface PostActionsProps {
   itemId: string;
@@ -18,6 +18,8 @@ function getApiBase(contentType: ContentType): string {
       return "/api/admin/schemes";
     case "entrance-exam":
       return "/api/admin/entrance-exams";
+    case "blog":
+      return "/api/admin/blog";
     default:
       return "/api/admin/quality-check";
   }
@@ -29,6 +31,8 @@ function getIdKey(contentType: ContentType): string {
       return "schemeId";
     case "entrance-exam":
       return "examId";
+    case "blog":
+      return "postId";
     default:
       return "jobId";
   }
@@ -40,6 +44,8 @@ function getPreviewPath(contentType: ContentType, slug: string): string {
       return `/admin/preview/${slug}?type=scheme`;
     case "entrance-exam":
       return `/admin/preview/${slug}?type=entrance-exam`;
+    case "blog":
+      return `/blog/${slug}`;
     default:
       return `/admin/preview/${slug}`;
   }
@@ -57,11 +63,12 @@ export default function PostActions({
   const apiBase = getApiBase(contentType);
   const idKey = getIdKey(contentType);
   const typeLabel = contentType === "entrance-exam" ? "exam" : contentType;
+  const publishEndpoint = contentType === "blog" ? "publish" : "approve";
 
   async function handlePublish() {
     setLoading("publish");
     try {
-      const res = await fetch(`${apiBase}/approve`, {
+      const res = await fetch(`${apiBase}/${publishEndpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [idKey]: itemId }),
