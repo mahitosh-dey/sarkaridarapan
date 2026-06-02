@@ -13,6 +13,41 @@ import { getJobPosts, getJobBySlug } from "@/lib/content";
 import { getRelatedGuidesForJob } from "@/lib/guides";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
+// Converts any stored date string to YYYY-MM-DD for schema.org.
+// Handles ISO timestamps, YYYY-MM-DD, DD/MM/YYYY, DD.MM.YYYY.
+function toIsoDate(raw: string | null | undefined): string | undefined {
+  if (!raw?.trim()) return undefined;
+  const s = raw.trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (slash) return `${slash[3]}-${slash[2].padStart(2, "0")}-${slash[1].padStart(2, "0")}`;
+  const dot = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(s);
+  if (dot) return `${dot[3]}-${dot[2].padStart(2, "0")}-${dot[1].padStart(2, "0")}`;
+  return undefined;
+}
+
+// Extracts the first two ₹ amounts from a salary string.
+// Returns {minValue, maxValue} for ranges or {value} for single figures.
+// Returns null when no numeric amount can be found.
+function parseSalary(raw: string | null | undefined): Record<string, unknown> | null {
+  if (!raw) return null;
+  const nums = [...raw.matchAll(/₹\s*([\d,]+)/g)]
+    .map((m) => parseInt(m[1].replace(/,/g, ""), 10))
+    .filter((n) => !isNaN(n) && n > 0);
+  if (nums.length === 0) return null;
+  return {
+    "@type": "MonetaryAmount",
+    currency: "INR",
+    value: {
+      "@type": "QuantitativeValue",
+      ...(nums.length >= 2
+        ? { minValue: nums[0], maxValue: nums[1] }
+        : { value: nums[0] }),
+      unitText: "MONTH",
+    },
+  };
+}
+
 export const revalidate = REVALIDATE_INTERVAL;
 
 interface JobPageProps {
@@ -96,18 +131,29 @@ export default async function JobPage({ params }: JobPageProps) {
     { label: job.title },
   ];
 
-  const jobPostingSchema = {
+  // Prefer the importantDates.lastDate column; fall back to the top-level lastDate.
+  const validThrough =
+    toIsoDate(job.importantDates?.lastDate) ?? toIsoDate(job.lastDate);
+
+  const baseSalary = parseSalary(job.salary);
+
+  const jobPostingSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title: job.title,
     description: job.description,
-    datePosted: job.publishedAt,
-    validThrough: job.lastDate,
+    datePosted: toIsoDate(job.publishedAt) ?? job.publishedAt,
+    url: `${SITE_URL}/sarkari-naukri/${params.slug}`,
+    identifier: {
+      "@type": "PropertyValue",
+      name: job.organization || SITE_NAME,
+      value: job.slug,
+    },
     employmentType: job.employmentType || "FULL_TIME",
     hiringOrganization: {
       "@type": "Organization",
-      name: job.organization || SITE_NAME,
-      sameAs: SITE_URL,
+      name: job.organization || "Government of India",
+      sameAs: job.officialLink || SITE_URL,
     },
     jobLocation: {
       "@type": "Place",
@@ -117,23 +163,18 @@ export default async function JobPage({ params }: JobPageProps) {
         addressCountry: "IN",
       },
     },
-    baseSalary: job.salary
-      ? {
-          "@type": "MonetaryAmount",
-          currency: "INR",
-          value: {
-            "@type": "QuantitativeValue",
-            value: job.salary,
-            unitText: "MONTH",
-          },
-        }
-      : undefined,
-    qualifications: job.qualification,
-    totalJobOpenings: job.vacancies,
-    applicationContact: {
-      "@type": "ContactPoint",
-      url: job.applyLink || `${SITE_URL}/sarkari-naukri/${params.slug}`,
-    },
+    directApply: false,
+  };
+
+  // Only include optional fields when they have real values — schema validators
+  // reject null/undefined entries for required sub-fields.
+  if (validThrough) jobPostingSchema.validThrough = validThrough;
+  if (baseSalary) jobPostingSchema.baseSalary = baseSalary;
+  if (job.qualification) jobPostingSchema.qualifications = job.qualification;
+  if (job.vacancies > 0) jobPostingSchema.totalJobOpenings = job.vacancies;
+  if (job.applyLink) jobPostingSchema.applicationContact = {
+    "@type": "ContactPoint",
+    url: job.applyLink,
   };
 
   return (
