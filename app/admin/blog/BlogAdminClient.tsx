@@ -72,15 +72,7 @@ export function NewPostForm() {
         return;
       }
 
-      setMessage({
-        type: "success",
-        text: `Post ${publish ? "published" : "saved as draft"} successfully! Slug: ${data.slug}`,
-      });
-      setTitle(""); setSlug(""); setSlugEdited(false);
-      setDescription(""); setTags(""); setContent(""); setImage("");
-      setCategory(GUIDE_CATEGORIES[0]);
-      setAuthor("SarkariDarapan Team");
-      router.refresh();
+      router.push("/admin/posts?type=blog");
     } catch {
       setMessage({ type: "error", text: "Network error — check your connection" });
     } finally {

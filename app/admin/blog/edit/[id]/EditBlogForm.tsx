@@ -71,7 +71,7 @@ export default function EditBlogForm({ post }: { post: Post }) {
         alert(data.error || "Failed to delete");
         return;
       }
-      router.push("/admin/blog");
+      router.push("/admin/posts?type=blog");
     } catch {
       alert("Network error");
     } finally {
@@ -201,7 +201,7 @@ export default function EditBlogForm({ post }: { post: Post }) {
         </button>
         <div className="flex items-center gap-3">
           <a
-            href="/admin/blog"
+            href="/admin/posts?type=blog"
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
           >
             Cancel

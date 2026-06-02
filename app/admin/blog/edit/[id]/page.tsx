@@ -32,10 +32,10 @@ export default async function EditBlogPage({ params }: PageProps) {
             <p className="mt-1 text-sm text-gray-500">/blog/{post.slug}</p>
           </div>
           <a
-            href="/admin/blog"
+            href="/admin/posts?type=blog"
             className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
           >
-            ← Back to Blog
+            ← All Blog Posts
           </a>
         </div>
 
