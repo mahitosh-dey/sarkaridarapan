@@ -72,7 +72,7 @@ export function extractTocItems(markdown: string): TocItem[] {
 }
 
 // =============================================================================
-// Starter Guide Content
+// Starter Guide Content — migrated to Supabase blog_posts table
 // =============================================================================
 
 const guides: Guide[] = [
@@ -2526,7 +2526,7 @@ If there are errors in your name, date of birth, photo, or category on the admit
 // =============================================================================
 
 export function getAllGuides(): Guide[] {
-  return guides;
+  return [];
 }
 
 export function getGuideBySlug(slug: string): Guide | undefined {
