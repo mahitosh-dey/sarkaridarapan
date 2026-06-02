@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getAllGuides } from "@/lib/guides";
 import { NewPostForm, PostRowActions } from "./BlogAdminClient";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ interface BlogPost {
   published_at: string | null;
   updated_at: string;
   reading_time: string;
+  isStatic?: boolean;
 }
 
 export default async function BlogAdminPage() {
@@ -27,7 +29,26 @@ export default async function BlogAdminPage() {
     .select("id, slug, title, category, author, is_active, published_at, updated_at, reading_time")
     .order("updated_at", { ascending: false });
 
-  const allPosts: BlogPost[] = (posts as BlogPost[]) || [];
+  const dbPosts: BlogPost[] = (posts as BlogPost[]) || [];
+  const dbSlugs = new Set(dbPosts.map((p) => p.slug));
+
+  // Merge hardcoded guides not already in Supabase
+  const staticPosts: BlogPost[] = getAllGuides()
+    .filter((g) => !dbSlugs.has(g.slug))
+    .map((g) => ({
+      id: g.slug,
+      slug: g.slug,
+      title: g.title,
+      category: g.category,
+      author: g.author,
+      is_active: true,
+      published_at: g.publishedAt,
+      updated_at: g.updatedAt,
+      reading_time: "",
+      isStatic: true,
+    }));
+
+  const allPosts = [...dbPosts, ...staticPosts];
   const published = allPosts.filter((p) => p.is_active);
   const drafts = allPosts.filter((p) => !p.is_active);
 
@@ -40,7 +61,7 @@ export default async function BlogAdminPage() {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Blog / Guides</h1>
             <p className="mt-1 text-gray-600 text-sm">
-              {published.length} published &middot; {drafts.length} draft{drafts.length !== 1 ? "s" : ""}
+              {allPosts.length} total &middot; {published.length} published &middot; {drafts.length} draft{drafts.length !== 1 ? "s" : ""}
             </p>
           </div>
           <div className="flex gap-3">
@@ -84,47 +105,61 @@ export default async function BlogAdminPage() {
         <section>
           <h2 className="text-xl font-semibold text-gray-800 mb-4">All Posts</h2>
 
-          {allPosts.length === 0 ? (
-            <div className="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center">
-              <p className="text-gray-500">No posts yet. Write your first post above.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {allPosts.map((post) => (
-                <div
-                  key={post.id}
-                  className="bg-white rounded-lg border border-gray-200 shadow-sm px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          post.is_active
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        {post.is_active ? "Published" : "Draft"}
+          <div className="space-y-3">
+            {allPosts.map((post) => (
+              <div
+                key={post.id}
+                className="bg-white rounded-lg border border-gray-200 shadow-sm px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        post.is_active
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {post.is_active ? "Published" : "Draft"}
+                    </span>
+                    {post.isStatic && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                        static
                       </span>
-                      <span className="text-xs text-indigo-600 font-medium">{post.category}</span>
-                    </div>
-                    <h3 className="mt-1 text-base font-semibold text-gray-900 truncate">
-                      {post.title}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {post.author} &middot; {post.reading_time} &middot; /blog/{post.slug} &middot; Updated{" "}
-                      {new Date(post.updated_at).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
+                    )}
+                    <span className="text-xs text-indigo-600 font-medium">{post.category}</span>
                   </div>
-                  <PostRowActions post={post} />
+                  <h3 className="mt-1 text-base font-semibold text-gray-900 truncate">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {post.author}
+                    {post.reading_time ? ` · ${post.reading_time}` : ""}
+                    {" · "}/blog/{post.slug}
+                    {" · "}Updated{" "}
+                    {new Date(post.updated_at).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
+
+                {post.isStatic ? (
+                  <a
+                    href={`/blog/${post.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors shrink-0"
+                  >
+                    View
+                  </a>
+                ) : (
+                  <PostRowActions post={post} />
+                )}
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>
