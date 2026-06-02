@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import type { Metadata } from "next";
 import PostActions from "./PostActions";
+import { getAllGuides } from "@/lib/guides";
 
 export const metadata: Metadata = {
   title: "All Posts | SarkariDarapan Admin",
@@ -23,6 +24,7 @@ interface PostItem {
   updated_at: string;
   category: string | null;
   contentType: ContentType;
+  isStatic?: boolean;
 }
 
 export default async function AllPostsPage({
@@ -100,6 +102,8 @@ export default async function AllPostsPage({
     contentType: "entrance-exam" as ContentType,
   }));
 
+  const dbBlogSlugs = new Set((blogRes.data || []).map((r: DbRow) => r.slug as string));
+
   const blogPosts: PostItem[] = (blogRes.data || []).map((r: DbRow) => ({
     id: r.id as string,
     slug: r.slug as string,
@@ -112,7 +116,23 @@ export default async function AllPostsPage({
     contentType: "blog" as ContentType,
   }));
 
-  const allPosts = [...jobs, ...schemes, ...exams, ...blogPosts].sort(
+  // Include hardcoded guides not already in Supabase
+  const staticGuides: PostItem[] = getAllGuides()
+    .filter((g) => !dbBlogSlugs.has(g.slug))
+    .map((g) => ({
+      id: g.slug,
+      slug: g.slug,
+      title: g.title,
+      subtitle: g.author,
+      is_active: true,
+      published_at: g.publishedAt,
+      updated_at: g.updatedAt,
+      category: g.category,
+      contentType: "blog" as ContentType,
+      isStatic: true,
+    }));
+
+  const allPosts = [...jobs, ...schemes, ...exams, ...blogPosts, ...staticGuides].sort(
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
 
@@ -393,12 +413,26 @@ export default async function AllPostsPage({
                       })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <PostActions
-                        itemId={post.id}
-                        slug={post.slug}
-                        isActive={post.is_active}
-                        contentType={post.contentType}
-                      />
+                      {post.isStatic ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <span className="text-xs text-gray-400 italic">static</span>
+                          <a
+                            href={`/blog/${post.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                          >
+                            View
+                          </a>
+                        </div>
+                      ) : (
+                        <PostActions
+                          itemId={post.id}
+                          slug={post.slug}
+                          isActive={post.is_active}
+                          contentType={post.contentType}
+                        />
+                      )}
                     </td>
                   </tr>
                 ))}
