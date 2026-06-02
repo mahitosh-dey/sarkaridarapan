@@ -59,18 +59,21 @@ export function isDatePast(dateStr: string | null | undefined): boolean {
  *
  * - Returns `fallback` for null / undefined / empty strings.
  * - Handles DD/MM/YYYY and DD.MM.YYYY in addition to ISO.
- * - Returns the original string unchanged if it can't be parsed as a date
- *   (e.g. "Not yet released", "TBA") — those strings are already readable.
+ * - By default returns the original string when it can't be parsed as a date
+ *   (e.g. "Not yet released") so it stays readable in detail views.
+ * - Pass `strict = true` to return `fallback` for any non-parseable input
+ *   (e.g. cards where "Not yet released" should show as "N/A").
  */
 export function safeFormatDate(
   dateStr: string | null | undefined,
   fallback = "TBA",
-  style: "short" | "long" = "short"
+  style: "short" | "long" = "short",
+  strict = false
 ): string {
   if (!dateStr || !dateStr.trim()) return fallback;
 
   const parsed = parseDate(dateStr);
-  if (!parsed) return dateStr; // meaningful text like "Not yet released"
+  if (!parsed) return strict ? fallback : dateStr;
 
   return parsed.toLocaleDateString("en-IN", style === "long" ? LONG_OPTS : SHORT_OPTS);
 }
