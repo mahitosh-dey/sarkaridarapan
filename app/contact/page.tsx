@@ -85,10 +85,10 @@ export default function ContactPage() {
                 </div>
                 <p className="mt-2 text-gray-600">
                   <a
-                    href="mailto:contact@sarkaridarapan.info"
+                    href="mailto:contact@sarkaridarapan.com"
                     className="text-blue-700 hover:underline"
                   >
-                    contact@sarkaridarapan.info
+                    contact@sarkaridarapan.com
                   </a>
                 </p>
               </div>
@@ -139,7 +139,7 @@ export default function ContactPage() {
                     href={SITE_URL}
                     className="text-blue-700 hover:underline"
                   >
-                    www.sarkaridarapan.info
+                    www.sarkaridarapan.com
                   </a>
                 </p>
               </div>

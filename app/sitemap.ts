@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
-import { getAllGuides } from "@/lib/guides";
+import { getPublishedDbPosts } from "@/lib/blog-db";
 import { SITE_URL, STATES, JOB_CATEGORIES } from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -110,22 +110,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     examPages = [];
   }
 
-  // Blog/Guide pages
-  const guides = getAllGuides();
-  const blogPages: MetadataRoute.Sitemap = [
+  // Blog/Guide pages — from Supabase
+  let blogPages: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/blog`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
     },
-    ...guides.map((guide) => ({
-      url: `${SITE_URL}/blog/${guide.slug}`,
-      lastModified: new Date(guide.publishedAt),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    })),
   ];
+  try {
+    const dbPosts = await getPublishedDbPosts();
+    blogPages = [
+      ...blogPages,
+      ...dbPosts.map((post) => ({
+        url: `${SITE_URL}/blog/${post.slug}`,
+        lastModified: new Date(post.updatedAt),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      })),
+    ];
+  } catch {
+    // silently skip if blog_posts unavailable
+  }
 
   // State pages
   const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({

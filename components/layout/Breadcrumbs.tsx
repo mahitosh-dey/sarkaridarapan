@@ -21,7 +21,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       name: item.label,
       ...(item.href
         ? {
-            item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://sarkaridarapan.info"}${item.href}`,
+            item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://sarkaridarapan.com"}${item.href}`,
           }
         : {}),
     })),

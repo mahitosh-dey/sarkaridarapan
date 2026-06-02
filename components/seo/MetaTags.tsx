@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const SITE_NAME = "SarkariDarapan";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://www.sarkaridarapan.info";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://www.sarkaridarapan.com";
 const DEFAULT_OG_IMAGE = "/images/og-default.png";
 
 interface PageMetadataParams {

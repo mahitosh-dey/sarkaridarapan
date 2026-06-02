@@ -1,11 +1,10 @@
-# *
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
 
 # Host
-Host: https://www.sarkaridarapan.info
+Host: https://sarkaridarapan.com
 
 # Sitemaps
-Sitemap: https://www.sarkaridarapan.info/sitemap.xml
+Sitemap: https://sarkaridarapan.com/sitemap.xml

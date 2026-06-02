@@ -5,7 +5,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Privacy Policy for SarkariDarapan (sarkaridarapan.info). Learn how we collect, use, and protect your personal information when you use our government jobs and schemes information website.",
+    "Privacy Policy for SarkariDarapan (sarkaridarapan.com). Learn how we collect, use, and protect your personal information when you use our government jobs and schemes information website.",
   alternates: {
     canonical: `${SITE_URL}/privacy-policy`,
   },
@@ -416,10 +416,10 @@ export default function PrivacyPolicyPage() {
               If you are a parent or guardian and you are aware that your child
               has provided us with personal information, please contact us at{" "}
               <a
-                href="mailto:contact@sarkaridarapan.info"
+                href="mailto:contact@sarkaridarapan.com"
                 className="text-blue-700 hover:underline"
               >
-                contact@sarkaridarapan.info
+                contact@sarkaridarapan.com
               </a>{" "}
               so that we can take the necessary actions.
             </p>
@@ -488,10 +488,10 @@ export default function PrivacyPolicyPage() {
             <p className="mt-4 text-gray-700 leading-relaxed">
               If you wish to exercise any of these rights, please contact us at{" "}
               <a
-                href="mailto:contact@sarkaridarapan.info"
+                href="mailto:contact@sarkaridarapan.com"
                 className="text-blue-700 hover:underline"
               >
-                contact@sarkaridarapan.info
+                contact@sarkaridarapan.com
               </a>
               . We will respond to your request within 30 days.
             </p>
@@ -553,10 +553,10 @@ export default function PrivacyPolicyPage() {
               <li>
                 <strong>Email:</strong>{" "}
                 <a
-                  href="mailto:contact@sarkaridarapan.info"
+                  href="mailto:contact@sarkaridarapan.com"
                   className="text-blue-700 hover:underline"
                 >
-                  contact@sarkaridarapan.info
+                  contact@sarkaridarapan.com
                 </a>
               </li>
               <li>

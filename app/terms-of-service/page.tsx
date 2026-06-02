@@ -26,7 +26,7 @@ export default function TermsOfServicePage() {
               1. Acceptance of Terms
             </h2>
             <p>
-              By accessing and using SarkariDarapan (sarkaridarapan.info),
+              By accessing and using SarkariDarapan (sarkaridarapan.com),
               hereinafter referred to as &quot;the Website,&quot; &quot;we,&quot;
               &quot;us,&quot; or &quot;our,&quot; you agree to be bound by these
               Terms of Service (&quot;Terms&quot;). If you do not agree with any
@@ -337,12 +337,12 @@ export default function TermsOfServicePage() {
               contact us at:
             </p>
             <p className="mt-3">
-              <strong>Email:</strong> contact@sarkaridarapan.info
+              <strong>Email:</strong> contact@sarkaridarapan.com
             </p>
             <p>
               <strong>Website:</strong>{" "}
               <a href="/contact" className="text-blue-600 hover:underline">
-                sarkaridarapan.info/contact
+                sarkaridarapan.com/contact
               </a>
             </p>
           </section>

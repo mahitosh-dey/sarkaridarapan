@@ -24,7 +24,7 @@ export default function DisclaimerPage() {
               Not a Government Website
             </h2>
             <p>
-              SarkariDarapan (sarkaridarapan.info) is a privately owned and
+              SarkariDarapan (sarkaridarapan.com) is a privately owned and
               operated website. We are <strong>not affiliated</strong> with any
               government body, ministry, department, or organization in India.
               This website is an independent informational portal that aggregates
@@ -203,10 +203,10 @@ export default function DisclaimerPage() {
               us at:
             </p>
             <p className="mt-3">
-              <strong>Email:</strong> contact@sarkaridarapan.info
+              <strong>Email:</strong> contact@sarkaridarapan.com
             </p>
             <p>
-              <strong>Website:</strong> sarkaridarapan.info/contact
+              <strong>Website:</strong> sarkaridarapan.com/contact
             </p>
           </section>
         </div>
