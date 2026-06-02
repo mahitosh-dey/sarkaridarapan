@@ -1,74 +1,33 @@
 import type { MetadataRoute } from "next";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
-import { SITE_URL, STATES, JOB_CATEGORIES } from "@/lib/constants";
+import {
+  SITE_URL,
+  STATES,
+  JOB_CATEGORIES,
+  SCHEME_CATEGORIES,
+  ENTRANCE_EXAM_CATEGORIES,
+} from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: SITE_URL,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${SITE_URL}/sarkari-naukri`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/sarkari-yojana`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/entrance-exams`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/privacy-policy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-    {
-      url: `${SITE_URL}/disclaimer`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-    {
-      url: `${SITE_URL}/terms-of-service`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-    {
-      url: `${SITE_URL}/search`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.4,
-    },
+    { url: SITE_URL,                           lastModified: new Date(), changeFrequency: "daily",   priority: 1.0 },
+    { url: `${SITE_URL}/sarkari-naukri`,       lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },
+    { url: `${SITE_URL}/sarkari-yojana`,       lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },
+    { url: `${SITE_URL}/entrance-exams`,       lastModified: new Date(), changeFrequency: "daily",   priority: 0.8 },
+    { url: `${SITE_URL}/blog`,                 lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${SITE_URL}/admit-card`,           lastModified: new Date(), changeFrequency: "weekly",  priority: 0.7 },
+    { url: `${SITE_URL}/results`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.7 },
+    { url: `${SITE_URL}/search`,               lastModified: new Date(), changeFrequency: "weekly",  priority: 0.4 },
+    { url: `${SITE_URL}/about`,                lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/contact`,              lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/privacy-policy`,       lastModified: new Date(), changeFrequency: "yearly",  priority: 0.2 },
+    { url: `${SITE_URL}/disclaimer`,           lastModified: new Date(), changeFrequency: "yearly",  priority: 0.2 },
+    { url: `${SITE_URL}/terms-of-service`,     lastModified: new Date(), changeFrequency: "yearly",  priority: 0.2 },
   ];
 
-  // Job post pages
+  // Job post pages — fetched fresh from Supabase on every request
   let jobPages: MetadataRoute.Sitemap = [];
   try {
     const jobs = await getJobPosts();
@@ -78,9 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
-  } catch {
-    jobPages = [];
-  }
+  } catch { /* skip on error */ }
 
   // Scheme post pages
   let schemePages: MetadataRoute.Sitemap = [];
@@ -92,9 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
-  } catch {
-    schemePages = [];
-  }
+  } catch { /* skip on error */ }
 
   // Entrance exam pages
   let examPages: MetadataRoute.Sitemap = [];
@@ -106,45 +61,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
-  } catch {
-    examPages = [];
-  }
+  } catch { /* skip on error */ }
 
-  // Blog/Guide pages — from Supabase
-  let blogPages: MetadataRoute.Sitemap = [
-    {
-      url: `${SITE_URL}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    },
-  ];
+  // Blog/Guide pages
+  let blogPostPages: MetadataRoute.Sitemap = [];
   try {
-    const dbPosts = await getPublishedDbPosts();
-    blogPages = [
-      ...blogPages,
-      ...dbPosts.map((post) => ({
-        url: `${SITE_URL}/blog/${post.slug}`,
-        lastModified: new Date(post.updatedAt),
-        changeFrequency: "monthly" as const,
-        priority: 0.8,
-      })),
-    ];
-  } catch {
-    // silently skip if blog_posts unavailable
-  }
+    const posts = await getPublishedDbPosts();
+    blogPostPages = posts.map((post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    }));
+  } catch { /* skip on error */ }
 
-  // State pages
-  const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({
-    url: `${SITE_URL}/state/${state.slug}`,
+  // Job category pages  (/category/ssc, /category/upsc, …)
+  const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES.map((cat) => ({
+    url: `${SITE_URL}/category/${cat.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.6,
   }));
 
-  // Category pages
-  const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES.map((category) => ({
-    url: `${SITE_URL}/category/${category.slug}`,
+  // Scheme category filter pages  (/sarkari-yojana?category=agriculture, …)
+  const schemeCategoryPages: MetadataRoute.Sitemap = SCHEME_CATEGORIES.map((cat) => ({
+    url: `${SITE_URL}/sarkari-yojana?category=${cat.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.5,
+  }));
+
+  // Entrance exam category filter pages  (/entrance-exams?category=engineering, …)
+  const examCategoryPages: MetadataRoute.Sitemap = ENTRANCE_EXAM_CATEGORIES.map((cat) => ({
+    url: `${SITE_URL}/entrance-exams?category=${cat.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.5,
+  }));
+
+  // State pages  (/state/uttar-pradesh, …)
+  const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({
+    url: `${SITE_URL}/state/${state.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.6,
@@ -155,8 +112,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...jobPages,
     ...schemePages,
     ...examPages,
-    ...blogPages,
-    ...statePages,
+    ...blogPostPages,
     ...categoryPages,
+    ...schemeCategoryPages,
+    ...examCategoryPages,
+    ...statePages,
   ];
 }
