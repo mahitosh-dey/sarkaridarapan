@@ -142,8 +142,16 @@ export default function PostActions({
         rel="noopener noreferrer"
         className="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
       >
-        Preview
+        {contentType === "blog" ? "View" : "Preview"}
       </a>
+      {contentType === "blog" && (
+        <a
+          href={`/admin/blog/edit/${itemId}`}
+          className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
+        >
+          Edit
+        </a>
+      )}
       {isActive ? (
         <button
           onClick={handleUnpublish}
