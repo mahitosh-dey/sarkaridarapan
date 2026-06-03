@@ -20,6 +20,13 @@ export const metadata: Metadata = {
     default: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana`,
     template: `%s | ${SITE_NAME}`,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
   description: SITE_DESCRIPTION,
   keywords: [
     "sarkari naukri",
@@ -85,7 +92,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#1e40af",
+  themeColor: "#4F46E5",
 };
 
 const organizationSchema = {
