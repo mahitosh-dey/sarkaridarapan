@@ -1,10 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <clipPath id="left-half">
+      <rect x="0" y="0" width="16" height="32"/>
+    </clipPath>
+    <clipPath id="right-half">
+      <rect x="16" y="0" width="16" height="32"/>
+    </clipPath>
+  </defs>
+
+  <!-- Orange left half -->
+  <rect width="32" height="32" rx="7" fill="#FF9933" clip-path="url(#left-half)"/>
+  <!-- Green right half -->
+  <rect width="32" height="32" rx="7" fill="#138808" clip-path="url(#right-half)"/>
+
+  <!-- S in white -->
   <text
+    x="9"
+    y="23"
     font-family="Arial Black, Arial, sans-serif"
-    font-size="18"
+    font-size="17"
     font-weight="900"
+    fill="white"
     text-anchor="middle"
-  >
-    <tspan x="10" y="24" fill="#FF9933">S</tspan><tspan fill="#138808">D</tspan>
-  </text>
+  >S</text>
+
+  <!-- D in white -->
+  <text
+    x="23"
+    y="23"
+    font-family="Arial Black, Arial, sans-serif"
+    font-size="17"
+    font-weight="900"
+    fill="white"
+    text-anchor="middle"
+  >D</text>
 </svg>
