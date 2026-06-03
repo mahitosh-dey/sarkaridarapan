@@ -48,8 +48,8 @@ const components = {
 
   li: ({ children }: { children?: React.ReactNode }) => (
     <li className="flex items-start gap-2 text-base text-gray-700 leading-7">
-      <span className="mt-2 shrink-0 h-2 w-2 rounded-full bg-indigo-500" />
-      <span>{children}</span>
+      <span className="mt-[10px] shrink-0 h-2 w-2 rounded-full bg-indigo-500" />
+      <span className="[&>p]:m-0 [&>p]:leading-7">{children}</span>
     </li>
   ),
 
