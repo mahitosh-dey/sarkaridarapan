@@ -11,19 +11,23 @@ function convertStylesToDataAttrs(source: string): string {
 }
 
 const components = {
-  h2: ({ children, id }: { children?: React.ReactNode; id?: string }) => (
-    <h2
-      id={id}
-      className="flex items-start gap-3 mt-14 mb-5 scroll-mt-24"
-    >
-      <span className="shrink-0 mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white shadow-sm">
-        {extractNumber(children)}
-      </span>
-      <span className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug border-b-2 border-indigo-100 pb-2 flex-1">
-        {stripNumber(children)}
-      </span>
-    </h2>
-  ),
+  h2: ({ children, id }: { children?: React.ReactNode; id?: string }) => {
+    const num = extractNumber(children);
+    return (
+      <h2 id={id} className="flex items-center gap-3 mt-14 mb-5 scroll-mt-24">
+        {num ? (
+          <span className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white shadow-sm">
+            {num}
+          </span>
+        ) : (
+          <span className="shrink-0 h-3 w-3 rounded-sm bg-indigo-600 shadow-sm" />
+        )}
+        <span className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug border-b-2 border-indigo-100 pb-2 flex-1">
+          {num ? stripNumber(children) : children}
+        </span>
+      </h2>
+    );
+  },
 
   h3: ({ children, id }: { children?: React.ReactNode; id?: string }) => (
     <h3
