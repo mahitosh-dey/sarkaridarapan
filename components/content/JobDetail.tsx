@@ -289,7 +289,7 @@ export default function JobDetail({ job }: JobDetailProps) {
             How to Apply
           </h2>
           <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
-            <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed whitespace-pre-line">
+            <div className="text-sm text-gray-700 leading-7 whitespace-pre-line">
               {job.howToApply}
             </div>
           </div>
