@@ -265,11 +265,12 @@ export async function getSchemesByState(
 ): Promise<SchemePost[]> {
   return unstable_cache(
     async () => {
+      // Include both state-specific schemes AND all-india central schemes
       const { data, error } = await supabase
         .from("schemes")
         .select("*")
         .eq("is_active", true)
-        .ilike("state", state)
+        .or(`state.ilike.${state},state.ilike.all-india`)
         .order("published_at", { ascending: false });
 
       if (error) {
