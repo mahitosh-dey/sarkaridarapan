@@ -29,7 +29,7 @@
 
 ---
 
-## PHASE 1 — Indexing (Week 1–2) [IN PROGRESS]
+## PHASE 1 — Indexing (Week 1–2) [COMPLETE ✅]
 
 ### ✅ Step 1: Google Search Console Setup — DONE (2026-06-03)
 Site verified, sitemap submitted at `https://www.sarkaridarapan.com/sitemap.xml`.
@@ -57,12 +57,12 @@ GA4 installed in `app/layout.tsx` and connected to the property.
 
 ---
 
-### Step 5: Publish the 5 Blog Drafts (2 of 5 done)
-- [x] `top-10-govt-jobs-after-12th-2026` — **Published 2026-06-03**
-- [x] `top-10-govt-jobs-after-graduation-2026` — **Published 2026-06-03**
-- [ ] `government-jobs-vs-private-jobs-india-2026` — pending
-- [ ] `pm-kisan-samman-nidhi-2026-status-check` — pending
-- [ ] `ayushman-bharat-card-2026-apply-download-use` — pending
+### Step 5: Publish the 5 Blog Drafts — DONE ✅
+- [x] `top-10-govt-jobs-after-12th-2026` — Published 2026-06-03
+- [x] `top-10-govt-jobs-after-graduation-2026` — Published 2026-06-03
+- [x] `government-jobs-vs-private-jobs-india-2026` — Published 2026-06-04
+- [x] `pm-kisan-samman-nidhi-2026-status-check` — Published 2026-06-04
+- [x] `ayushman-bharat-card-2026-apply-download-use` — Published 2026-06-04
 
 ---
 
@@ -174,14 +174,14 @@ google.com, pub-YOUR_REAL_16_DIGIT_ID, DIRECT, f08c47fec0942fa0
 
 ## Priority Action Checklist
 
-### This Week (Week 1):
-- [x] Verify site on Google Search Console — **Done 2026-06-03**
-- [x] Submit sitemap.xml to Google Search Console — **Done 2026-06-03**
-- [x] Verify site on Bing Webmaster Tools — **Done 2026-06-03**
-- [x] Install Google Analytics 4 — **Done 2026-06-03**
-- [x] Publish 21 schemes — **Done 2026-06-03**
-- [ ] Publish remaining 3 blog drafts (government-jobs-vs-private, pm-kisan, ayushman-bharat)
-- [ ] Trigger IndexNow after each publish
+### Week 1 — COMPLETE ✅ (2026-06-03 to 2026-06-04)
+- [x] Verify site on Google Search Console
+- [x] Submit sitemap.xml to Google Search Console
+- [x] Verify site on Bing Webmaster Tools
+- [x] Install Google Analytics 4
+- [x] Publish 21 schemes
+- [x] Publish all 5 blog drafts
+- [ ] Trigger IndexNow — **do this now**
 - [ ] Ensure 30+ job listings are active
 
 ### Week 2–3:
@@ -218,4 +218,4 @@ google.com, pub-YOUR_REAL_16_DIGIT_ID, DIRECT, f08c47fec0942fa0
 
 ---
 
-*Last updated: 2026-06-04*
+*Last updated: 2026-06-04 — Phase 1 complete. Starting Phase 2.*

@@ -167,19 +167,21 @@ function ExamDetailSection({ exam }: { exam: EntranceExamPost }) {
   );
 }
 
-function getTableAndContentType(type: string): { table: string; contentType: ContentType } {
+function getTableAndContentType(type: string): { table: string; contentType: ContentType | "blog" } {
   switch (type) {
     case "scheme":
       return { table: "schemes", contentType: "scheme" };
     case "entrance-exam":
       return { table: "entrance_exams", contentType: "entrance-exam" };
+    case "blog":
+      return { table: "blog_posts", contentType: "blog" };
     default:
       return { table: "jobs", contentType: "job" };
   }
 }
 
 export default async function AdminPreviewPage({ params, searchParams }: PreviewPageProps) {
-  let contentType: ContentType;
+  let contentType: ContentType | "blog";
   let data: Record<string, unknown> | null = null;
 
   if (searchParams.type) {
@@ -193,12 +195,13 @@ export default async function AdminPreviewPage({ params, searchParams }: Preview
       .single();
     if (!res.error && res.data) data = res.data;
   } else {
-    // No type param — auto-detect by checking all tables
+    // No type param — auto-detect by checking all tables (blog last)
     contentType = "job";
-    const tables: { table: string; ct: ContentType }[] = [
+    const tables: { table: string; ct: ContentType | "blog" }[] = [
       { table: "jobs", ct: "job" },
       { table: "schemes", ct: "scheme" },
       { table: "entrance_exams", ct: "entrance-exam" },
+      { table: "blog_posts", ct: "blog" },
     ];
     for (const { table, ct } of tables) {
       const res = await supabaseAdmin
@@ -235,7 +238,11 @@ export default async function AdminPreviewPage({ params, searchParams }: Preview
       ? "bg-yellow-100 text-yellow-800 border-yellow-200"
       : "bg-gray-100 text-gray-800 border-gray-200";
 
-  const typeLabel = contentType === "job" ? "Job" : contentType === "scheme" ? "Scheme" : "Entrance Exam";
+  const typeLabel =
+    contentType === "job" ? "Job" :
+    contentType === "scheme" ? "Scheme" :
+    contentType === "blog" ? "Blog Post" :
+    "Entrance Exam";
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -255,37 +262,67 @@ export default async function AdminPreviewPage({ params, searchParams }: Preview
               </p>
             </div>
           </div>
-          <PreviewActions
-            itemId={String(data.id)}
-            slug={String(data.slug)}
-            hasContent={hasContent}
-            initialContent={content}
-            isActive={isActive}
-            contentType={contentType}
-          />
+          {contentType !== "blog" && (
+            <PreviewActions
+              itemId={String(data.id)}
+              slug={String(data.slug)}
+              hasContent={hasContent}
+              initialContent={content}
+              isActive={isActive}
+              contentType={contentType as ContentType}
+            />
+          )}
+          {contentType === "blog" && (
+            <a
+              href="/admin/blog"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50"
+            >
+              Manage in Blog Admin →
+            </a>
+          )}
         </div>
       </div>
 
       {/* Content */}
       <article className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <div className="p-6 md:p-8">
-          {contentType === "job" && <JobDetail job={mapJobRow(data)} />}
-          {contentType === "scheme" && <SchemeDetail scheme={mapSchemeRow(data)} />}
-          {contentType === "entrance-exam" && <ExamDetailSection exam={mapExamRow(data)} />}
+          {contentType === "blog" ? (
+            <>
+              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl mb-2">
+                {String(data.title || "")}
+              </h1>
+              {data.description && (
+                <p className="text-gray-600 mt-2 mb-6">{String(data.description)}</p>
+              )}
+              {hasContent ? (
+                <MarkdownContent content={content} />
+              ) : (
+                <div className="mt-8 p-8 bg-gray-50 rounded-lg text-center">
+                  <p className="text-gray-500">No content yet for this blog draft.</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {contentType === "job" && <JobDetail job={mapJobRow(data)} />}
+              {contentType === "scheme" && <SchemeDetail scheme={mapSchemeRow(data)} />}
+              {contentType === "entrance-exam" && <ExamDetailSection exam={mapExamRow(data)} />}
 
-          {hasContent && (
-            <section className="mt-8 border-t border-gray-200 pt-8">
-              <MarkdownContent content={content} />
-            </section>
-          )}
+              {hasContent && (
+                <section className="mt-8 border-t border-gray-200 pt-8">
+                  <MarkdownContent content={content} />
+                </section>
+              )}
 
-          {!hasContent && (
-            <div className="mt-8 p-8 bg-gray-50 rounded-lg text-center">
-              <p className="text-gray-500">
-                No content generated yet. Click &quot;Generate Content&quot;
-                above to create an article for this {typeLabel.toLowerCase()}.
-              </p>
-            </div>
+              {!hasContent && (
+                <div className="mt-8 p-8 bg-gray-50 rounded-lg text-center">
+                  <p className="text-gray-500">
+                    No content generated yet. Click &quot;Generate Content&quot;
+                    above to create an article for this {typeLabel.toLowerCase()}.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </article>
