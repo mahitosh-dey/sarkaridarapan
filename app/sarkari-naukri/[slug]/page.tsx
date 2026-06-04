@@ -132,10 +132,18 @@ export default async function JobPage({ params }: JobPageProps) {
   ];
 
   // Prefer the importantDates.lastDate column; fall back to the top-level lastDate.
+  // If no last date exists, default to 1 year from posting (Google recommends validThrough).
   const validThrough =
-    toIsoDate(job.importantDates?.lastDate) ?? toIsoDate(job.lastDate);
+    toIsoDate(job.importantDates?.lastDate) ??
+    toIsoDate(job.lastDate) ??
+    new Date(new Date(job.publishedAt ?? Date.now()).getTime() + 365 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
 
   const baseSalary = parseSalary(job.salary);
+
+  // addressLocality = most specific location we have (state or national capital for central govt)
+  const addressLocality = job.state && job.state !== "All India" ? job.state : "New Delhi";
 
   const jobPostingSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -143,6 +151,7 @@ export default async function JobPage({ params }: JobPageProps) {
     title: job.title,
     description: job.description,
     datePosted: toIsoDate(job.publishedAt) ?? job.publishedAt,
+    validThrough,
     url: `${SITE_URL}/sarkari-naukri/${params.slug}`,
     identifier: {
       "@type": "PropertyValue",
@@ -159,7 +168,8 @@ export default async function JobPage({ params }: JobPageProps) {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        addressRegion: job.state || "India",
+        addressLocality,
+        addressRegion: job.state || "Delhi",
         addressCountry: "IN",
       },
     },
@@ -168,7 +178,6 @@ export default async function JobPage({ params }: JobPageProps) {
 
   // Only include optional fields when they have real values — schema validators
   // reject null/undefined entries for required sub-fields.
-  if (validThrough) jobPostingSchema.validThrough = validThrough;
   if (baseSalary) jobPostingSchema.baseSalary = baseSalary;
   if (job.qualification) jobPostingSchema.qualifications = job.qualification;
   if (job.vacancies > 0) jobPostingSchema.totalJobOpenings = job.vacancies;

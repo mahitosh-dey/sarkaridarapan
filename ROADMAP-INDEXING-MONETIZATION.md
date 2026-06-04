@@ -20,45 +20,24 @@
 | Blog drafts written | Done (5 drafts ready) |
 | Social channels created | Done (Telegram, YouTube, etc.) |
 | Google site verification slot | Done (env var slot empty) |
+| Google Search Console verified | **Done (2026-06-03)** |
+| Bing Webmaster Tools verified | **Done (2026-06-03)** |
+| GA4 installed & connected | **Done (2026-06-03)** |
+| Sitemap submitted (GSC + Bing) | **Done (2026-06-03)** |
+| Schemes published | **21 schemes live** |
+| Blog posts published | **2 of 5 published** |
 
 ---
 
-## PHASE 1 — Indexing (Week 1–2) [URGENT]
+## PHASE 1 — Indexing (Week 1–2) [IN PROGRESS]
 
-### Step 1: Google Search Console Setup
-**Action required — manual steps:**
-
-1. Go to https://search.google.com/search-console/
-2. Add property → URL prefix → `https://www.sarkaridarapan.com`
-3. Choose **HTML tag** verification method
-4. Copy the content value (looks like: `abc123xyz...`)
-5. In your Vercel project → Settings → Environment Variables → add:
-   ```
-   NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION = <your-code-here>
-   ```
-6. Redeploy site on Vercel
-7. Back in Search Console → click Verify
-
-**After verification:**
-- Go to Sitemaps → Submit `https://www.sarkaridarapan.com/sitemap.xml`
-- Request indexing for the homepage via URL Inspection tool
+### ✅ Step 1: Google Search Console Setup — DONE (2026-06-03)
+Site verified, sitemap submitted at `https://www.sarkaridarapan.com/sitemap.xml`.
 
 ---
 
-### Step 2: Bing Webmaster Tools Setup
-**Action required — manual steps:**
-
-1. Go to https://www.bing.com/webmasters/
-2. Sign in with Microsoft account
-3. Add site → `https://www.sarkaridarapan.com`
-4. Choose XML file or meta tag verification
-5. Copy the verification code and add to Vercel env:
-   ```
-   NEXT_PUBLIC_BING_VERIFICATION = <your-code-here>
-   ```
-6. Submit sitemap: `https://www.sarkaridarapan.com/sitemap.xml`
-
-> Bing also powers DuckDuckGo and Yahoo — one submission covers all three.
+### ✅ Step 2: Bing Webmaster Tools Setup — DONE (2026-06-03)
+Site verified, sitemap submitted. Covers Bing + DuckDuckGo + Yahoo.
 
 ---
 
@@ -73,35 +52,17 @@ Or trigger it from the admin panel after each publish.
 
 ---
 
-### Step 4: Google Analytics 4 (GA4) Setup
-AdSense reviewers check if your site has real traffic. GA4 helps track it.
-
-1. Go to https://analytics.google.com/
-2. Create account → Property → `sarkaridarapan.com`
-3. Get Measurement ID (looks like `G-XXXXXXXXXX`)
-4. Install it in `app/layout.tsx` — add this inside `<head>`:
-   ```tsx
-   {/* Google Analytics */}
-   <script async src={`https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX`} />
-   <script dangerouslySetInnerHTML={{ __html: `
-     window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
-     gtag('config', 'G-XXXXXXXXXX');
-   `}} />
-   ```
+### ✅ Step 4: Google Analytics 4 (GA4) Setup — DONE (2026-06-03)
+GA4 installed in `app/layout.tsx` and connected to the property.
 
 ---
 
-### Step 5: Publish the 5 Blog Drafts
-The drafts in `/blog-drafts/` are ready. Publish them all through the admin panel immediately. Each published page = more indexed URLs = stronger site signal.
-
-Drafts ready to publish:
-- `government-jobs-vs-private-jobs-india-2026.md`
-- `pm-kisan-samman-nidhi-2026-status-check.md`
-- `top-10-govt-jobs-after-12th-2026.md`
-- `top-10-govt-jobs-after-graduation-2026.md`
-- `ayushman-bharat-card-2026-apply-download-use.md`
+### Step 5: Publish the 5 Blog Drafts (2 of 5 done)
+- [x] `top-10-govt-jobs-after-12th-2026` — **Published 2026-06-03**
+- [x] `top-10-govt-jobs-after-graduation-2026` — **Published 2026-06-03**
+- [ ] `government-jobs-vs-private-jobs-india-2026` — pending
+- [ ] `pm-kisan-samman-nidhi-2026-status-check` — pending
+- [ ] `ayushman-bharat-card-2026-apply-download-use` — pending
 
 ---
 
@@ -112,8 +73,8 @@ Google rewards fresh, high-volume content for job/news sites. Aim for:
 | Content Type | Current | Target (30 days) |
 |---|---|---|
 | Job posts | Unknown | 50+ active listings |
-| Blog articles | 0 published | 15+ published |
-| Scheme posts | Unknown | 20+ published |
+| Blog articles | **2 published** | 15+ published |
+| Scheme posts | **21 published** | 20+ published ✅ |
 | Entrance exam posts | Unknown | 15+ published |
 
 ### Content Strategy:
@@ -214,15 +175,17 @@ google.com, pub-YOUR_REAL_16_DIGIT_ID, DIRECT, f08c47fec0942fa0
 ## Priority Action Checklist
 
 ### This Week (Week 1):
-- [ ] Verify site on Google Search Console
-- [ ] Submit sitemap.xml to Google Search Console
-- [ ] Verify site on Bing Webmaster Tools
-- [ ] Install Google Analytics 4
-- [ ] Publish all 5 blog drafts via admin panel
+- [x] Verify site on Google Search Console — **Done 2026-06-03**
+- [x] Submit sitemap.xml to Google Search Console — **Done 2026-06-03**
+- [x] Verify site on Bing Webmaster Tools — **Done 2026-06-03**
+- [x] Install Google Analytics 4 — **Done 2026-06-03**
+- [x] Publish 21 schemes — **Done 2026-06-03**
+- [ ] Publish remaining 3 blog drafts (government-jobs-vs-private, pm-kisan, ayushman-bharat)
+- [ ] Trigger IndexNow after each publish
 - [ ] Ensure 30+ job listings are active
 
 ### Week 2–3:
-- [ ] Publish 2 new blog articles
+- [ ] Publish 2–3 more new blog articles
 - [ ] Check Google Search Console for indexing errors
 - [ ] Request indexing for key pages manually (homepage, /sarkari-naukri, /blog)
 - [ ] Start growing Telegram channel
@@ -255,4 +218,4 @@ google.com, pub-YOUR_REAL_16_DIGIT_ID, DIRECT, f08c47fec0942fa0
 
 ---
 
-*Last updated: 2026-06-03*
+*Last updated: 2026-06-04*
