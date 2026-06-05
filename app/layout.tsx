@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AdSenseScript from "@/components/ads/AdSenseScript";
+import TelegramBanner from "@/components/ui/TelegramBanner";
 import JsonLd from "@/components/seo/JsonLd";
 import Script from "next/script";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/constants";
@@ -162,6 +163,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <TelegramBanner />
       </body>
     </html>
   );
