@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import EntranceExamDetail from "@/components/content/EntranceExamDetail";
 import EntranceExamCard from "@/components/ui/EntranceExamCard";
+import GuideCard from "@/components/GuideCard";
 import MarkdownContent from "@/components/content/MarkdownContent";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getEntranceExamPosts, getEntranceExamBySlug } from "@/lib/content";
+import { getPublishedDbPosts } from "@/lib/blog-db";
+import { examToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -82,6 +86,18 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
     relatedExams = [];
   }
 
+  // Fetch related blog guides based on static mapping
+  let relatedBlogs: import("@/lib/guides").Guide[] = [];
+  try {
+    const blogSlugs = examToBlogs[params.slug] ?? [];
+    if (blogSlugs.length > 0) {
+      const allBlogs = await getPublishedDbPosts();
+      relatedBlogs = allBlogs.filter((b) => blogSlugs.includes(b.slug));
+    }
+  } catch {
+    relatedBlogs = [];
+  }
+
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Entrance Exams", href: "/entrance-exams" },
@@ -147,6 +163,21 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedExams.map((relExam) => (
                   <EntranceExamCard key={relExam.slug} exam={relExam} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Helpful Guides — internal links to relevant blog posts */}
+          {relatedBlogs.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Helpful Guides</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Read these guides to understand your career options after this exam.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedBlogs.map((guide) => (
+                  <GuideCard key={guide.slug} guide={guide} />
                 ))}
               </div>
             </section>

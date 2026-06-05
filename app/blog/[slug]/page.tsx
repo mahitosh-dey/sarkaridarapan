@@ -5,12 +5,15 @@ import Link from "next/link";
 import MarkdownContent from "@/components/content/MarkdownContent";
 import TableOfContents from "@/components/ui/TableOfContents";
 import GuideCard from "@/components/GuideCard";
+import EntranceExamCard from "@/components/ui/EntranceExamCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
 import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
+import { getEntranceExamPosts } from "@/lib/content";
+import { blogToExams } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +80,18 @@ export default async function GuidePage({ params }: GuidePageProps) {
   const relatedGuides = allGuides
     .filter((g) => g.category === guide.category && g.slug !== guide.slug)
     .slice(0, 3);
+
+  // Related entrance exams from static mapping
+  let relatedExams: import("@/lib/types").EntranceExamPost[] = [];
+  try {
+    const examSlugs = blogToExams[guide.slug] ?? [];
+    if (examSlugs.length > 0) {
+      const allExams = await getEntranceExamPosts();
+      relatedExams = allExams.filter((e) => examSlugs.includes(e.slug));
+    }
+  } catch {
+    relatedExams = [];
+  }
 
   const breadcrumbs = [
     { label: "Guides", href: "/blog" },
@@ -263,6 +278,23 @@ export default async function GuidePage({ params }: GuidePageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedGuides.map((relGuide) => (
                   <GuideCard key={relGuide.slug} guide={relGuide} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Related Entrance Exams — internal links from static mapping */}
+          {relatedExams.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Upcoming Entrance Exams
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                These exams are relevant to the career path discussed in this guide.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedExams.map((exam) => (
+                  <EntranceExamCard key={exam.slug} exam={exam} />
                 ))}
               </div>
             </section>
