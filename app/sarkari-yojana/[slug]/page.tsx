@@ -8,7 +8,10 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
+import GuideCard from "@/components/GuideCard";
 import { getSchemePosts, getSchemeBySlug } from "@/lib/content";
+import { getPublishedDbPosts } from "@/lib/blog-db";
+import { schemeToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -80,6 +83,18 @@ export default async function SchemePage({ params }: SchemePageProps) {
       .slice(0, 4);
   } catch {
     relatedSchemes = [];
+  }
+
+  // Fetch related blog guides from static mapping
+  let relatedBlogs: import("@/lib/guides").Guide[] = [];
+  try {
+    const blogSlugs = schemeToBlogs[params.slug] ?? [];
+    if (blogSlugs.length > 0) {
+      const allBlogs = await getPublishedDbPosts();
+      relatedBlogs = allBlogs.filter((b) => blogSlugs.includes(b.slug));
+    }
+  } catch {
+    relatedBlogs = [];
   }
 
   const breadcrumbs = [
@@ -165,6 +180,21 @@ export default async function SchemePage({ params }: SchemePageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedSchemes.map((relScheme) => (
                   <SchemeCard key={relScheme.slug} scheme={relScheme} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Helpful Guides — links to related DB blog posts */}
+          {relatedBlogs.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Helpful Guides</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Step-by-step guides related to this scheme.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedBlogs.map((guide) => (
+                  <GuideCard key={guide.slug} guide={guide} />
                 ))}
               </div>
             </section>

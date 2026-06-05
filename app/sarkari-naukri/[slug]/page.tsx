@@ -11,6 +11,8 @@ import JsonLd from "@/components/seo/JsonLd";
 import GuideCard from "@/components/GuideCard";
 import { getJobPosts, getJobBySlug } from "@/lib/content";
 import { getRelatedGuidesForJob } from "@/lib/guides";
+import { getPublishedDbPosts } from "@/lib/blog-db";
+import { jobToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 // Converts any stored date string to YYYY-MM-DD for schema.org.
@@ -124,7 +126,20 @@ export default async function JobPage({ params }: JobPageProps) {
     relatedJobs = [];
   }
 
-  const relatedGuides = getRelatedGuidesForJob(job.category);
+  // Merge DB blog posts from static mapping with category-based hardcoded guides
+  const hardcodedGuides = getRelatedGuidesForJob(job.category);
+  let relatedGuides = hardcodedGuides;
+  try {
+    const blogSlugs = jobToBlogs[params.slug] ?? [];
+    if (blogSlugs.length > 0) {
+      const allDbPosts = await getPublishedDbPosts();
+      const dbGuides = allDbPosts.filter((b) => blogSlugs.includes(b.slug));
+      const seen = new Set(dbGuides.map((g) => g.slug));
+      relatedGuides = [...dbGuides, ...hardcodedGuides.filter((g) => !seen.has(g.slug))].slice(0, 4);
+    }
+  } catch {
+    relatedGuides = hardcodedGuides;
+  }
 
   const breadcrumbs = [
     { label: "Sarkari Naukri", href: "/sarkari-naukri" },

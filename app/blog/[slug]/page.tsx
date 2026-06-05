@@ -6,14 +6,16 @@ import MarkdownContent from "@/components/content/MarkdownContent";
 import TableOfContents from "@/components/ui/TableOfContents";
 import GuideCard from "@/components/GuideCard";
 import EntranceExamCard from "@/components/ui/EntranceExamCard";
+import JobCard from "@/components/ui/JobCard";
+import SchemeCard from "@/components/ui/SchemeCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
 import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
-import { getEntranceExamPosts } from "@/lib/content";
-import { blogToExams } from "@/lib/related-links";
+import { getEntranceExamPosts, getJobPosts, getSchemePosts } from "@/lib/content";
+import { blogToExams, blogToJobs, blogToSchemes } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -91,6 +93,30 @@ export default async function GuidePage({ params }: GuidePageProps) {
     }
   } catch {
     relatedExams = [];
+  }
+
+  // Related jobs from static mapping
+  let relatedJobs: import("@/lib/types").JobPost[] = [];
+  try {
+    const jobSlugs = blogToJobs[guide.slug] ?? [];
+    if (jobSlugs.length > 0) {
+      const allJobs = await getJobPosts();
+      relatedJobs = allJobs.filter((j) => jobSlugs.includes(j.slug));
+    }
+  } catch {
+    relatedJobs = [];
+  }
+
+  // Related schemes from static mapping
+  let relatedSchemes: import("@/lib/types").SchemePost[] = [];
+  try {
+    const schemeSlugs = blogToSchemes[guide.slug] ?? [];
+    if (schemeSlugs.length > 0) {
+      const allSchemes = await getSchemePosts();
+      relatedSchemes = allSchemes.filter((s) => schemeSlugs.includes(s.slug));
+    }
+  } catch {
+    relatedSchemes = [];
   }
 
   const breadcrumbs = [
@@ -278,6 +304,40 @@ export default async function GuidePage({ params }: GuidePageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedGuides.map((relGuide) => (
                   <GuideCard key={relGuide.slug} guide={relGuide} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Related Jobs — internal links from static mapping */}
+          {relatedJobs.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Active Job Openings
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                These government jobs are directly relevant to what you just read.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedJobs.map((job) => (
+                  <JobCard key={job.slug} job={job} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Related Schemes — internal links from static mapping */}
+          {relatedSchemes.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Related Government Schemes
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                These schemes are relevant to the topic covered in this guide.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedSchemes.map((scheme) => (
+                  <SchemeCard key={scheme.slug} scheme={scheme} />
                 ))}
               </div>
             </section>
