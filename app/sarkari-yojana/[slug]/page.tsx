@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: SchemePageProps): Promise<Met
         type: "article",
         publishedTime: scheme.publishedAt,
         modifiedTime: scheme.updatedAt,
-        images: scheme.image ? [{ url: scheme.image }] : [],
+        images: [{ url: scheme.image || `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
       },
       twitter: {
         card: "summary_large_image",

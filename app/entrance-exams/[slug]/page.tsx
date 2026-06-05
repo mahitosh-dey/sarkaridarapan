@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: ExamPageProps): Promise<Metad
         type: "article",
         publishedTime: exam.publishedAt,
         modifiedTime: exam.updatedAt,
-        images: exam.image ? [{ url: exam.image }] : [],
+        images: [{ url: exam.image || `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
       },
       twitter: {
         card: "summary_large_image",

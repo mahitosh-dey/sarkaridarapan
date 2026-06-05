@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
       type: "article",
       publishedTime: guide.publishedAt,
       modifiedTime: guide.updatedAt,
-      images: guide.image ? [{ url: guide.image }] : [],
+      images: [{ url: guide.image || `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
