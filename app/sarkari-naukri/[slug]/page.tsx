@@ -28,14 +28,17 @@ function toIsoDate(raw: string | null | undefined): string | undefined {
   return undefined;
 }
 
-// Extracts the first two ₹ amounts from a salary string.
-// Returns {minValue, maxValue} for ranges or {value} for single figures.
-// Returns null when no numeric amount can be found.
+// Extracts unique ₹ amounts from a salary string to build a schema.org range.
+// Uses the smallest and largest distinct values found so repeated figures
+// (e.g. "₹88,635 basic … pay scale ₹88,635 — ₹1,69,025") produce a proper range.
+// Returns {value} when only one distinct amount exists, null when none found.
 function parseSalary(raw: string | null | undefined): Record<string, unknown> | null {
   if (!raw) return null;
-  const nums = [...raw.matchAll(/₹\s*([\d,]+)/g)]
-    .map((m) => parseInt(m[1].replace(/,/g, ""), 10))
-    .filter((n) => !isNaN(n) && n > 0);
+  const nums = [...new Set(
+    [...raw.matchAll(/₹\s*([\d,]+)/g)]
+      .map((m) => parseInt(m[1].replace(/,/g, ""), 10))
+      .filter((n) => !isNaN(n) && n > 0)
+  )].sort((a, b) => a - b);
   if (nums.length === 0) return null;
   return {
     "@type": "MonetaryAmount",
@@ -43,7 +46,7 @@ function parseSalary(raw: string | null | undefined): Record<string, unknown> | 
     value: {
       "@type": "QuantitativeValue",
       ...(nums.length >= 2
-        ? { minValue: nums[0], maxValue: nums[1] }
+        ? { minValue: nums[0], maxValue: nums[nums.length - 1] }
         : { value: nums[0] }),
       unitText: "MONTH",
     },
@@ -158,7 +161,9 @@ export default async function JobPage({ params }: JobPageProps) {
   const baseSalary = parseSalary(job.salary);
 
   // addressLocality = most specific location we have (state or national capital for central govt)
-  const addressLocality = job.state && job.state !== "All India" ? job.state : "New Delhi";
+  // Normalise "all-india" / "All India" / "all india" variants to New Delhi.
+  const isAllIndia = !job.state || job.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
+  const addressLocality = isAllIndia ? "New Delhi" : job.state;
 
   const jobPostingSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
