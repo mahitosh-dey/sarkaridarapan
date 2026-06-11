@@ -5,8 +5,6 @@ import {
   SITE_URL,
   STATES,
   JOB_CATEGORIES,
-  SCHEME_CATEGORIES,
-  ENTRANCE_EXAM_CATEGORIES,
 } from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -83,22 +81,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  // Scheme category filter pages  (/sarkari-yojana?category=agriculture, …)
-  const schemeCategoryPages: MetadataRoute.Sitemap = SCHEME_CATEGORIES.map((cat) => ({
-    url: `${SITE_URL}/sarkari-yojana?category=${cat.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.5,
-  }));
-
-  // Entrance exam category filter pages  (/entrance-exams?category=engineering, …)
-  const examCategoryPages: MetadataRoute.Sitemap = ENTRANCE_EXAM_CATEGORIES.map((cat) => ({
-    url: `${SITE_URL}/entrance-exams?category=${cat.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.5,
-  }));
-
   // State pages  (/state/uttar-pradesh, …)
   const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({
     url: `${SITE_URL}/state/${state.slug}`,
@@ -114,8 +96,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...examPages,
     ...blogPostPages,
     ...categoryPages,
-    ...schemeCategoryPages,
-    ...examCategoryPages,
     ...statePages,
   ];
 }

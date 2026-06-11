@@ -64,9 +64,9 @@ The owner's goal is to earn money through **Google AdSense** and affiliate marke
 | Jobs | **50** ✅ | 50 |
 | Schemes | **25** ✅ | 20+ |
 | Blog posts | **17** ✅ | 15+ |
-| Entrance Exams | **5** ❌ | 15+ |
+| Entrance Exams | **22** ✅ | 15+ |
 
-**Entrance exams is the biggest content gap.** Target: add UPSC, JEE, NEET, CUET, CAT, GATE, CLAT, CTET, NDA, Bank PO (10 more).
+**Still missing:** UPSC CSE (biggest gap), NEET UG main exam (only counselling entry exists), CTET, NDA.
 
 ---
 

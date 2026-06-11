@@ -165,6 +165,24 @@ export default async function JobPage({ params }: JobPageProps) {
   const isAllIndia = !job.state || job.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
   const addressLocality = isAllIndia ? "New Delhi" : job.state;
 
+  // Postal codes for state capitals — used to satisfy Google's JobPosting rich result recommendations.
+  const STATE_POSTAL_CODES: Record<string, string> = {
+    "all-india": "110001", "delhi": "110001",
+    "uttar-pradesh": "226001", "maharashtra": "400032",
+    "tamil-nadu": "600009", "karnataka": "560001",
+    "rajasthan": "302005", "gujarat": "382010",
+    "bihar": "800001", "madhya-pradesh": "462004",
+    "andhra-pradesh": "522503", "telangana": "500022",
+    "west-bengal": "700001", "odisha": "751001",
+    "jharkhand": "834001", "assam": "781001",
+    "kerala": "695001", "haryana": "134109",
+    "punjab": "160001", "himachal-pradesh": "171001",
+    "uttarakhand": "248001", "chhattisgarh": "492001",
+    "jammu-kashmir": "190001", "goa": "403001",
+    "tripura": "799001", "meghalaya": "793001",
+  };
+  const postalCode = STATE_POSTAL_CODES[job.state?.toLowerCase() ?? ""] ?? "110001";
+
   const jobPostingSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -188,8 +206,10 @@ export default async function JobPage({ params }: JobPageProps) {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
+        streetAddress: addressLocality,
         addressLocality,
         addressRegion: job.state || "Delhi",
+        postalCode,
         addressCountry: "IN",
       },
     },
