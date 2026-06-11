@@ -27,14 +27,14 @@ Started: 2026-06-09
 
 ## SCHEMES TO ADD
 
-- [ ] MGNREGA 2026
-- [ ] PM Ujjwala Yojana 2026
-- [ ] Sukanya Samriddhi Yojana
-- [ ] Ladli Behna Yojana MP
-- [ ] PM Fasal Bima Yojana
-- [ ] PMEGP 2026
-- [ ] Jal Jeevan Mission
-- [ ] PM Kaushal Vikas Yojana (PMKVY) / Skill India 2026
+- [x] MGNREGA 2026 ✅ (2026-06-11)
+- [x] PM Ujjwala Yojana 2026 ✅ (2026-06-11)
+- [x] Sukanya Samriddhi Yojana ✅ (2026-06-11)
+- [x] Ladli Behna Yojana MP ✅ (2026-06-11)
+- [x] PM Fasal Bima Yojana ✅ (2026-06-11)
+- [x] PMEGP 2026 ✅ (2026-06-11)
+- [x] Jal Jeevan Mission ✅ (2026-06-11)
+- [x] PM Kaushal Vikas Yojana (PMKVY) / Skill India 2026 ✅ (2026-06-11)
 
 ## BLOGS TO ADD
 
@@ -52,7 +52,7 @@ Started: 2026-06-09
 |----------|--------|-------|-------|
 | Exams    | 23     | 7     | 30    |
 | Jobs     | 50     | 10    | 60    |
-| Schemes  | 25     | 0     | 25    |
+| Schemes  | 25     | 8     | 33    |
 | Blogs    | 27     | 5     | 32    |
 
 ---
@@ -75,3 +75,11 @@ Started: 2026-06-09
 - [x] Bihar Police Constable 2026 job added (2026-06-11)
 - [x] SBI SO 2026 job added (2026-06-11)
 - [x] DRDO CEPTAM 11 2026 job added (2026-06-11)
+- [x] MGNREGA 2026 scheme added (2026-06-11)
+- [x] PM Ujjwala Yojana 2026 scheme added (2026-06-11)
+- [x] Sukanya Samriddhi Yojana scheme added (2026-06-11)
+- [x] Ladli Behna Yojana MP scheme added (2026-06-11)
+- [x] PM Fasal Bima Yojana scheme added (2026-06-11)
+- [x] PMEGP 2026 scheme added (2026-06-11)
+- [x] Jal Jeevan Mission scheme added (2026-06-11)
+- [x] PMKVY 4.0 scheme added (2026-06-11)
