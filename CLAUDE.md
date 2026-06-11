@@ -61,7 +61,7 @@ The owner's goal is to earn money through **Google AdSense** and affiliate marke
 
 | Type | Count | Target |
 |---|---|---|
-| Jobs | **53** ✅ | 50 |
+| Jobs | **60** ✅ | 50 |
 | Schemes | **25** ✅ | 20+ |
 | Blog posts | **32** ✅ | 15+ |
 | Entrance Exams | **30** ✅ | 15+ |

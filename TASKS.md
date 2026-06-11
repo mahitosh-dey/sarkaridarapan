@@ -17,13 +17,13 @@ Started: 2026-06-09
 - [x] Indian Army Agniveer 2026 ✅ (2026-06-09)
 - [x] Indian Navy Agniveer 2026 ✅ (2026-06-09)
 - [x] Indian Air Force Agniveer 2026 ✅ (2026-06-09)
-- [ ] RRB Group D 2026
-- [ ] India Post GDS 2026
-- [ ] UP Police Constable 2026
-- [ ] MP Police Constable 2026
-- [ ] Bihar Police SI / Constable 2026
-- [ ] SBI SO 2026 (Specialist Officers)
-- [ ] DRDO CEPTAM 2026
+- [x] RRB Group D 2026 ✅ (2026-06-11)
+- [x] India Post GDS 2026 ✅ (2026-06-11)
+- [x] UP Police Constable 2026 ✅ (2026-06-11)
+- [x] MP Police Constable 2026 ✅ (2026-06-11)
+- [x] Bihar Police Constable 2026 ✅ (2026-06-11)
+- [x] SBI SO 2026 (Specialist Officers) ✅ (2026-06-11)
+- [x] DRDO CEPTAM 11 2026 ✅ (2026-06-11)
 
 ## SCHEMES TO ADD
 
@@ -51,7 +51,7 @@ Started: 2026-06-09
 | Type     | Before | Added | Total |
 |----------|--------|-------|-------|
 | Exams    | 23     | 7     | 30    |
-| Jobs     | 50     | 3     | 53    |
+| Jobs     | 50     | 10    | 60    |
 | Schemes  | 25     | 0     | 25    |
 | Blogs    | 27     | 5     | 32    |
 
@@ -68,3 +68,10 @@ Started: 2026-06-09
 - [x] Government jobs for women 2026 published (2026-06-11)
 - [x] PM Mudra Loan 2026 guide published (2026-06-11)
 - [x] Best govt jobs for arts students 2026 published (2026-06-11)
+- [x] RRB Group D 2026 job added (2026-06-11)
+- [x] India Post GDS 2026 job added (2026-06-11)
+- [x] UP Police Constable 2026 job added (2026-06-11)
+- [x] MP Police Constable 2026 job added (2026-06-11)
+- [x] Bihar Police Constable 2026 job added (2026-06-11)
+- [x] SBI SO 2026 job added (2026-06-11)
+- [x] DRDO CEPTAM 11 2026 job added (2026-06-11)
