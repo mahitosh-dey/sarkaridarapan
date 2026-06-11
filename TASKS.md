@@ -6,11 +6,11 @@ Started: 2026-06-09
 - [x] NEET UG 2026 (main exam) ✅ (2026-06-10)
 - [x] JEE Main 2026 (Session 1 Jan + Session 2 Apr) ✅ (2026-06-10)
 - [x] CTET September 2026 ✅ (2026-06-10)
-- [ ] JEE Advanced 2026
-- [ ] UGC NET June 2026
-- [ ] NDA 2026 (exam page — job page already exists)
-- [ ] RRB Group D 2026 (exam page — blog mentions it)
-- [ ] CDS I 2026
+- [x] JEE Advanced 2026 ✅ (2026-06-11)
+- [x] UGC NET June 2026 ✅ (2026-06-11)
+- [x] NDA 2 2026 (exam page) ✅ (2026-06-11)
+- [x] CDS 2 2026 ✅ (2026-06-11)
+- [ ] RRB Group D 2026 (exam page)
 
 ## JOBS TO ADD
 
@@ -50,7 +50,7 @@ Started: 2026-06-09
 
 | Type     | Before | Added | Total |
 |----------|--------|-------|-------|
-| Exams    | 23     | 3     | 26    |
+| Exams    | 23     | 7     | 30    |
 | Jobs     | 50     | 3     | 53    |
 | Schemes  | 25     | 0     | 25    |
 | Blogs    | 27     | 5     | 32    |

@@ -64,9 +64,9 @@ The owner's goal is to earn money through **Google AdSense** and affiliate marke
 | Jobs | **53** ✅ | 50 |
 | Schemes | **25** ✅ | 20+ |
 | Blog posts | **32** ✅ | 15+ |
-| Entrance Exams | **26** ✅ | 15+ |
+| Entrance Exams | **30** ✅ | 15+ |
 
-**Still missing (exams):** JEE Advanced, UGC NET June 2026, NDA exam page, CDS I 2026.
+**Still missing (exams):** RRB Group D 2026 exam page (low priority).
 
 ---
 
