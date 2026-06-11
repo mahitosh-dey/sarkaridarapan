@@ -57,16 +57,16 @@ The owner's goal is to earn money through **Google AdSense** and affiliate marke
 
 ---
 
-## Content Count (as of 2026-06-05)
+## Content Count (as of 2026-06-11)
 
 | Type | Count | Target |
 |---|---|---|
-| Jobs | **50** ✅ | 50 |
+| Jobs | **53** ✅ | 50 |
 | Schemes | **25** ✅ | 20+ |
-| Blog posts | **17** ✅ | 15+ |
-| Entrance Exams | **22** ✅ | 15+ |
+| Blog posts | **32** ✅ | 15+ |
+| Entrance Exams | **26** ✅ | 15+ |
 
-**Still missing:** UPSC CSE (biggest gap), NEET UG main exam (only counselling entry exists), CTET, NDA.
+**Still missing (exams):** JEE Advanced, UGC NET June 2026, NDA exam page, CDS I 2026.
 
 ---
 

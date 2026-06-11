@@ -38,11 +38,11 @@ Started: 2026-06-09
 
 ## BLOGS TO ADD
 
-- [ ] How to crack UPSC CSE 2026 in first attempt — DRAFT READY (scripts/blog-upsc-cse-2026-first-attempt-guide.md)
+- [x] How to crack UPSC CSE 2026 in first attempt ✅ (2026-06-11, published via admin)
 - [x] Agniveer 2026 — Army, Navy, Air Force complete guide ✅ (2026-06-11, published via admin)
-- [ ] Government jobs for women in India 2026 — DRAFT READY (scripts/blog-govt-jobs-women-india-2026.md)
-- [ ] How to apply for PM Mudra Loan 2026 — DRAFT READY (scripts/blog-pm-mudra-loan-2026-apply-guide.md)
-- [ ] Best government jobs for arts students 2026 — DRAFT READY (scripts/blog-govt-jobs-arts-students-2026.md)
+- [x] Government jobs for women in India 2026 ✅ (2026-06-11, published via admin)
+- [x] How to apply for PM Mudra Loan 2026 ✅ (2026-06-11, published via admin)
+- [x] Best government jobs for arts students 2026 ✅ (2026-06-11, published via admin)
 
 ---
 
@@ -53,7 +53,7 @@ Started: 2026-06-09
 | Exams    | 23     | 3     | 26    |
 | Jobs     | 50     | 3     | 53    |
 | Schemes  | 25     | 0     | 25    |
-| Blogs    | 17     | 1     | 18    |
+| Blogs    | 27     | 5     | 32    |
 
 ---
 
@@ -64,3 +64,7 @@ Started: 2026-06-09
 - [x] JEE Main 2026 (both sessions) added (2026-06-10)
 - [x] CTET September 2026 added (2026-06-10)
 - [x] Agniveer 2026 blog published (2026-06-11)
+- [x] UPSC CSE 2026 first attempt guide published (2026-06-11)
+- [x] Government jobs for women 2026 published (2026-06-11)
+- [x] PM Mudra Loan 2026 guide published (2026-06-11)
+- [x] Best govt jobs for arts students 2026 published (2026-06-11)
