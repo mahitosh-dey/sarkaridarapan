@@ -1,10 +1,14 @@
 import { Metadata } from "next";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Disclaimer",
   description:
     "Disclaimer for SarkariDarapan - Important information about the use of content and services provided on our website.",
+  alternates: {
+    canonical: `${SITE_URL}/disclaimer`,
+  },
 };
 
 export default function DisclaimerPage() {

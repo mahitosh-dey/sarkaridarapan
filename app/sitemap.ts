@@ -8,7 +8,7 @@ import {
 } from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static pages
+  // Static pages — /search is excluded (has noindex meta)
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL,                           lastModified: new Date(), changeFrequency: "daily",   priority: 1.0 },
     { url: `${SITE_URL}/sarkari-naukri`,       lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },
@@ -17,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/blog`,                 lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${SITE_URL}/admit-card`,           lastModified: new Date(), changeFrequency: "weekly",  priority: 0.7 },
     { url: `${SITE_URL}/results`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.7 },
-    { url: `${SITE_URL}/search`,               lastModified: new Date(), changeFrequency: "weekly",  priority: 0.4 },
     { url: `${SITE_URL}/about`,                lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${SITE_URL}/contact`,              lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${SITE_URL}/privacy-policy`,       lastModified: new Date(), changeFrequency: "yearly",  priority: 0.2 },
@@ -26,10 +25,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Job post pages — fetched fresh from Supabase on every request
+  let rawJobs: import("@/lib/types").JobPost[] = [];
   let jobPages: MetadataRoute.Sitemap = [];
   try {
-    const jobs = await getJobPosts();
-    jobPages = jobs.map((job) => ({
+    rawJobs = await getJobPosts();
+    jobPages = rawJobs.map((job) => ({
       url: `${SITE_URL}/sarkari-naukri/${job.slug}`,
       lastModified: new Date(job.updatedAt || job.publishedAt),
       changeFrequency: "weekly" as const,
@@ -38,10 +38,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch { /* skip on error */ }
 
   // Scheme post pages
+  let rawSchemes: import("@/lib/types").SchemePost[] = [];
   let schemePages: MetadataRoute.Sitemap = [];
   try {
-    const schemes = await getSchemePosts();
-    schemePages = schemes.map((scheme) => ({
+    rawSchemes = await getSchemePosts();
+    schemePages = rawSchemes.map((scheme) => ({
       url: `${SITE_URL}/sarkari-yojana/${scheme.slug}`,
       lastModified: new Date(scheme.updatedAt || scheme.publishedAt),
       changeFrequency: "weekly" as const,
@@ -73,21 +74,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch { /* skip on error */ }
 
-  // Job category pages  (/category/ssc, /category/upsc, …)
-  const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES.map((cat) => ({
-    url: `${SITE_URL}/category/${cat.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
+  // Job category pages — only include categories that have at least one job
+  const categoriesWithJobs = new Set(rawJobs.map((j) => j.category).filter(Boolean));
+  const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES
+    .filter((cat) => categoriesWithJobs.has(cat.slug))
+    .map((cat) => ({
+      url: `${SITE_URL}/category/${cat.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
 
-  // State pages  (/state/uttar-pradesh, …)
-  const statePages: MetadataRoute.Sitemap = STATES.map((state) => ({
-    url: `${SITE_URL}/state/${state.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
+  // State pages — only include states that have at least one job or scheme
+  const statesWithContent = new Set([
+    ...rawJobs.map((j) => j.state).filter(Boolean),
+    ...rawSchemes.map((s) => s.state).filter(Boolean),
+  ]);
+  const statePages: MetadataRoute.Sitemap = STATES
+    .filter((state) => statesWithContent.has(state.slug))
+    .map((state) => ({
+      url: `${SITE_URL}/state/${state.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
 
   return [
     ...staticPages,

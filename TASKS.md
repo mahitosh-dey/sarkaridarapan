@@ -1,4 +1,5 @@
 # SarkariDarapan — Content Task List
+
 Started: 2026-06-09
 
 ## EXAMS TO ADD
@@ -48,12 +49,12 @@ Started: 2026-06-09
 
 ## PROGRESS TRACKER
 
-| Type     | Before | Added | Total |
-|----------|--------|-------|-------|
-| Exams    | 23     | 7     | 30    |
-| Jobs     | 50     | 10    | 60    |
-| Schemes  | 25     | 8     | 33    |
-| Blogs    | 27     | 5     | 32    |
+| Type    | Before | Added | Total |
+| ------- | ------ | ----- | ----- |
+| Exams   | 23     | 7     | 30    |
+| Jobs    | 50     | 10    | 60    |
+| Schemes | 25     | 8     | 33    |
+| Blogs   | 27     | 5     | 32    |
 
 ---
 
@@ -83,3 +84,5 @@ Started: 2026-06-09
 - [x] PMEGP 2026 scheme added (2026-06-11)
 - [x] Jal Jeevan Mission scheme added (2026-06-11)
 - [x] PMKVY 4.0 scheme added (2026-06-11)
+
+write blog content on those topic "SSC CGL 2026 Syllabus & Preparation Guide","UPSC CSE 2026 Notification — Dates, Eligibility, Apply Online","Top 10 Government Jobs After 12th in India 2026" with 100% correct content and sounds like human voice . Also make double cross check content for correction. And save blog into a draft file for manually entry via admin blog post.

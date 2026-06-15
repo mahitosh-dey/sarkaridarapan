@@ -1,10 +1,14 @@
 import { Metadata } from "next";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
     "Terms of Service for SarkariDarapan - Rules and guidelines for using our government jobs and schemes information website.",
+  alternates: {
+    canonical: `${SITE_URL}/terms-of-service`,
+  },
 };
 
 export default function TermsOfServicePage() {

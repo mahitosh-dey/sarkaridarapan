@@ -25,12 +25,19 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const stateData = STATES.find((s) => s.slug === params.state);
   if (!stateData) return { title: "State Not Found" };
 
+  const [jobs, schemes] = await Promise.all([
+    getJobsByState(params.state).catch(() => []),
+    getSchemesByState(params.state).catch(() => []),
+  ]);
+  const hasContent = jobs.length > 0 || schemes.length > 0;
+
   return {
     title: `${stateData.name} Government Jobs & Schemes 2026`,
     description: `Latest government jobs and sarkari yojana in ${stateData.name}. Find state government vacancies, central govt jobs, and government schemes available in ${stateData.name}.`,
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
+    ...(!hasContent && { robots: { index: false, follow: true } }),
     openGraph: {
       title: `${stateData.name} Government Jobs & Schemes 2026 | ${SITE_NAME}`,
       description: `Latest government jobs and sarkari yojana in ${stateData.name}.`,

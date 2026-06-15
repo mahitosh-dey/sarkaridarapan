@@ -25,12 +25,15 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const categoryData = JOB_CATEGORIES.find((c) => c.slug === params.category);
   if (!categoryData) return { title: "Category Not Found" };
 
+  const jobs = await getJobsByCategory(params.category).catch(() => []);
+
   return {
     title: `${categoryData.name} Jobs 2026 - Government Job Vacancies`,
     description: `Latest ${categoryData.name} government job vacancies 2026. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`,
     alternates: {
       canonical: `${SITE_URL}/category/${params.category}`,
     },
+    ...(jobs.length === 0 && { robots: { index: false, follow: true } }),
     openGraph: {
       title: `${categoryData.name} Jobs 2026 | ${SITE_NAME}`,
       description: `Latest ${categoryData.name} government job vacancies and notifications.`,
