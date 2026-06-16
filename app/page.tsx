@@ -127,7 +127,7 @@ export default async function HomePage() {
                   href={`/sarkari-naukri/${job.slug}`}
                   className="flex-1 min-w-[260px] max-w-sm bg-white border border-red-200 rounded-lg px-4 py-3 hover:border-red-400 hover:shadow-sm transition-all"
                 >
-                  <p className="font-semibold text-gray-900 text-sm line-clamp-1">{job.title}</p>
+                  <p className="font-semibold text-gray-900 text-sm line-clamp-2">{job.title}</p>
                   <p className="text-xs text-red-600 font-semibold mt-1">
                     Last Date: {safeFormatDate(job.importantDates.lastDate, "N/A")}
                   </p>
