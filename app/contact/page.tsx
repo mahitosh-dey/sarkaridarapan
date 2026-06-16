@@ -20,6 +20,7 @@ export default function ContactPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -33,13 +34,35 @@ export default function ContactPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError("");
 
-    // Simulate form submission delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: "c668d32e-d997-4d2a-937b-c16b4032536c",
+          from_name: "SarkariDarapan Contact Form",
+          subject: `[SarkariDarapan] ${formData.subject} — from ${formData.name}`,
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
+      const result = await response.json();
+
+      if (result.success) {
+        setIsSubmitted(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setError("Something went wrong. Please email us directly at contact@sarkaridarapan.com");
+      }
+    } catch {
+      setError("Something went wrong. Please email us directly at contact@sarkaridarapan.com");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -265,6 +288,12 @@ export default function ContactPage() {
                     className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y"
                   />
                 </div>
+
+                {error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {error}
+                  </div>
+                )}
 
                 <div>
                   <button

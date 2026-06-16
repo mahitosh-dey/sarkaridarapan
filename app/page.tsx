@@ -11,7 +11,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import FAQSection from "@/components/FAQSection";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
-import { isDatePast } from "@/lib/date-utils";
+import { isDatePast, safeFormatDate } from "@/lib/date-utils";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -49,6 +49,22 @@ export default async function HomePage() {
   const latestExams = sortedExams.slice(0, 6);
   const latestGuides = guides.slice(0, 4);
 
+  // Jobs whose last date is today or within the next 7 days
+  const todayIST = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  const sevenDaysLaterIST = new Date(
+    new Date(todayIST).getTime() + 7 * 24 * 60 * 60 * 1000
+  ).toLocaleDateString("en-CA");
+  const closingSoonJobs = jobs
+    .filter((job) => {
+      if (!job.isActive) return false;
+      const d = job.importantDates?.lastDate?.trim();
+      if (!d) return false;
+      const iso = d.length >= 10 ? d.slice(0, 10) : null;
+      if (!iso) return false;
+      return iso >= todayIST && iso <= sevenDaysLaterIST;
+    })
+    .slice(0, 5);
+
   return (
     <>
       {/* Hero Section */}
@@ -66,6 +82,61 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Telegram / WhatsApp CTA strip */}
+      <div className="bg-blue-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm font-medium">
+            Get instant job alerts — join our free channels!
+          </p>
+          <div className="flex gap-3">
+            <a
+              href="https://t.me/sarkaridarapaninfo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-full transition-colors"
+            >
+              Join Telegram
+            </a>
+            <a
+              href="https://whatsapp.com/channel/0029VbCHYsIDeON1dKiWuk1A"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 bg-green-500 hover:bg-green-400 text-white text-xs font-bold px-4 py-1.5 rounded-full transition-colors"
+            >
+              Join WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Closing Soon urgency banner */}
+      {closingSoonJobs.length > 0 && (
+        <div className="bg-red-50 border-y border-red-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded">
+                CLOSING SOON
+              </span>
+              <span className="text-sm text-red-700 font-medium">Apply before the last date!</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {closingSoonJobs.map((job) => (
+                <Link
+                  key={job.slug}
+                  href={`/sarkari-naukri/${job.slug}`}
+                  className="flex-1 min-w-[260px] max-w-sm bg-white border border-red-200 rounded-lg px-4 py-3 hover:border-red-400 hover:shadow-sm transition-all"
+                >
+                  <p className="font-semibold text-gray-900 text-sm line-clamp-1">{job.title}</p>
+                  <p className="text-xs text-red-600 font-semibold mt-1">
+                    Last Date: {safeFormatDate(job.importantDates.lastDate, "N/A")}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col lg:flex-row gap-8">

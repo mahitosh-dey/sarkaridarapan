@@ -8,7 +8,7 @@ interface AdSenseScriptProps {
 }
 
 export default function AdSenseScript({
-  publisherId = "pub-XXXXXXXXXXXXXXXX",
+  publisherId = "pub-1237254119179544",
 }: AdSenseScriptProps) {
   useEffect(() => {
     // Suppress the "adsbygoogle.push() error" that occurs during

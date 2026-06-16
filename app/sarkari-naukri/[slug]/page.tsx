@@ -13,6 +13,7 @@ import { getJobPosts, getJobBySlug } from "@/lib/content";
 import { getRelatedGuidesForJob } from "@/lib/guides";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { jobToBlogs } from "@/lib/related-links";
+import { safeFormatDate } from "@/lib/date-utils";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 // Converts any stored date string to YYYY-MM-DD for schema.org.
@@ -77,8 +78,15 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 
     const post = job.postName || job.title;
     const org = job.organization || "Government of India";
-    const salaryPart = job.salary ? ` Salary: ${job.salary}.` : "";
-    const description = `${job.title} - Apply for ${post} at ${org}.${salaryPart} Check eligibility, dates and how to apply at SarkariDarpan.`;
+    const rawLastDate = job.importantDates?.lastDate;
+    const lastDateFormatted = rawLastDate ? safeFormatDate(rawLastDate, "", "short", true) : "";
+    const descParts = [
+      job.vacancies > 0 ? `${job.vacancies.toLocaleString("en-IN")} Vacancies` : "",
+      lastDateFormatted ? `Last Date: ${lastDateFormatted}` : "",
+      job.salary ? `Salary: ${job.salary}` : "",
+    ].filter(Boolean);
+    const descSuffix = descParts.length > 0 ? ` ${descParts.join(" | ")}.` : "";
+    const description = `Apply for ${post} at ${org}.${descSuffix} Check eligibility and apply online.`;
 
     return {
       title: job.title,

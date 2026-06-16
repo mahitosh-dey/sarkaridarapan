@@ -44,8 +44,7 @@ const organizationSchema = {
   },
   sameAs: [
     "https://www.linkedin.com/in/mahitosh-dey-b70575147/",
-    "https://t.me/sarkaridarapan",
-    "https://facebook.com/sarkaridarapan",
+    "https://t.me/sarkaridarapaninfo",
   ],
 };
 
@@ -125,8 +124,8 @@ const contactRows = [
   {
     emoji: "\u2708\uFE0F",
     label: "Telegram",
-    href: "https://t.me/sarkaridarapan",
-    text: "t.me/sarkaridarapan",
+    href: "https://t.me/sarkaridarapaninfo",
+    text: "t.me/sarkaridarapaninfo",
     external: true,
   },
 ];
