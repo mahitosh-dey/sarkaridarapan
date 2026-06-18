@@ -22,6 +22,7 @@ Priority order: newest and highest-traffic posts first.
 
 | # | Slug | Title | Category | Published | Rules Applied | Date Done |
 |---|---|---|---|---|---|---|
+| 0 | `upsc-mains-2026-preparation-strategy-9-week-plan` | UPSC Mains 2026 Preparation Strategy | Exam Prep | 2026-06-18 | ✅ Done | 2026-06-18 |
 | 1 | `upsc-prelims-result-2026-cutoff-paper-analysis` | UPSC Prelims Result 2026 | Exam Prep | 2026-06-15 | ✅ Done | 2026-06-18 |
 | 2 | `upsc-cse-2026-notification-dates-eligibility-apply-online` | UPSC CSE 2026 Notification | Exam Prep | 2026-06-12 | ⬜ | — |
 | 3 | `top-10-government-jobs-after-12th-india-2026` | Top 10 Govt Jobs After 12th | Career Guide | 2026-06-12 | ⬜ | — |
@@ -65,9 +66,9 @@ Priority order: newest and highest-traffic posts first.
 
 | Status | Count |
 |---|---|
-| ✅ Done (DB updated) | 2 |
+| ✅ Done (DB updated) | 3 |
 | ⬜ Not done | 34 |
-| **Total** | **36** |
+| **Total** | **37** |
 
 ---
 
@@ -76,4 +77,5 @@ Priority order: newest and highest-traffic posts first.
 | Date | Post # | Slug | What was changed |
 |---|---|---|---|
 | 2026-06-17 | #4 | `ssc-cgl-2026-syllabus-preparation-guide` | Em dashes removed, Title Case → sentence case, inline-header bullets → prose, signposting removed, generic ending replaced, cutoff attribution added. DB updated directly via script. |
+| 2026-06-18 | new | `upsc-mains-2026-preparation-strategy-9-week-plan` | New post written with all rules applied from scratch. 9-week plan, paper structure table, answer writing norms, FAQ section, attribution for all stats. No em dashes, sentence case headings, no inline-headers, no signposting. 1,608 words. |
 | 2026-06-18 | #1 | `upsc-prelims-result-2026-cutoff-paper-analysis` | Title em dash → colon. All headings → sentence case. 6 inline-header lists (**Label:**) → H4 headings. Signposting removed. Bold overuse stripped. Vague "experts expect" → attributed to official 2025 result. Passive voice fixed. Negative parallelism removed. Generic ending replaced with specific stats (933 seats, 5.49 lakh appeared). En dashes in ranges → "to". DB updated via script. |
