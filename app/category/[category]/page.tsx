@@ -78,9 +78,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
           {categoryData.name} Government Jobs 2026
         </h1>
-        <p className="text-gray-600 text-lg">
-          Browse all latest {categoryData.name.toLowerCase()} government job notifications, vacancies, and recruitment updates.
-        </p>
+        {categoryData.description ? (
+          <p className="text-gray-600 text-base leading-relaxed max-w-3xl">
+            {categoryData.description}
+          </p>
+        ) : (
+          <p className="text-gray-600 text-lg">
+            Browse all latest {categoryData.name.toLowerCase()} government job notifications, vacancies, and recruitment updates.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
