@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type ContentType = "job" | "scheme" | "exam" | "blog";
 
@@ -21,6 +21,7 @@ interface Props {
   blogs: Item[];
 }
 
+const STORAGE_KEY = "sarkari_shared_items";
 const TELEGRAM_CHANNEL = "https://t.me/sarkaridarapaninfo";
 const WHATSAPP_CHANNEL = "https://whatsapp.com/channel/0029VbCHYsIDeON1dKiWuk1A";
 const SITE_URL = "https://www.sarkaridarapan.com";
@@ -45,21 +46,63 @@ function generatePost(item: Item): string {
     return `📝 Exam Alert!\n\n${item.title}${dateLine}\n\n👉 Full Details: ${url}\n\n📢 Share करें!\n\n@sarkaridarapaninfo`;
   }
 
-  // blog
   const sub = item.subtitle ? `\n${item.subtitle}` : "";
   return `📖 New Blog Post!\n\n${item.title}${sub}\n\n👉 Read Now: ${url}\n\n@sarkaridarapaninfo`;
+}
+
+function sharedKey(type: ContentType, id: string) {
+  return `${type}_${id}`;
+}
+
+function formatSharedDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 export default function ShareComposer({ jobs, schemes, exams, blogs }: Props) {
   const [contentType, setContentType] = useState<ContentType>("job");
   const [selectedId, setSelectedId] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [unsharedOnly, setUnsharedOnly] = useState(false);
+  // sharedMap: key → ISO date string of when it was shared
+  const [sharedMap, setSharedMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setSharedMap(JSON.parse(raw));
+    } catch {}
+  }, []);
 
   const lists: Record<ContentType, Item[]> = { job: jobs, scheme: schemes, exam: exams, blog: blogs };
-  const currentList = lists[contentType];
 
-  const selectedItem = currentList.find((i) => i.id === selectedId) ?? null;
+  const isShared = (type: ContentType, id: string) => !!sharedMap[sharedKey(type, id)];
+  const sharedDate = (type: ContentType, id: string) => sharedMap[sharedKey(type, id)] ?? null;
+
+  const pendingCount = (type: ContentType) =>
+    lists[type].filter((i) => !isShared(type, i.id)).length;
+
+  const visibleList = lists[contentType].filter((i) =>
+    unsharedOnly ? !isShared(contentType, i.id) : true
+  );
+
+  const selectedItem = lists[contentType].find((i) => i.id === selectedId) ?? null;
   const postText = selectedItem ? generatePost(selectedItem) : "";
+
+  const persist = (updated: Record<string, string>) => {
+    setSharedMap(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
+
+  const markShared = (type: ContentType, id: string) => {
+    persist({ ...sharedMap, [sharedKey(type, id)]: new Date().toISOString() });
+  };
+
+  const unmarkShared = (type: ContentType, id: string) => {
+    const updated = { ...sharedMap };
+    delete updated[sharedKey(type, id)];
+    persist(updated);
+  };
 
   const handleTypeChange = (type: ContentType) => {
     setContentType(type);
@@ -67,10 +110,16 @@ export default function ShareComposer({ jobs, schemes, exams, blogs }: Props) {
     setCopied(false);
   };
 
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+    setCopied(false);
+  };
+
   const handleCopy = async () => {
-    if (!postText) return;
+    if (!postText || !selectedItem) return;
     await navigator.clipboard.writeText(postText);
     setCopied(true);
+    markShared(selectedItem.contentType, selectedItem.id);
     setTimeout(() => setCopied(false), 2500);
   };
 
@@ -81,43 +130,104 @@ export default function ShareComposer({ jobs, schemes, exams, blogs }: Props) {
     { key: "blog", label: "Blogs", emoji: "📖" },
   ];
 
+  const itemShared = selectedItem ? isShared(selectedItem.contentType, selectedItem.id) : false;
+  const itemSharedOn = selectedItem ? sharedDate(selectedItem.contentType, selectedItem.id) : null;
+
   return (
     <div className="space-y-6">
-      {/* Tabs */}
+
+      {/* Tabs with pending badges */}
       <div className="flex gap-2 flex-wrap">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => handleTypeChange(t.key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              contentType === t.key
-                ? "bg-orange-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {t.emoji} {t.label}
-          </button>
-        ))}
+        {tabs.map((t) => {
+          const pending = pendingCount(t.key);
+          return (
+            <button
+              key={t.key}
+              onClick={() => handleTypeChange(t.key)}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                contentType === t.key
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {t.emoji} {t.label}
+              {pending > 0 && (
+                <span className={`inline-flex items-center justify-center rounded-full text-xs font-bold px-1.5 py-0.5 min-w-[1.25rem] ${
+                  contentType === t.key ? "bg-white text-orange-600" : "bg-orange-500 text-white"
+                }`}>
+                  {pending}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Filter toggle */}
+      <div className="flex items-center justify-between">
+        <label className="block text-sm font-medium text-gray-700">
+          Select {tabs.find((t) => t.key === contentType)?.label.slice(0, -1)}
+        </label>
+        <button
+          onClick={() => { setUnsharedOnly((v) => !v); setSelectedId(""); }}
+          className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+            unsharedOnly
+              ? "border-orange-400 bg-orange-50 text-orange-700 font-medium"
+              : "border-gray-300 text-gray-500 hover:border-gray-400"
+          }`}
+        >
+          {unsharedOnly ? "Showing: unshared only" : "Show unshared only"}
+        </button>
       </div>
 
       {/* Item selector */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Select {tabs.find((t) => t.key === contentType)?.label.slice(0, -1)}
-        </label>
         <select
           value={selectedId}
-          onChange={(e) => { setSelectedId(e.target.value); setCopied(false); }}
+          onChange={(e) => handleSelect(e.target.value)}
           className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
         >
           <option value="">— Choose one —</option>
-          {currentList.map((item) => (
+          {visibleList.map((item) => (
             <option key={item.id} value={item.id}>
-              {item.title}
+              {isShared(contentType, item.id) ? "✓ " : "• "}{item.title}
             </option>
           ))}
         </select>
+        {unsharedOnly && visibleList.length === 0 && (
+          <p className="mt-2 text-sm text-green-600 font-medium">
+            All {tabs.find((t) => t.key === contentType)?.label.toLowerCase()} have been shared.
+          </p>
+        )}
       </div>
+
+      {/* Share status badge for selected item */}
+      {selectedItem && (
+        <div className={`flex items-center justify-between rounded-lg px-4 py-2.5 text-sm ${
+          itemShared ? "bg-green-50 border border-green-200" : "bg-amber-50 border border-amber-200"
+        }`}>
+          <span className={itemShared ? "text-green-700" : "text-amber-700"}>
+            {itemShared
+              ? `✓ Shared on ${formatSharedDate(itemSharedOn!)}`
+              : "⏳ Not shared yet"}
+          </span>
+          {itemShared ? (
+            <button
+              onClick={() => unmarkShared(selectedItem.contentType, selectedItem.id)}
+              className="text-xs text-gray-400 hover:text-red-500 underline transition-colors"
+            >
+              Unmark
+            </button>
+          ) : (
+            <button
+              onClick={() => markShared(selectedItem.contentType, selectedItem.id)}
+              className="text-xs text-green-600 hover:text-green-800 underline transition-colors"
+            >
+              Mark as shared
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Post preview */}
       {postText && (
@@ -145,7 +255,7 @@ export default function ShareComposer({ jobs, schemes, exams, blogs }: Props) {
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Copied!
+                Copied & marked!
               </>
             ) : (
               <>

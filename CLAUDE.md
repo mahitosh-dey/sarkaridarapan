@@ -175,6 +175,90 @@ All platforms use `@sarkaridarapaninfo`:
 
 ---
 
+## Content Writing Rules (MANDATORY — apply to ALL content)
+
+These rules apply to every blog post, job page, scheme page, and exam page — new or edited.
+**For old content:** modify ONE piece per day. Always ask the owner before starting.
+
+---
+
+### Part A — 30 Anti-AI Writing Patterns
+
+#### Content patterns
+1. **No significance inflation.** Cut "marking a pivotal moment", "serves as a testament", "underscores its importance", "reflects broader trends", "setting the stage for", "evolving landscape". State facts directly.
+2. **No notability name-dropping.** Don't list outlets without context. Give the quote and year, not a list of logos.
+3. **No superficial -ing analyses.** Cut "symbolizing...", "reflecting...", "showcasing...", "fostering..." tacked on as fake depth at the end of sentences.
+4. **No promotional language.** Cut "boasts", "vibrant", "nestled", "breathtaking", "groundbreaking", "renowned", "stunning". State facts plainly.
+5. **No vague attributions.** Never "experts believe", "industry reports suggest". Name the source and year.
+6. **No formulaic challenges sections.** No "Despite challenges... continues to thrive." Use specific facts instead.
+
+#### Language patterns
+7. **No AI vocabulary.** Ban: actually, additionally, align with, crucial, delve, enduring, enhance, fostering, garner, highlight (verb), interplay, intricate, key (adjective), landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore (verb), vibrant.
+8. **No copula avoidance.** Use "is/are/has" directly. Cut "serves as", "stands as", "boasts", "features".
+9. **No negative parallelisms.** Cut "It's not just about X, it's Y" and tailing negations like "no guessing". State the point directly.
+10. **No rule of three.** Don't force ideas into groups of three. Use the natural number of items.
+11. **No synonym cycling.** Repeat the clearest word. Don't swap synonyms to avoid repetition.
+12. **No false ranges.** Cut "from X to Y" when X and Y aren't on a real scale.
+13. **Active voice — name the actor.** Avoid subjectless fragments like "No configuration needed."
+
+#### Style patterns
+14. **No em dashes or en dashes — hard rule.** Zero — or – in final output. Replace with: period (new sentence), comma (aside), colon (explanation), or parentheses. Also catch spaced dashes ` — ` and double hyphens ` -- `.
+15. **No bold overuse.** Don't bold terms or phrases mechanically. Bold only for truly critical warnings.
+16. **No inline-header lists.** Don't write bullets as "**Label:** explanation". Convert to prose or real headings.
+17. **Sentence case headings.** H2/H3 use sentence case, not Title Case. Bad: "## Best Books For SSC CGL" → Good: "## Best books for SSC CGL"
+18. **No emojis in content.** Remove decorative emojis from all blog/job/scheme/exam content. Exception: `/admin/share` Telegram posts use emojis intentionally — leave those alone.
+19. **Straight quotes only.** Use "..." not "..."
+
+#### Communication patterns
+20. **No chatbot artifacts.** Remove "I hope this helps!", "Let me know if...", "Here is a...", "Of course!", "Want me to give examples?", "Should I continue?", "Want me to expand on any section?"
+21. **No knowledge-cutoff disclaimers.** Remove "while specific details are limited", "maintains a low profile". Find the source or cut the sentence.
+22. **No sycophantic tone.** Cut "Great question!", "You're absolutely right!"
+
+#### Filler and hedging
+23. **Cut filler phrases.** "In order to" → "To" | "Due to the fact that" → "Because" | "It is important to note that" → delete it | "The system has the ability to" → "The system can"
+24. **Cut excessive hedging.** "could potentially possibly" → "may"
+25. **No generic conclusions.** Cut "The future looks bright", "Exciting times lie ahead". End with a specific fact.
+26. **Hyphens in predicate position only when attributive.** Keep "a high-quality report" but write "the report is high quality".
+27. **No persuasive authority tropes.** Cut "At its core", "The real question is", "What really matters". State the point directly.
+28. **No signposting announcements.** Cut "Let's dive in", "Here's what you need to know", "No fluff, just what matters". Start with the content.
+29. **No fragmented headers.** Don't follow a heading with a one-liner that restates it.
+30. **No diff-anchored writing.** Describe what a thing IS, not what changed from before.
+31. **No manufactured punchlines / staccato drama.** Don't stack short declarative sentences to fake drama. Bad: "It had no preference. No aesthetic. No nostalgia." → Merge into one real sentence.
+32. **No aphorism formulas.** Cut "X is the Y of Z", "X becomes a trap", "X is not a tool but a mirror", "the language of", "the currency of". Replace with the concrete claim.
+33. **No conversational rhetorical openers.** Cut standalone "Honestly?", "Look,", "Here's the thing,", "The thing is,", "Real talk," used as fake-candid hooks. Just say the thing.
+
+---
+
+### Part B — AI Citation Rules (AI-1 to AI-6)
+
+These make content quotable by LLM answer engines (ChatGPT, Perplexity, Gemini, Claude).
+
+- **AI-1:** The first sentence of every H2 section must be self-contained and liftable — no pronoun-only references.
+- **AI-2:** Every dated stat carries inline attribution in the same sentence. Example: "50 lakh beneficiaries enrolled as of March 2026, per the Ministry of Rural Development."
+- **AI-3:** Every blog post should include FAQPage JSON-LD. Each FAQ answer must open with a directly-answering sentence (not "Great question", not "It depends").
+- **AI-4:** Worked examples use actual numbers. Never "X rupees" or "some amount".
+- **AI-5:** Sources/links section uses primary sources only — government portals, official notifications, ministry sites.
+- **AI-6:** Comparisons (eligibility criteria, salary, exam vs exam) must use markdown tables, not prose lists.
+
+---
+
+### Part C — Ten Human-Voice Rules
+
+Apply to every sentence of every article.
+
+- **H-1:** Never bold the first sentence of a paragraph. Use real ## or ### headings instead.
+- **H-2:** Three consecutive sentences with the same opener → rewrite at least two.
+- **H-3:** Never write "Here is X" or "Here is what X is." State it directly.
+- **H-4:** Never preview the steps then give the steps. Just give the steps.
+- **H-5:** Never write "Notice that..." Make the observation directly.
+- **H-6:** Start at least 1 paragraph per post with a number, quote, or surprising fact.
+- **H-7:** Use contractions naturally — it's, you'll, doesn't, they're, can't.
+- **H-8:** Include at least 1 short paragraph (1–2 sentences) per post for rhythm.
+- **H-9:** Never write the word "consistently." Replace with a specific stat or drop it.
+- **H-10:** End with a specific observation, not a summary repeat of the post.
+
+---
+
 ## Important Warnings
 
 1. **ads.txt placeholder** — `public/ads.txt` has `pub-XXXXXXXXXXXXXXXX`. Update immediately after AdSense approval.

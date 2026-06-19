@@ -22,6 +22,8 @@ Priority order: newest and highest-traffic posts first.
 
 | # | Slug | Title | Category | Published | Rules Applied | Date Done |
 |---|---|---|---|---|---|---|
+| new | `ssc-cgl-tier-2-score-card-2026-how-to-check-marks` | SSC CGL Tier 2 Score Card 2026 | Application Help | 2026-06-19 | ✅ Done | 2026-06-19 |
+| new | `ctet-2026-eligibility-exam-pattern-syllabus-preparation-guide` | CTET 2026 Complete Guide | Exam Prep | 2026-06-19 | ✅ Done | 2026-06-19 |
 | 0 | `upsc-mains-2026-preparation-strategy-9-week-plan` | UPSC Mains 2026 Preparation Strategy | Exam Prep | 2026-06-18 | ✅ Done | 2026-06-18 |
 | 1 | `upsc-prelims-result-2026-cutoff-paper-analysis` | UPSC Prelims Result 2026 | Exam Prep | 2026-06-15 | ✅ Done | 2026-06-18 |
 | 2 | `upsc-cse-2026-notification-dates-eligibility-apply-online` | UPSC CSE 2026 Notification | Exam Prep | 2026-06-12 | ⬜ | — |
@@ -31,7 +33,7 @@ Priority order: newest and highest-traffic posts first.
 | 6 | `best-government-jobs-for-women-india-2026-career-guide` | Best Govt Jobs for Women 2026 | Career Guide | 2026-06-11 | ⬜ | — |
 | 7 | `how-to-apply-pm-mudra-loan-2026-step-by-step-guide` | How to Apply for PM Mudra Loan | Scheme Guide | 2026-06-11 | ⬜ | — |
 | 8 | `how-to-crack-upsc-cse-2026-first-attempt-strategy-guide` | How to Crack UPSC CSE 2026 | Career Guide | 2026-06-11 | ⬜ | — |
-| 9 | `agniveer-2026-army-navy-air-force-complete-guide` | Agniveer 2026 Complete Guide | Career Guide | 2026-06-10 | ⬜ | — |
+| 9 | `agniveer-2026-army-navy-air-force-complete-guide` | Agniveer 2026 Complete Guide | Career Guide | 2026-06-10 | ✅ Done | 2026-06-19 |
 | 10 | `how-to-clear-ibps-clerk-2026-first-attempt` | How to Clear IBPS Clerk 2026 | Exam Prep | 2026-06-08 | ⬜ | — |
 | 11 | `best-books-ibps-po-sbi-po-2026` | Best Books for IBPS PO & SBI PO | Exam Prep | 2026-06-08 | ⬜ | — |
 | 12 | `upsc-vs-ssc-which-exam-to-choose-2026` | UPSC vs SSC — Which to Choose | Career Guide | 2026-06-08 | ⬜ | — |
@@ -66,9 +68,10 @@ Priority order: newest and highest-traffic posts first.
 
 | Status | Count |
 |---|---|
-| ✅ Done (DB updated) | 3 |
-| ⬜ Not done | 34 |
-| **Total** | **37** |
+| ✅ Done (DB updated) | 4 |
+| ✅ Done (draft ready) | 1 |
+| ⬜ Not done | 33 |
+| **Total** | **38** |
 
 ---
 
@@ -76,6 +79,8 @@ Priority order: newest and highest-traffic posts first.
 
 | Date | Post # | Slug | What was changed |
 |---|---|---|---|
+| 2026-06-19 | #9 | `agniveer-2026-army-navy-air-force-complete-guide` | Title em dash removed. Promotional title ("The Only Guide You Need") replaced with factual title. Opening paragraph rewritten: removed chatty/sentimental tone, rule of three ("vacancies are real..."), signposting ("Let's go service by service"). All headings → sentence case. Em dashes in headings replaced with colons. Bold sub-paper labels (GD Paper, Technical Paper) → proper #### headings. Bold overuse stripped throughout. Inline-header prep tips (numbered + bold) → prose paragraphs under ### headings. FAQ **Q:** format → #### headings. Staccato "No second chance. Fail it and you're out." → single sentence. "This is the question everyone asks" signposting removed. "Here's the honest breakdown:" removed. Life insurance and Seva Nidhi inline-headers → regular prose. Vague state attribution qualified. Sources section added. DB updated. |
+| 2026-06-19 | new | `ctet-2026-eligibility-exam-pattern-syllabus-preparation-guide` | New post written with all rules applied. Tables for exam pattern, passing marks, fee. Sentence case headings. No em dashes. No inline-header lists — syllabus subsections use ### headings. FAQ uses ####. Sources section with official URLs. All stats attributed to CBSE/NCTE. |
 | 2026-06-17 | #4 | `ssc-cgl-2026-syllabus-preparation-guide` | Em dashes removed, Title Case → sentence case, inline-header bullets → prose, signposting removed, generic ending replaced, cutoff attribution added. DB updated directly via script. |
 | 2026-06-18 | new | `upsc-mains-2026-preparation-strategy-9-week-plan` | New post written with all rules applied from scratch. 9-week plan, paper structure table, answer writing norms, FAQ section, attribution for all stats. No em dashes, sentence case headings, no inline-headers, no signposting. 1,608 words. |
 | 2026-06-18 | #1 | `upsc-prelims-result-2026-cutoff-paper-analysis` | Title em dash → colon. All headings → sentence case. 6 inline-header lists (**Label:**) → H4 headings. Signposting removed. Bold overuse stripped. Vague "experts expect" → attributed to official 2025 result. Passive voice fixed. Negative parallelism removed. Generic ending replaced with specific stats (933 seats, 5.49 lakh appeared). En dashes in ranges → "to". DB updated via script. |
