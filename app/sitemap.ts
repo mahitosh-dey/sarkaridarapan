@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
+import { getAllGuides } from "@/lib/guides";
 import {
   SITE_URL,
   STATES,
   JOB_CATEGORIES,
 } from "@/lib/constants";
+
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages — /search is excluded (has noindex meta)
@@ -62,7 +65,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch { /* skip on error */ }
 
-  // Blog/Guide pages
+  // Blog/Guide pages — hardcoded guides from guides.ts
+  const hardcodedGuidePages: MetadataRoute.Sitemap = getAllGuides().map((guide) => ({
+    url: `${SITE_URL}/blog/${guide.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  // Blog/Guide pages — DB posts from Supabase
   let blogPostPages: MetadataRoute.Sitemap = [];
   try {
     const posts = await getPublishedDbPosts();
@@ -104,6 +115,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...jobPages,
     ...schemePages,
     ...examPages,
+    ...hardcodedGuidePages,
     ...blogPostPages,
     ...categoryPages,
     ...statePages,
