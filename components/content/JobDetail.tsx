@@ -7,9 +7,11 @@ import { safeFormatDate } from "@/lib/date-utils";
 
 interface JobDetailProps {
   job: JobPost;
+  closingSoon?: boolean;
+  daysLeft?: number | null;
 }
 
-export default function JobDetail({ job }: JobDetailProps) {
+export default function JobDetail({ job, closingSoon = false, daysLeft = null }: JobDetailProps) {
   const [copied, setCopied] = useState(false);
 
   const updatedDate = safeFormatDate(job.updatedAt, "—", "long");
@@ -85,6 +87,11 @@ export default function JobDetail({ job }: JobDetailProps) {
           <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
             {job.state}
           </span>
+          {closingSoon && daysLeft !== null && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700 ring-1 ring-inset ring-red-600/20">
+              🔴 Closing in {daysLeft} day{daysLeft === 1 ? "" : "s"}
+            </span>
+          )}
         </div>
 
         {job.verifiedAt && (
@@ -217,7 +224,16 @@ export default function JobDetail({ job }: JobDetailProps) {
                 {job.importantDates.lastDate && (
                   <tr className="bg-white">
                     <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Last Date</td>
-                    <td className="px-4 py-3 font-semibold text-red-600">{formatDate(job.importantDates.lastDate)}</td>
+                    <td className="px-4 py-3 font-semibold text-red-600">
+                      <span className="flex flex-wrap items-center gap-2">
+                        {formatDate(job.importantDates.lastDate)}
+                        {closingSoon && daysLeft !== null && (
+                          <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700 ring-1 ring-inset ring-red-600/20">
+                            🔴 {daysLeft} day{daysLeft === 1 ? "" : "s"} left
+                          </span>
+                        )}
+                      </span>
+                    </td>
                   </tr>
                 )}
                 {job.importantDates.examDate && (

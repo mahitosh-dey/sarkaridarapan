@@ -6,6 +6,7 @@ import JobCard from "@/components/ui/JobCard";
 import SchemeCard from "@/components/ui/SchemeCard";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { getJobsByState, getSchemesByState } from "@/lib/content";
 import { SITE_NAME, SITE_URL, STATES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
@@ -103,6 +104,12 @@ export default async function StatePage({ params, searchParams }: StatePageProps
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: `${stateData.name} Government Jobs`, url: `${SITE_URL}/state/${params.state}` },
+        ]}
+      />
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">

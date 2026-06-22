@@ -8,11 +8,13 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import GuideCard from "@/components/GuideCard";
 import { getJobPosts, getJobBySlug, getJobsByCategory } from "@/lib/content";
 import { getRelatedGuidesForJob } from "@/lib/guides";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { safeFormatDate } from "@/lib/date-utils";
+import { isClosingSoon, getDaysRemaining } from "@/lib/utils";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 // Converts any stored date string to YYYY-MM-DD for schema.org.
@@ -53,6 +55,18 @@ function parseSalary(raw: string | null | undefined): Record<string, unknown> | 
   };
 }
 
+// Formats a raw date string as "DD MMM" (e.g. "29 Jul") for page titles.
+// Delegates parsing to toIsoDate so all stored formats are handled uniformly.
+// Uses UTC parts to avoid server timezone drift on YYYY-MM-DD strings.
+function formatDateShort(raw: string | null | undefined): string {
+  const iso = toIsoDate(raw);
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (isNaN(date.getTime())) return "";
+  return `${String(d).padStart(2, "0")} ${date.toLocaleString("en-US", { month: "short", timeZone: "UTC" })}`;
+}
+
 export const revalidate = REVALIDATE_INTERVAL;
 
 interface JobPageProps {
@@ -75,26 +89,56 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     const job = await getJobBySlug(params.slug);
     if (!job) return { title: "Job Not Found" };
 
-    const post = job.postName || job.title;
-    const org = job.organization || "Government of India";
-    const rawLastDate = job.importantDates?.lastDate;
-    const lastDateFormatted = rawLastDate ? safeFormatDate(rawLastDate, "", "short", true) : "";
-    const descParts = [
-      job.vacancies > 0 ? `${job.vacancies.toLocaleString("en-IN")} Vacancies` : "",
-      lastDateFormatted ? `Last Date: ${lastDateFormatted}` : "",
-      job.salary ? `Salary: ${job.salary}` : "",
-    ].filter(Boolean);
-    const descSuffix = descParts.length > 0 ? ` ${descParts.join(" | ")}.` : "";
-    const description = `Apply for ${post} at ${org}.${descSuffix} Check eligibility and apply online.`;
+    const postName = job.postName || job.title;
+    const year = job.publishedAt
+      ? new Date(job.publishedAt).getFullYear()
+      : new Date().getFullYear();
+    const rawLastDate = job.importantDates?.lastDate || job.lastDate;
+    const lastDateShort = formatDateShort(rawLastDate);
+    const lastDateFull = safeFormatDate(rawLastDate, "", "short");
+    const vacanciesLabel = job.vacancies > 0
+      ? `${job.vacancies.toLocaleString("en-IN")} Vacancies`
+      : "";
+
+    // Build the middle segment: "9,144 Vacancies, Apply Online by 29 Jul"
+    const midParts = [
+      vacanciesLabel,
+      lastDateShort ? `Apply Online by ${lastDateShort}` : "",
+    ].filter(Boolean).join(", ");
+    const suffix = ` ${year}${midParts ? `: ${midParts}` : ""} | ${SITE_NAME}`;
+
+    // Truncate post_name so total stays at or under 60 chars where possible.
+    // Floor at 15 chars so the name stays meaningful when the suffix is long.
+    const budget = Math.max(15, 60 - suffix.length);
+    const displayName =
+      postName.length > budget
+        ? postName.slice(0, budget - 1).trimEnd() + "…"
+        : postName;
+    const title = `${displayName}${suffix}`;
+
+    // Description: "Apply for {post_name} {year} — {vacancies} vacancies, last date {last_date}.
+    //               Check eligibility, salary {salary_range}, exam pattern and direct apply link."
+    const vacanciesCount = job.vacancies > 0
+      ? `${job.vacancies.toLocaleString("en-IN")} vacancies`
+      : "";
+    let description = `Apply for ${postName} ${year}`;
+    if (vacanciesCount || lastDateFull) {
+      description += " —";
+      if (vacanciesCount) description += ` ${vacanciesCount}`;
+      if (lastDateFull) description += `${vacanciesCount ? "," : ""} last date ${lastDateFull}`;
+    }
+    description += ". Check eligibility";
+    if (job.salary) description += `, salary ${job.salary}`;
+    description += ", exam pattern and direct apply link.";
 
     return {
-      title: job.title,
+      title,
       description,
       alternates: {
         canonical: `${SITE_URL}/sarkari-naukri/${params.slug}`,
       },
       openGraph: {
-        title: `${job.title} | ${SITE_NAME}`,
+        title,
         description,
         url: `${SITE_URL}/sarkari-naukri/${params.slug}`,
         type: "article",
@@ -104,7 +148,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       },
       twitter: {
         card: "summary_large_image",
-        title: job.title,
+        title,
         description,
       },
     };
@@ -158,59 +202,35 @@ export default async function JobPage({ params }: JobPageProps) {
 
   const baseSalary = parseSalary(job.salary);
 
-  // addressLocality = most specific location we have (state or national capital for central govt)
-  // Normalise "all-india" / "All India" / "all india" variants to New Delhi.
   const isAllIndia = !job.state || job.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
-  const addressLocality = isAllIndia ? "New Delhi" : job.state;
+  const addressRegion = isAllIndia ? "India" : job.state;
 
-  // Postal codes for state capitals — used to satisfy Google's JobPosting rich result recommendations.
-  const STATE_POSTAL_CODES: Record<string, string> = {
-    "all-india": "110001", "delhi": "110001",
-    "uttar-pradesh": "226001", "maharashtra": "400032",
-    "tamil-nadu": "600009", "karnataka": "560001",
-    "rajasthan": "302005", "gujarat": "382010",
-    "bihar": "800001", "madhya-pradesh": "462004",
-    "andhra-pradesh": "522503", "telangana": "500022",
-    "west-bengal": "700001", "odisha": "751001",
-    "jharkhand": "834001", "assam": "781001",
-    "kerala": "695001", "haryana": "134109",
-    "punjab": "160001", "himachal-pradesh": "171001",
-    "uttarakhand": "248001", "chhattisgarh": "492001",
-    "jammu-kashmir": "190001", "goa": "403001",
-    "tripura": "799001", "meghalaya": "793001",
-  };
-  const postalCode = STATE_POSTAL_CODES[job.state?.toLowerCase() ?? ""] ?? "110001";
+  const pageUrl = `${SITE_URL}/sarkari-naukri/${params.slug}`;
 
   const jobPostingSchema: Record<string, unknown> = {
-    "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: job.title,
-    description: job.description,
+    "@id": `${pageUrl}/#jobposting`,
+    title: job.postName || job.title,
+    description: (job.description?.trim() ?? "").slice(0, 500),
     datePosted: toIsoDate(job.publishedAt) ?? job.publishedAt,
-    dateModified: toIsoDate(job.verifiedAt ?? job.updatedAt) ?? job.updatedAt,
     ...(validThrough ? { validThrough } : {}),
-    url: `${SITE_URL}/sarkari-naukri/${params.slug}`,
-    identifier: {
-      "@type": "PropertyValue",
-      name: job.organization || SITE_NAME,
-      value: job.slug,
-    },
-    ...(isAllIndia ? { employmentType: "FULL_TIME", jobLocationType: "TELECOMMUTE" } : {}),
+    employmentType: "FULL_TIME",
     hiringOrganization: {
       "@type": "Organization",
       name: job.organization || "Government of India",
-      sameAs: job.officialLink || SITE_URL,
     },
     jobLocation: {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        streetAddress: addressLocality,
-        addressLocality,
-        addressRegion: job.state || "Delhi",
-        postalCode,
         addressCountry: "IN",
+        addressRegion,
       },
+    },
+    identifier: {
+      "@type": "PropertyValue",
+      name: job.organization || SITE_NAME,
+      value: params.slug,
     },
     directApply: false,
   };
@@ -225,18 +245,104 @@ export default async function JobPage({ params }: JobPageProps) {
     url: job.applyLink,
   };
 
+  const postName = job.postName || job.title;
+  const lastDateRaw = job.importantDates?.lastDate || job.lastDate || "";
+  const lastDateFormatted = safeFormatDate(lastDateRaw, "");
+
+  const jobFaqs = [
+    {
+      question: `How to apply for ${postName}?`,
+      answer: job.applyLink
+        ? `Visit the official application portal at ${job.applyLink} to apply for ${postName}.${lastDateFormatted ? ` The last date to apply is ${lastDateFormatted}.` : ""} Read the official notification carefully before submitting your application.`
+        : `To apply for ${postName}, visit the official website of ${job.organization || "the recruiting organisation"} and follow the instructions in the official notification.${lastDateFormatted ? ` The last date to apply is ${lastDateFormatted}.` : ""}`,
+    },
+    {
+      question: `What is the last date for ${postName}?`,
+      answer: lastDateFormatted
+        ? `The last date to apply for ${postName} is ${lastDateFormatted}. Submit your application before this date to avoid rejection.`
+        : `The application deadline for ${postName} has not been announced yet. Check the official notification on ${job.organization || "the recruiting organisation"}'s website for the latest updates.`,
+    },
+    {
+      question: `What is the salary for ${postName}?`,
+      answer: job.salary
+        ? `The salary for ${postName} is ${job.salary} per month. Additional allowances such as HRA, DA, and TA apply as per government norms.`
+        : `The salary for ${postName} will be as per ${job.organization || "the recruiting organisation"} pay scales. Refer to the official notification for exact pay details.`,
+    },
+  ];
+
+  const faqSchema = {
+    "@type": "FAQPage",
+    "@id": `${pageUrl}/#faq`,
+    mainEntity: jobFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+
+  const webPageSchema: Record<string, unknown> = {
+    "@type": "WebPage",
+    "@id": `${pageUrl}/#webpage`,
+    url: pageUrl,
+    name: job.title,
+    isPartOf: { "@type": "WebSite", url: SITE_URL },
+    mainEntity: { "@id": `${pageUrl}/#jobposting` },
+  };
+
+  const lastDateForSA = job.importantDates?.lastDate || job.lastDate;
+  const closingSoon = job.isActive && isClosingSoon(lastDateForSA);
+  const daysLeft = getDaysRemaining(lastDateForSA ?? null);
+
+  const specialAnnouncementSchema: Record<string, unknown> | null =
+    closingSoon
+      ? {
+          "@type": "SpecialAnnouncement",
+          name: `Last date to apply: ${job.title}`,
+          text: `The last date to apply for ${postName}${job.vacancies > 0 ? ` (${job.vacancies.toLocaleString("en-IN")} vacancies)` : ""} at ${job.organization} is ${safeFormatDate(lastDateForSA ?? "", "", "long")}. Apply before the deadline closes.`,
+          datePosted: toIsoDate(job.publishedAt) ?? job.publishedAt,
+          ...(validThrough ? { expires: `${validThrough}T23:59:59+05:30` } : {}),
+          category: "https://www.wikidata.org/wiki/Q628455",
+          announcementLocation: {
+            "@type": "GovernmentBuilding",
+            name: job.organization,
+            address: { "@type": "PostalAddress", addressCountry: "IN" },
+          },
+          spatialCoverage: {
+            "@type": "Place",
+            name: isAllIndia ? "India" : job.state,
+          },
+          url: pageUrl,
+        }
+      : null;
+
+  const combinedSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      webPageSchema,
+      jobPostingSchema,
+      faqSchema,
+      ...(specialAnnouncementSchema ? [specialAnnouncementSchema] : []),
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
-
-      <JsonLd data={jobPostingSchema} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Sarkari Naukri", url: `${SITE_URL}/sarkari-naukri` },
+          { name: job.title, url: pageUrl },
+        ]}
+      />
+      <JsonLd data={combinedSchema} />
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           <article className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-6 md:p-8">
-              <JobDetail job={job} />
+              <JobDetail job={job} closingSoon={closingSoon} daysLeft={daysLeft} />
 
               {/* AI-generated article content */}
               {job.content && job.content.trim() !== "" && (
@@ -276,6 +382,37 @@ export default async function JobPage({ params }: JobPageProps) {
               </div>
             </section>
           )}
+
+          {/* FAQ */}
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Frequently asked questions
+            </h2>
+            <div className="space-y-3">
+              {jobFaqs.map((faq, i) => (
+                <details
+                  key={i}
+                  className="group bg-white rounded-lg border border-gray-200 overflow-hidden"
+                >
+                  <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors list-none">
+                    <span className="pr-4">{faq.question}</span>
+                    <svg
+                      className="h-5 w-5 flex-shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <p className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </section>
         </div>
 
         {/* Sidebar */}

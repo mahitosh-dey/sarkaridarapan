@@ -13,6 +13,7 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
 import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
 import { getEntranceExamPosts, getJobsByCategory, getSchemePosts } from "@/lib/content";
@@ -113,26 +114,29 @@ export default async function GuidePage({ params }: GuidePageProps) {
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: guide.title,
+    headline: guide.title.slice(0, 110),
     description: guide.description,
     author: {
       "@type": "Person",
       name: "Mahitosh Dey",
-      url: `${SITE_URL}/about/mahitosh-dey`,
+      url: `${SITE_URL}/about`,
       sameAs: "https://www.linkedin.com/in/mahitosh-dey-b70575147/",
     },
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
-      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/images/logo.png`,
+      },
     },
     datePublished: guide.publishedAt,
     dateModified: guide.updatedAt,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${SITE_URL}/blog/${guide.slug}`,
+      "@id": `${SITE_URL}/blog/${params.slug}`,
     },
-    image: guide.image || `${SITE_URL}/og-image.png`,
+    image: guide.image || `${SITE_URL}/images/og-default.jpg`,
   };
 
   const faqSchema = guide.faqs?.length
@@ -153,6 +157,13 @@ export default async function GuidePage({ params }: GuidePageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Blog", url: `${SITE_URL}/blog` },
+          { name: guide.title, url: `${SITE_URL}/blog/${params.slug}` },
+        ]}
+      />
       <JsonLd data={articleSchema} />
       {faqSchema && <JsonLd data={faqSchema} />}
 

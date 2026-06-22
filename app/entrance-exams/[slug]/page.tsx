@@ -15,6 +15,19 @@ import { getPublishedDbPosts } from "@/lib/blog-db";
 import { examToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
+// Normalises any stored date string to YYYY-MM-DD for schema.org.
+// Handles ISO timestamps, YYYY-MM-DD, DD/MM/YYYY, and DD.MM.YYYY.
+function toIsoDate(raw: string | null | undefined): string | undefined {
+  if (!raw?.trim()) return undefined;
+  const s = raw.trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (slash) return `${slash[3]}-${slash[2].padStart(2, "0")}-${slash[1].padStart(2, "0")}`;
+  const dot = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(s);
+  if (dot) return `${dot[3]}-${dot[2].padStart(2, "0")}-${dot[1].padStart(2, "0")}`;
+  return undefined;
+}
+
 export const revalidate = REVALIDATE_INTERVAL;
 
 interface ExamPageProps {
@@ -108,6 +121,32 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
     { label: exam.title },
   ];
 
+  const pageUrl = `${SITE_URL}/entrance-exams/${params.slug}`;
+  const examDateIso = toIsoDate(exam.examDate);
+
+  const eventSchema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: exam.title,
+    ...(examDateIso ? { startDate: examDateIso, endDate: examDateIso } : {}),
+    description: exam.description || "",
+    organizer: {
+      "@type": "Organization",
+      name: exam.conductingBody || "Government of India",
+    },
+    location: {
+      "@type": "Place",
+      name: "India",
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "IN",
+      },
+    },
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    url: pageUrl,
+  };
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -139,6 +178,7 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
 
+      <JsonLd data={eventSchema} />
       <JsonLd data={articleSchema} />
 
       <div className="flex flex-col lg:flex-row gap-8">

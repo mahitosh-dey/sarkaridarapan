@@ -26,7 +26,7 @@ Priority order: newest and highest-traffic posts first.
 | new | `ctet-2026-eligibility-exam-pattern-syllabus-preparation-guide` | CTET 2026 Complete Guide | Exam Prep | 2026-06-19 | ✅ Done | 2026-06-19 |
 | 0 | `upsc-mains-2026-preparation-strategy-9-week-plan` | UPSC Mains 2026 Preparation Strategy | Exam Prep | 2026-06-18 | ✅ Done | 2026-06-18 |
 | 1 | `upsc-prelims-result-2026-cutoff-paper-analysis` | UPSC Prelims Result 2026 | Exam Prep | 2026-06-15 | ✅ Done | 2026-06-18 |
-| 2 | `upsc-cse-2026-notification-dates-eligibility-apply-online` | UPSC CSE 2026 Notification | Exam Prep | 2026-06-12 | ⬜ | — |
+| 2 | `upsc-cse-2026-notification-dates-eligibility-apply-online` | UPSC CSE 2026 Notification | Exam Prep | 2026-06-12 | ✅ Done | 2026-06-22 |
 | 3 | `top-10-government-jobs-after-12th-india-2026` | Top 10 Govt Jobs After 12th | Career Guide | 2026-06-12 | ⬜ | — |
 | 4 | `ssc-cgl-2026-syllabus-preparation-guide` | SSC CGL 2026 Syllabus Guide | Exam Prep | 2026-06-12 | ✅ Done | 2026-06-17 |
 | 5 | `best-government-jobs-for-arts-students-india-2026` | Best Govt Jobs for Arts Students | Career Guide | 2026-06-11 | ⬜ | — |
@@ -68,8 +68,8 @@ Priority order: newest and highest-traffic posts first.
 
 | Status | Count |
 |---|---|
-| ✅ Done (DB updated) | 4 |
-| ✅ Done (draft ready) | 1 |
+| ✅ Done (DB updated) | 5 |
+| ✅ Done (draft ready) | 0 |
 | ⬜ Not done | 33 |
 | **Total** | **38** |
 
@@ -84,3 +84,4 @@ Priority order: newest and highest-traffic posts first.
 | 2026-06-17 | #4 | `ssc-cgl-2026-syllabus-preparation-guide` | Em dashes removed, Title Case → sentence case, inline-header bullets → prose, signposting removed, generic ending replaced, cutoff attribution added. DB updated directly via script. |
 | 2026-06-18 | new | `upsc-mains-2026-preparation-strategy-9-week-plan` | New post written with all rules applied from scratch. 9-week plan, paper structure table, answer writing norms, FAQ section, attribution for all stats. No em dashes, sentence case headings, no inline-headers, no signposting. 1,608 words. |
 | 2026-06-18 | #1 | `upsc-prelims-result-2026-cutoff-paper-analysis` | Title em dash → colon. All headings → sentence case. 6 inline-header lists (**Label:**) → H4 headings. Signposting removed. Bold overuse stripped. Vague "experts expect" → attributed to official 2025 result. Passive voice fixed. Negative parallelism removed. Generic ending replaced with specific stats (933 seats, 5.49 lakh appeared). En dashes in ranges → "to". DB updated via script. |
+| 2026-06-22 | #2 | `upsc-cse-2026-notification-dates-eligibility-apply-online` | Title em dash → colon. Opening "most prestigious" removed; selection rate stat (under 0.1%) added. "This guide covers everything you need to know" signposting removed. All headings → sentence case. All em/en dashes removed (ranges → "to", em dashes → periods/colons). Stage headings "Stage 1 — Preliminary Exam" → "Stage 1: Preliminary exam" pattern throughout. **CSAT is qualifying** bold removed. **Grand Total** bold removed. Step 1-6 inline bold headers → #### headings. "make or break your Mains score" → rewritten as 500/1,750 marks fact. Duplicate PSIR/Political Science rows merged. "And 15+ more services" inline-header → #### Group A services heading. Salary inline-header → #### heading. Pep-talk ending replaced with specific preparation pattern observation. "This is not meant to discourage you" disclaimer removed. FAQ section added (4 questions). Sources section added. Stats attributed to UPSC Annual Reports. DB updated via script. |

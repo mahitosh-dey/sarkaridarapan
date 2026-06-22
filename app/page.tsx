@@ -9,10 +9,13 @@ import GuideCard from "@/components/GuideCard";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import FAQSection from "@/components/FAQSection";
+import JsonLd from "@/components/seo/JsonLd";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { isDatePast, safeFormatDate } from "@/lib/date-utils";
+import { isClosingSoon } from "@/lib/utils";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { HOME_FAQS } from "@/lib/faq-data";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -50,23 +53,99 @@ export default async function HomePage() {
   const latestGuides = guides.slice(0, 4);
 
   // Jobs whose last date is today or within the next 7 days
-  const todayIST = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-  const sevenDaysLaterIST = new Date(
-    new Date(todayIST).getTime() + 7 * 24 * 60 * 60 * 1000
-  ).toLocaleDateString("en-CA");
   const closingSoonJobs = jobs
-    .filter((job) => {
-      if (!job.isActive) return false;
-      const d = job.importantDates?.lastDate?.trim();
-      if (!d) return false;
-      const iso = d.length >= 10 ? d.slice(0, 10) : null;
-      if (!iso) return false;
-      return iso >= todayIST && iso <= sevenDaysLaterIST;
-    })
+    .filter((job) => job.isActive && isClosingSoon(job.importantDates?.lastDate))
     .slice(0, 5);
+
+  const specialAnnouncementsSchema = closingSoonJobs.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@graph": closingSoonJobs.map((job) => {
+          const lastDateRaw = job.importantDates?.lastDate ?? "";
+          const isoDate = lastDateRaw.length >= 10 ? lastDateRaw.slice(0, 10) : null;
+          const isAllIndia =
+            !job.state ||
+            job.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
+          const vacanciesText =
+            job.vacancies > 0
+              ? ` (${job.vacancies.toLocaleString("en-IN")} vacancies)`
+              : "";
+          return {
+            "@type": "SpecialAnnouncement",
+            name: `Last date to apply: ${job.title}`,
+            text: `The last date to apply for ${job.postName || job.title}${vacanciesText} at ${job.organization} is ${safeFormatDate(lastDateRaw, "", "long")}. Apply before the deadline closes.`,
+            datePosted: job.publishedAt,
+            ...(isoDate ? { expires: `${isoDate}T23:59:59+05:30` } : {}),
+            category: "https://www.wikidata.org/wiki/Q628455",
+            announcementLocation: {
+              "@type": "GovernmentBuilding",
+              name: job.organization,
+              address: { "@type": "PostalAddress", addressCountry: "IN" },
+            },
+            spatialCoverage: {
+              "@type": "Place",
+              name: isAllIndia ? "India" : job.state,
+            },
+            url: `${SITE_URL}/sarkari-naukri/${job.slug}`,
+          };
+        }),
+      }
+    : null;
+
+  const homeFaqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HOME_FAQS.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+
+  const siteSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: SITE_NAME,
+        url: SITE_URL,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: `${SITE_URL}/images/logo.png`,
+        description: SITE_DESCRIPTION,
+        foundingDate: "2026",
+        founder: { "@type": "Person", name: "Mahitosh Dey" },
+        sameAs: [
+          "https://t.me/sarkaridarapaninfo",
+          "https://whatsapp.com/channel/0029VbCHYsIDeON1dKiWuk1A",
+          "https://www.linkedin.com/in/mahitosh-dey-b70575147/",
+        ],
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          url: `${SITE_URL}/contact`,
+        },
+      },
+    ],
+  };
 
   return (
     <>
+      <JsonLd data={homeFaqSchema} />
+      <JsonLd data={siteSchema} />
+      {specialAnnouncementsSchema && <JsonLd data={specialAnnouncementsSchema} />}
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-800 via-blue-700 to-indigo-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">

@@ -6,6 +6,7 @@ import JobCard from "@/components/ui/JobCard";
 import Pagination from "@/components/ui/Pagination";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { getJobsByCategory, getJobPosts } from "@/lib/content";
 import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
@@ -99,6 +100,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: `${categoryData.name} Jobs`, url: `${SITE_URL}/category/${params.category}` },
+        ]}
+      />
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">

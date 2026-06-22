@@ -9,6 +9,7 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import GuideCard from "@/components/GuideCard";
 import { getSchemePosts, getSchemeBySlug, getJobsByState } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
@@ -164,7 +165,13 @@ export default async function SchemePage({ params }: SchemePageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
-
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Sarkari Yojana", url: `${SITE_URL}/sarkari-yojana` },
+          { name: scheme.title, url: `${SITE_URL}/sarkari-yojana/${params.slug}` },
+        ]}
+      />
       <JsonLd data={govtServiceSchema} />
       <JsonLd data={articleSchema} />
       {faqSchema && <JsonLd data={faqSchema} />}
