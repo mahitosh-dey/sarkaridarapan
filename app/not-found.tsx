@@ -35,7 +35,7 @@ export default function NotFound() {
           Coming Soon
         </h1>
         <p className="text-gray-500 text-lg mb-8">
-          This page is under construction. Check back soon — we're working on it.
+          This page is under construction. Check back soon — we&apos;re working on it.
         </p>
 
         {/* Navigation Links */}
@@ -62,7 +62,7 @@ export default function NotFound() {
 
         {/* Quick Links */}
         <div className="mt-10 text-left bg-gray-50 rounded-lg p-6 border border-gray-200">
-          <h2 className="font-semibold text-gray-900 mb-3">Explore what's available now</h2>
+          <h2 className="font-semibold text-gray-900 mb-3">Explore what&apos;s available now</h2>
           <ul className="space-y-2 text-sm text-gray-600">
             <li>
               <Link href="/sarkari-naukri" className="text-blue-700 hover:underline">

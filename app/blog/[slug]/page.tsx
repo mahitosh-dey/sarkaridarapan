@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import MarkdownContent from "@/components/content/MarkdownContent";
 import TableOfContents from "@/components/ui/TableOfContents";
 import GuideCard from "@/components/GuideCard";
@@ -195,8 +196,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
                     href="/about/mahitosh-dey"
                     className="flex items-center gap-2 group"
                   >
-                    <img
-                      src="/images/mahitosh-dey.jpeg?v=2"
+                    <Image
+                      src="/images/mahitosh-dey.jpeg"
                       alt="Mahitosh Dey"
                       width={28}
                       height={28}
@@ -297,7 +298,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                 Apply for these jobs
               </h2>
               <p className="text-sm text-gray-500 mb-6">
-                Government vacancies matching this guide's category — check last dates before applying.
+                Government vacancies matching this guide&apos;s category — check last dates before applying.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedJobs.map((job) => (
