@@ -2,6 +2,8 @@ import Link from "next/link";
 
 const quickLinks = [
   { label: "Home", href: "/" },
+  { label: "Admit Card", href: "/admit-card" },
+  { label: "Sarkari Result", href: "/results" },
   { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy Policy", href: "/privacy-policy" },
@@ -15,7 +17,7 @@ const categoryLinks = [
   { label: "Railway Jobs", href: "/category/railway" },
   { label: "Banking Jobs", href: "/category/banking" },
   { label: "Defence Jobs", href: "/category/defence" },
-  { label: "State Govt Jobs", href: "/category/state-govt" },
+  { label: "State PSC Jobs", href: "/category/state-psc" },
 ];
 
 const popularStates = [

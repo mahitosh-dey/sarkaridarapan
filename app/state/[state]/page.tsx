@@ -31,25 +31,13 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
     getJobsByState(params.state).catch(() => []),
     getSchemesByState(params.state).catch(() => []),
   ]);
-  const totalCount = jobs.length + schemes.length;
-
-  // No jobs at all — hard noindex + nofollow (thin page with zero content)
-  // Some content but below threshold — noindex but follow
-  // Enough content — fully indexed
-  const robots =
-    jobs.length === 0
-      ? { index: false, follow: false }
-      : totalCount < 5
-        ? { index: false, follow: true }
-        : { index: true, follow: true };
-
   return {
     title: `${stateData.name} Government Jobs & Schemes 2026`,
     description: `Latest government jobs and sarkari yojana in ${stateData.name}. Find state government vacancies, central govt jobs, and government schemes available in ${stateData.name}.`,
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
-    robots,
+    robots: { index: true, follow: true },
     openGraph: {
       title: `${stateData.name} Government Jobs & Schemes 2026 | ${SITE_NAME}`,
       description: `Latest government jobs and sarkari yojana in ${stateData.name}.`,

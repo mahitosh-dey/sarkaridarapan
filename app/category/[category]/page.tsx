@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     alternates: {
       canonical: `${SITE_URL}/category/${params.category}`,
     },
-    robots: count < 5 ? { index: false, follow: true } : { index: true, follow: true },
+    robots: { index: true, follow: true },
     openGraph: {
       title: `${categoryData.name} Jobs 2026 | ${SITE_NAME}`,
       description,

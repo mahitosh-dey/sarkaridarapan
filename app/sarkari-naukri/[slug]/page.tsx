@@ -107,14 +107,26 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     ].filter(Boolean).join(", ");
     const suffix = ` ${year}${midParts ? `: ${midParts}` : ""} | ${SITE_NAME}`;
 
-    // Truncate post_name so total stays at or under 60 chars where possible.
-    // Floor at 15 chars so the name stays meaningful when the suffix is long.
-    const budget = Math.max(15, 60 - suffix.length);
+    // Primary: fit post_name so total stays at or under 65 chars (Bing limit).
+    // Fallback: when the suffix alone is close to 65 chars, drop vacancy/date
+    // detail and fall back to the shorter "Name Year | Site" format.
+    const budget = Math.max(15, 65 - suffix.length);
     const displayName =
       postName.length > budget
         ? postName.slice(0, budget - 1).trimEnd() + "…"
         : postName;
-    const title = `${displayName}${suffix}`;
+    const rawTitle = `${displayName}${suffix}`;
+    const title = rawTitle.length <= 65
+      ? rawTitle
+      : (() => {
+          const shortSuffix = ` ${year} | ${SITE_NAME}`;
+          const shortBudget = Math.max(15, 65 - shortSuffix.length);
+          const shortName =
+            postName.length > shortBudget
+              ? postName.slice(0, shortBudget - 1).trimEnd() + "…"
+              : postName;
+          return `${shortName}${shortSuffix}`;
+        })();
 
     // Description: "Apply for {post_name} {year} — {vacancies} vacancies, last date {last_date}.
     //               Check eligibility, salary {salary_range}, exam pattern and direct apply link."
@@ -130,6 +142,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     description += ". Check eligibility";
     if (job.salary) description += `, salary ${job.salary}`;
     description += ", exam pattern and direct apply link.";
+    if (description.length > 155) description = description.slice(0, 154).trimEnd() + "…";
 
     return {
       title,

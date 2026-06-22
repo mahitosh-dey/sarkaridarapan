@@ -18,6 +18,8 @@ const navLinks: NavItem[] = [
   { label: "Sarkari Naukri", href: "/sarkari-naukri" },
   { label: "Sarkari Yojana", href: "/sarkari-yojana" },
   { label: "Entrance Exams", href: "/entrance-exams" },
+  { label: "Admit Card", href: "/admit-card" },
+  { label: "Results", href: "/results" },
   { label: "Blog", href: "/blog" },
 ];
 
