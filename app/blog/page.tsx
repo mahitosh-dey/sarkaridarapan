@@ -15,14 +15,14 @@ export const dynamic = "force-dynamic";
 const POSTS_PER_PAGE = 12;
 
 export const metadata: Metadata = {
-  title: `Guides & Articles - Preparation Tips, Scheme Guides | ${SITE_NAME}`,
+  title: `Blog - Preparation Tips, Scheme Guides | ${SITE_NAME}`,
   description:
     "Read comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and step-by-step application help for Sarkari Naukri aspirants.",
   alternates: {
     canonical: `${SITE_URL}/blog`,
   },
   openGraph: {
-    title: `Guides & Articles | ${SITE_NAME}`,
+    title: `Blog | ${SITE_NAME}`,
     description:
       "Comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and application help.",
     url: `${SITE_URL}/blog`,
@@ -57,7 +57,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: "Guides" },
+    { label: "Blog" },
   ];
 
   return (
@@ -66,7 +66,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
-          Guides &amp; Articles
+          Blog
         </h1>
         <p className="text-gray-600 text-lg">
           In-depth preparation guides, scheme walkthroughs, and expert tips for
@@ -85,7 +85,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            All Guides
+            All Posts
           </Link>
           {GUIDE_CATEGORIES.map((category) => (
             <Link
@@ -127,7 +127,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           ) : (
             <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                No Guides Found
+                No Posts Found
               </h3>
               <p className="text-gray-500">
                 No guides available for the selected category. Try a different

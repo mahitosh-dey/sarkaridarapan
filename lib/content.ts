@@ -99,6 +99,7 @@ function mapEntranceExamRow(row: any): EntranceExamPost {
     image: row.image || undefined,
     qualityFlag: row.quality_flag || null,
     reviewedAt: row.reviewed_at || null,
+    verifiedAt: row.verified_at || null,
   };
 }
 

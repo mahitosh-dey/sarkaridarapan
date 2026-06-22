@@ -57,6 +57,17 @@ export default function EntranceExamDetail({ exam }: EntranceExamDetailProps) {
             Published on {publishedDate}
           </span>
         </div>
+
+        {exam.verifiedAt && (
+          <div className="mt-4 inline-flex items-center gap-2 rounded-md bg-green-50 px-3 py-2 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0" aria-hidden="true">
+              <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
+            </svg>
+            Information verified on{" "}
+            <time dateTime={exam.verifiedAt}>{safeFormatDate(exam.verifiedAt, "", "long")}</time>{" "}
+            from official source
+          </div>
+        )}
       </header>
 
       <hr className="mb-8 border-gray-200" />

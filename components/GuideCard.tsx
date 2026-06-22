@@ -59,7 +59,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
           href={`/blog/${guide.slug}`}
           className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-150"
         >
-          Read Guide
+          Read Post
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"

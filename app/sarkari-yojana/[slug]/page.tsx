@@ -4,12 +4,13 @@ import { notFound } from "next/navigation";
 import SchemeDetail from "@/components/content/SchemeDetail";
 import MarkdownContent from "@/components/content/MarkdownContent";
 import SchemeCard from "@/components/ui/SchemeCard";
+import JobCard from "@/components/ui/JobCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import GuideCard from "@/components/GuideCard";
-import { getSchemePosts, getSchemeBySlug } from "@/lib/content";
+import { getSchemePosts, getSchemeBySlug, getJobsByState } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { schemeToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
@@ -74,28 +75,28 @@ export default async function SchemePage({ params }: SchemePageProps) {
     notFound();
   }
 
-  // Fetch related schemes from same category
-  let relatedSchemes: import("@/lib/types").SchemePost[] = [];
-  try {
-    const allSchemes = await getSchemePosts();
-    relatedSchemes = allSchemes
-      .filter((s) => s.category === scheme.category && s.slug !== scheme.slug)
-      .slice(0, 4);
-  } catch {
-    relatedSchemes = [];
-  }
+  // Determine state for job lookup before parallel fetch
+  const isAllIndia =
+    !scheme.state ||
+    scheme.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
+  const jobsState = isAllIndia ? "all-india" : scheme.state;
+  const blogSlugs = schemeToBlogs[params.slug] ?? [];
 
-  // Fetch related blog guides from static mapping
-  let relatedBlogs: import("@/lib/guides").Guide[] = [];
-  try {
-    const blogSlugs = schemeToBlogs[params.slug] ?? [];
-    if (blogSlugs.length > 0) {
-      const allBlogs = await getPublishedDbPosts();
-      relatedBlogs = allBlogs.filter((b) => blogSlugs.includes(b.slug));
-    }
-  } catch {
-    relatedBlogs = [];
-  }
+  // Fetch all related content in parallel
+  const [allSchemes, allBlogs, stateJobs] = await Promise.all([
+    getSchemePosts().catch(() => []),
+    blogSlugs.length > 0 ? getPublishedDbPosts().catch(() => []) : Promise.resolve([]),
+    getJobsByState(jobsState).catch(() => []),
+  ]);
+
+  const relatedSchemes = (allSchemes as import("@/lib/types").SchemePost[])
+    .filter((s) => s.category === scheme.category && s.slug !== scheme.slug)
+    .slice(0, 4);
+
+  const relatedBlogs = (allBlogs as import("@/lib/guides").Guide[])
+    .filter((b) => blogSlugs.includes(b.slug));
+
+  const stateJobsList = (stateJobs as import("@/lib/types").JobPost[]).slice(0, 3);
 
   const breadcrumbs = [
     { label: "Sarkari Yojana", href: "/sarkari-yojana" },
@@ -118,10 +119,6 @@ export default async function SchemePage({ params }: SchemePageProps) {
           })),
         }
       : null;
-
-  const isAllIndia =
-    !scheme.state ||
-    scheme.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
 
   const govtServiceSchema = {
     "@context": "https://schema.org",
@@ -203,10 +200,29 @@ export default async function SchemePage({ params }: SchemePageProps) {
             </section>
           )}
 
+          {/* Jobs in [State] / All-India Jobs */}
+          {stateJobsList.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {isAllIndia ? "All-India government jobs" : `Jobs in ${scheme.state}`}
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                {isAllIndia
+                  ? "Central government vacancies open to candidates from all states."
+                  : `Government job vacancies currently available in ${scheme.state}.`}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {stateJobsList.map((job) => (
+                  <JobCard key={job.slug} job={job} />
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Helpful Guides — links to related DB blog posts */}
           {relatedBlogs.length > 0 && (
             <section className="mt-10">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Helpful Guides</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Helpful articles</h2>
               <p className="text-sm text-gray-500 mb-6">
                 Step-by-step guides related to this scheme.
               </p>

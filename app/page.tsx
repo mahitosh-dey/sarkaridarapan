@@ -228,7 +228,7 @@ export default async function HomePage() {
               <section className="mb-12">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                    Latest Guides &amp; Articles
+                    Latest Blog Posts
                   </h2>
                   <Link
                     href="/blog"

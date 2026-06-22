@@ -14,8 +14,8 @@ import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
 import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
-import { getEntranceExamPosts, getJobPosts, getSchemePosts } from "@/lib/content";
-import { blogToExams, blogToJobs, blogToSchemes } from "@/lib/related-links";
+import { getEntranceExamPosts, getJobsByCategory, getSchemePosts } from "@/lib/content";
+import { blogToExams, blogToSchemes } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -72,55 +72,30 @@ export default async function GuidePage({ params }: GuidePageProps) {
 
   const tocItems = extractTocItems(guide.content);
 
-  // Related guides from the same category
-  const [dbPosts, hardcoded] = await Promise.all([
+  // Fetch all related content in parallel
+  const examSlugs = blogToExams[guide.slug] ?? [];
+  const schemeSlugs = blogToSchemes[guide.slug] ?? [];
+
+  const [dbPosts, hardcoded, categoryJobs, allExams, allSchemes] = await Promise.all([
     getPublishedDbPosts(),
     Promise.resolve(getAllGuides()),
+    getJobsByCategory(guide.category).catch(() => []),
+    examSlugs.length > 0 ? getEntranceExamPosts().catch(() => []) : Promise.resolve([]),
+    schemeSlugs.length > 0 ? getSchemePosts().catch(() => []) : Promise.resolve([]),
   ]);
+
   const dbSlugs = new Set(dbPosts.map((p) => p.slug));
   const allGuides = [...dbPosts, ...hardcoded.filter((g) => !dbSlugs.has(g.slug))];
   const relatedGuides = allGuides
     .filter((g) => g.category === guide.category && g.slug !== guide.slug)
     .slice(0, 3);
 
-  // Related entrance exams from static mapping
-  let relatedExams: import("@/lib/types").EntranceExamPost[] = [];
-  try {
-    const examSlugs = blogToExams[guide.slug] ?? [];
-    if (examSlugs.length > 0) {
-      const allExams = await getEntranceExamPosts();
-      relatedExams = allExams.filter((e) => examSlugs.includes(e.slug));
-    }
-  } catch {
-    relatedExams = [];
-  }
-
-  // Related jobs from static mapping
-  let relatedJobs: import("@/lib/types").JobPost[] = [];
-  try {
-    const jobSlugs = blogToJobs[guide.slug] ?? [];
-    if (jobSlugs.length > 0) {
-      const allJobs = await getJobPosts();
-      relatedJobs = allJobs.filter((j) => jobSlugs.includes(j.slug));
-    }
-  } catch {
-    relatedJobs = [];
-  }
-
-  // Related schemes from static mapping
-  let relatedSchemes: import("@/lib/types").SchemePost[] = [];
-  try {
-    const schemeSlugs = blogToSchemes[guide.slug] ?? [];
-    if (schemeSlugs.length > 0) {
-      const allSchemes = await getSchemePosts();
-      relatedSchemes = allSchemes.filter((s) => schemeSlugs.includes(s.slug));
-    }
-  } catch {
-    relatedSchemes = [];
-  }
+  const relatedJobs = categoryJobs.slice(0, 3);
+  const relatedExams = (allExams as import("@/lib/types").EntranceExamPost[]).filter((e) => examSlugs.includes(e.slug));
+  const relatedSchemes = (allSchemes as import("@/lib/types").SchemePost[]).filter((s) => schemeSlugs.includes(s.slug));
 
   const breadcrumbs = [
-    { label: "Guides", href: "/blog" },
+    { label: "Blog", href: "/blog" },
     { label: guide.title },
   ];
 
@@ -215,20 +190,22 @@ export default async function GuidePage({ params }: GuidePageProps) {
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-4 w-4 text-gray-400"
-                      aria-hidden="true"
-                    >
-                      <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-                    </svg>
-                    <Link href="/about/mahitosh-dey" className="hover:text-indigo-600 hover:underline transition-colors">
+                  {/* Author with photo */}
+                  <Link
+                    href="/about/mahitosh-dey"
+                    className="flex items-center gap-2 group"
+                  >
+                    <img
+                      src="/images/mahitosh-dey.jpeg?v=2"
+                      alt="Mahitosh Dey"
+                      width={28}
+                      height={28}
+                      className="h-7 w-7 rounded-full object-cover ring-2 ring-indigo-100"
+                    />
+                    <span className="font-semibold text-indigo-700 group-hover:underline transition-colors">
                       {guide.author}
-                    </Link>
-                  </div>
+                    </span>
+                  </Link>
 
                   <div className="flex items-center gap-1.5">
                     <svg
@@ -303,7 +280,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
           {relatedGuides.length > 0 && (
             <section className="mt-10">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Related Guides
+                Related articles
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedGuides.map((relGuide) => (
@@ -313,14 +290,14 @@ export default async function GuidePage({ params }: GuidePageProps) {
             </section>
           )}
 
-          {/* Related Jobs — internal links from static mapping */}
+          {/* Apply for These Jobs — category-matched job openings */}
           {relatedJobs.length > 0 && (
             <section className="mt-10">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Active Job Openings
+                Apply for these jobs
               </h2>
               <p className="text-sm text-gray-500 mb-6">
-                These government jobs are directly relevant to what you just read.
+                Government vacancies matching this guide's category — check last dates before applying.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedJobs.map((job) => (
@@ -383,7 +360,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                   clipRule="evenodd"
                 />
               </svg>
-              Back to All Guides
+              Back to Blog
             </Link>
           </div>
         </div>

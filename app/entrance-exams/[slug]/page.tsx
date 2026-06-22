@@ -175,7 +175,7 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
           {/* Helpful Guides — internal links to relevant blog posts */}
           {relatedBlogs.length > 0 && (
             <section className="mt-10">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Helpful Guides</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Helpful articles</h2>
               <p className="text-sm text-gray-500 mb-6">
                 Read these guides to understand your career options after this exam.
               </p>

@@ -116,6 +116,7 @@ export interface EntranceExamPost {
   image?: string;
   qualityFlag?: string[] | null;
   reviewedAt?: string | null;
+  verifiedAt?: string | null;
   completenessScore?: number;
 }
 

@@ -9,10 +9,9 @@ import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import GuideCard from "@/components/GuideCard";
-import { getJobPosts, getJobBySlug } from "@/lib/content";
+import { getJobPosts, getJobBySlug, getJobsByCategory } from "@/lib/content";
 import { getRelatedGuidesForJob } from "@/lib/guides";
 import { getPublishedDbPosts } from "@/lib/blog-db";
-import { jobToBlogs } from "@/lib/related-links";
 import { safeFormatDate } from "@/lib/date-utils";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
@@ -126,29 +125,23 @@ export default async function JobPage({ params }: JobPageProps) {
     notFound();
   }
 
-  // Fetch related jobs from same category
-  let relatedJobs: import("@/lib/types").JobPost[] = [];
-  try {
-    const allJobs = await getJobPosts();
-    relatedJobs = allJobs
-      .filter((j) => j.category === job.category && j.slug !== job.slug)
-      .slice(0, 4);
-  } catch {
-    relatedJobs = [];
-  }
-
-  // Merge DB blog posts from static mapping with category-based hardcoded guides
+  // Fetch similar jobs and related blog guides in parallel
   const hardcodedGuides = getRelatedGuidesForJob(job.category);
+  let similarJobs: import("@/lib/types").JobPost[] = [];
   let relatedGuides = hardcodedGuides;
   try {
-    const blogSlugs = jobToBlogs[params.slug] ?? [];
-    if (blogSlugs.length > 0) {
-      const allDbPosts = await getPublishedDbPosts();
-      const dbGuides = allDbPosts.filter((b) => blogSlugs.includes(b.slug));
+    const [categoryJobs, allDbPosts] = await Promise.all([
+      getJobsByCategory(job.category),
+      getPublishedDbPosts(),
+    ]);
+    similarJobs = categoryJobs.filter((j) => j.slug !== job.slug).slice(0, 3);
+    const dbGuides = allDbPosts.filter((b) => b.category === job.category).slice(0, 3);
+    if (dbGuides.length > 0) {
       const seen = new Set(dbGuides.map((g) => g.slug));
-      relatedGuides = [...dbGuides, ...hardcodedGuides.filter((g) => !seen.has(g.slug))].slice(0, 4);
+      relatedGuides = [...dbGuides, ...hardcodedGuides.filter((g) => !seen.has(g.slug))].slice(0, 3);
     }
   } catch {
+    similarJobs = [];
     relatedGuides = hardcodedGuides;
   }
 
@@ -257,12 +250,12 @@ export default async function JobPage({ params }: JobPageProps) {
             </div>
           </article>
 
-          {/* Related Jobs */}
-          {relatedJobs.length > 0 && (
+          {/* Similar Jobs */}
+          {similarJobs.length > 0 && (
             <section className="mt-10">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Government Jobs</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Similar Jobs</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {relatedJobs.map((relJob) => (
+                {similarJobs.map((relJob) => (
                   <JobCard key={relJob.slug} job={relJob} />
                 ))}
               </div>
@@ -272,7 +265,10 @@ export default async function JobPage({ params }: JobPageProps) {
           {/* Related Guides */}
           {relatedGuides.length > 0 && (
             <section className="mt-10">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Guides & Articles</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Related articles</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Preparation tips, eligibility guides, and exam strategies for this category.
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedGuides.map((guide) => (
                   <GuideCard key={guide.slug} guide={guide} />
