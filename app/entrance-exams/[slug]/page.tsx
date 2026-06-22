@@ -37,15 +37,19 @@ export async function generateMetadata({ params }: ExamPageProps): Promise<Metad
     const exam = await getEntranceExamBySlug(params.slug);
     if (!exam) return { title: "Entrance Exam Not Found" };
 
+    const fallbackDesc = `${exam.title} - Complete details including exam date, eligibility, syllabus, admit card, and results.`;
+    const rawDesc = exam.description || fallbackDesc;
+    const metaDesc = rawDesc.length > 160 ? rawDesc.slice(0, 157) + "..." : rawDesc;
+
     return {
       title: exam.title,
-      description: exam.description || `${exam.title} - Complete details including exam date, eligibility, syllabus, admit card, and results.`,
+      description: metaDesc,
       alternates: {
         canonical: `${SITE_URL}/entrance-exams/${params.slug}`,
       },
       openGraph: {
         title: `${exam.title} | ${SITE_NAME}`,
-        description: exam.description || `${exam.title} - Exam dates, eligibility, syllabus, and how to apply.`,
+        description: metaDesc,
         url: `${SITE_URL}/entrance-exams/${params.slug}`,
         type: "article",
         publishedTime: exam.publishedAt,
@@ -55,7 +59,7 @@ export async function generateMetadata({ params }: ExamPageProps): Promise<Metad
       twitter: {
         card: "summary_large_image",
         title: exam.title,
-        description: exam.description,
+        description: metaDesc,
       },
     };
   } catch {
