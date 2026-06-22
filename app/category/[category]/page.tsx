@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     alternates: {
       canonical: `${SITE_URL}/category/${params.category}`,
     },
-    ...(jobs.length === 0 && { robots: { index: false, follow: true } }),
+    robots: jobs.length < 5 ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title: `${categoryData.name} Jobs 2026 | ${SITE_NAME}`,
       description: `Latest ${categoryData.name} government job vacancies and notifications.`,
@@ -65,9 +65,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const paginatedJobs = categoryJobs.slice(startIndex, startIndex + postsPerPage);
 
   const breadcrumbs = [
-    { label: "Home", href: "/" },
-    { label: "Categories", href: "/sarkari-naukri" },
-    { label: categoryData.name },
+    { label: "Sarkari Naukri", href: "/sarkari-naukri" },
+    { label: `${categoryData.name} Jobs` },
   ];
 
   return (

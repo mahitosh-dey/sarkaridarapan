@@ -48,6 +48,22 @@ export async function getPublishedDbPosts(): Promise<Guide[]> {
   }
 }
 
+export async function getPostsByAuthor(author: string): Promise<Guide[]> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("blog_posts")
+      .select("*")
+      .eq("is_active", true)
+      .eq("author", author)
+      .order("published_at", { ascending: false });
+
+    if (error || !data) return [];
+    return (data as DbBlogPost[]).map(dbPostToGuide);
+  } catch {
+    return [];
+  }
+}
+
 export async function getDbPostBySlug(slug: string): Promise<Guide | null> {
   try {
     const { data, error } = await supabaseAdmin

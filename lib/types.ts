@@ -53,6 +53,7 @@ export interface JobPost {
   completenessScore?: number;
   qualityFlag?: string[] | null;
   reviewedAt?: string | null;
+  verifiedAt?: string | null;
 }
 
 // -----------------------------------------------------------------------------
@@ -84,6 +85,7 @@ export interface SchemePost {
   qualityFlag?: string[] | null;
   reviewedAt?: string | null;
   completenessScore?: number;
+  verifiedAt?: string | null;
 }
 
 // -----------------------------------------------------------------------------

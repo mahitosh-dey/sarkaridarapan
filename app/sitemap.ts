@@ -35,8 +35,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     jobPages = rawJobs.map((job) => ({
       url: `${SITE_URL}/sarkari-naukri/${job.slug}`,
       lastModified: new Date(job.updatedAt || job.publishedAt),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
     }));
   } catch { /* skip on error */ }
 
@@ -69,8 +69,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const hardcodedGuidePages: MetadataRoute.Sitemap = getAllGuides().map((guide) => ({
     url: `${SITE_URL}/blog/${guide.slug}`,
     lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
   }));
 
   // Blog/Guide pages — DB posts from Supabase
@@ -80,8 +80,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogPostPages = posts.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
       lastModified: new Date(post.updatedAt),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
     }));
   } catch { /* skip on error */ }
 

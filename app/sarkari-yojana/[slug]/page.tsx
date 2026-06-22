@@ -98,7 +98,6 @@ export default async function SchemePage({ params }: SchemePageProps) {
   }
 
   const breadcrumbs = [
-    { label: "Home", href: "/" },
     { label: "Sarkari Yojana", href: "/sarkari-yojana" },
     { label: scheme.title },
   ];
@@ -120,13 +119,31 @@ export default async function SchemePage({ params }: SchemePageProps) {
         }
       : null;
 
+  const isAllIndia =
+    !scheme.state ||
+    scheme.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
+
+  const govtServiceSchema = {
+    "@context": "https://schema.org",
+    "@type": "GovernmentService",
+    name: scheme.title,
+    description: scheme.objective || scheme.description,
+    serviceType: "Government Welfare Scheme",
+    provider: {
+      "@type": "GovernmentOrganization",
+      name: scheme.ministry || "Government of India",
+    },
+    areaServed: isAllIndia ? "India" : scheme.state,
+    url: `${SITE_URL}/sarkari-yojana/${params.slug}`,
+  };
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: scheme.title,
     description: scheme.description,
     datePublished: scheme.publishedAt,
-    dateModified: scheme.updatedAt || scheme.publishedAt,
+    dateModified: scheme.verifiedAt || scheme.updatedAt || scheme.publishedAt,
     author: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -151,6 +168,7 @@ export default async function SchemePage({ params }: SchemePageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
 
+      <JsonLd data={govtServiceSchema} />
       <JsonLd data={articleSchema} />
       {faqSchema && <JsonLd data={faqSchema} />}
 

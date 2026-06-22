@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/constants";
 
 export interface BreadcrumbItem {
   label: string;
@@ -19,11 +20,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       "@type": "ListItem",
       position: index + 1,
       name: item.label,
-      ...(item.href
-        ? {
-            item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://sarkaridarapan.com"}${item.href}`,
-          }
-        : {}),
+      ...(item.href ? { item: `${SITE_URL}${item.href === "/" ? "" : item.href}` } : {}),
     })),
   };
 

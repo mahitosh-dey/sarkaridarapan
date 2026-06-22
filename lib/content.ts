@@ -44,6 +44,7 @@ function mapJobRow(row: any): JobPost {
     employmentType: row.employment_type || undefined,
     qualityFlag: row.quality_flag || null,
     reviewedAt: row.reviewed_at || null,
+    verifiedAt: row.verified_at || null,
   };
 }
 
@@ -69,6 +70,7 @@ function mapSchemeRow(row: any): SchemePost {
     readingTime: row.reading_time || "",
     image: row.image || undefined,
     faqs: row.faqs || undefined,
+    verifiedAt: row.verified_at || null,
   };
 }
 

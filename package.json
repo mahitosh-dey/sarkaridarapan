@@ -13,6 +13,7 @@
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.106.0",
     "cheerio": "^1.2.0",
+    "googleapis": "^173.0.0",
     "gray-matter": "^4.0.3",
     "next": "^14.2.0",
     "next-mdx-remote": "^6.0.0",

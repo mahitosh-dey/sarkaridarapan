@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
     getJobsByState(params.state).catch(() => []),
     getSchemesByState(params.state).catch(() => []),
   ]);
-  const hasContent = jobs.length > 0 || schemes.length > 0;
+  const totalCount = jobs.length + schemes.length;
 
   return {
     title: `${stateData.name} Government Jobs & Schemes 2026`,
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
-    ...(!hasContent && { robots: { index: false, follow: true } }),
+    robots: totalCount < 5 ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title: `${stateData.name} Government Jobs & Schemes 2026 | ${SITE_NAME}`,
       description: `Latest government jobs and sarkari yojana in ${stateData.name}.`,
@@ -72,9 +72,7 @@ export default async function StatePage({ params, searchParams }: StatePageProps
   }
 
   const breadcrumbs = [
-    { label: "Home", href: "/" },
-    { label: "States", href: "/#states" },
-    { label: stateData.name },
+    { label: `${stateData.name} Government Jobs & Schemes` },
   ];
 
   const jobsHref = `/state/${params.state}`;

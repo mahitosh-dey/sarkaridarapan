@@ -158,13 +158,10 @@ export default async function JobPage({ params }: JobPageProps) {
   ];
 
   // Prefer the importantDates.lastDate column; fall back to the top-level lastDate.
-  // If no last date exists, default to 1 year from posting (Google recommends validThrough).
+  // Omit validThrough entirely when no last date is stored.
   const validThrough =
     toIsoDate(job.importantDates?.lastDate) ??
-    toIsoDate(job.lastDate) ??
-    new Date(new Date(job.publishedAt ?? Date.now()).getTime() + 365 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
+    toIsoDate(job.lastDate);
 
   const baseSalary = parseSalary(job.salary);
 
@@ -197,14 +194,15 @@ export default async function JobPage({ params }: JobPageProps) {
     title: job.title,
     description: job.description,
     datePosted: toIsoDate(job.publishedAt) ?? job.publishedAt,
-    validThrough,
+    dateModified: toIsoDate(job.verifiedAt ?? job.updatedAt) ?? job.updatedAt,
+    ...(validThrough ? { validThrough } : {}),
     url: `${SITE_URL}/sarkari-naukri/${params.slug}`,
     identifier: {
       "@type": "PropertyValue",
       name: job.organization || SITE_NAME,
       value: job.slug,
     },
-    employmentType: job.employmentType || "FULL_TIME",
+    ...(isAllIndia ? { employmentType: "FULL_TIME", jobLocationType: "TELECOMMUTE" } : {}),
     hiringOrganization: {
       "@type": "Organization",
       name: job.organization || "Government of India",
