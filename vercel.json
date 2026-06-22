@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/check-closing-jobs",
+      "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/ping-bing",
+      "schedule": "30 2 * * *"
+    }
+  ]
+}
