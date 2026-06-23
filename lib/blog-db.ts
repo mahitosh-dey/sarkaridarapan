@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import type { Guide } from "@/lib/guides";
 
@@ -33,49 +34,65 @@ export function dbPostToGuide(post: DbBlogPost): Guide {
   };
 }
 
-export async function getPublishedDbPosts(): Promise<Guide[]> {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("blog_posts")
-      .select("*")
-      .eq("is_active", true)
-      .order("published_at", { ascending: false });
+export const getPublishedDbPosts = unstable_cache(
+  async (): Promise<Guide[]> => {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("blog_posts")
+        .select("*")
+        .eq("is_active", true)
+        .order("published_at", { ascending: false });
 
-    if (error || !data) return [];
-    return (data as DbBlogPost[]).map(dbPostToGuide);
-  } catch {
-    return [];
-  }
-}
+      if (error || !data) return [];
+      return (data as DbBlogPost[]).map(dbPostToGuide);
+    } catch {
+      return [];
+    }
+  },
+  ["all-blog-posts"],
+  { revalidate: 300, tags: ["blog-posts"] }
+);
 
 export async function getPostsByAuthor(author: string): Promise<Guide[]> {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("blog_posts")
-      .select("*")
-      .eq("is_active", true)
-      .eq("author", author)
-      .order("published_at", { ascending: false });
+  return unstable_cache(
+    async () => {
+      try {
+        const { data, error } = await supabaseAdmin
+          .from("blog_posts")
+          .select("*")
+          .eq("is_active", true)
+          .eq("author", author)
+          .order("published_at", { ascending: false });
 
-    if (error || !data) return [];
-    return (data as DbBlogPost[]).map(dbPostToGuide);
-  } catch {
-    return [];
-  }
+        if (error || !data) return [];
+        return (data as DbBlogPost[]).map(dbPostToGuide);
+      } catch {
+        return [];
+      }
+    },
+    [`blog-posts-author-${author}`],
+    { revalidate: 300, tags: ["blog-posts"] }
+  )();
 }
 
 export async function getDbPostBySlug(slug: string): Promise<Guide | null> {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("blog_posts")
-      .select("*")
-      .eq("slug", slug)
-      .eq("is_active", true)
-      .single();
+  return unstable_cache(
+    async () => {
+      try {
+        const { data, error } = await supabaseAdmin
+          .from("blog_posts")
+          .select("*")
+          .eq("slug", slug)
+          .eq("is_active", true)
+          .single();
 
-    if (error || !data) return null;
-    return dbPostToGuide(data as DbBlogPost);
-  } catch {
-    return null;
-  }
+        if (error || !data) return null;
+        return dbPostToGuide(data as DbBlogPost);
+      } catch {
+        return null;
+      }
+    },
+    [`blog-post-${slug}`],
+    { revalidate: 300, tags: ["blog-posts", `blog-post-${slug}`] }
+  )();
 }

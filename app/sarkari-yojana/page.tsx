@@ -24,6 +24,7 @@ export const metadata: Metadata = {
       "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes for all citizens.",
     url: `${SITE_URL}/sarkari-yojana`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

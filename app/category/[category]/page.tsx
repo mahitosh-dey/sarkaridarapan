@@ -47,6 +47,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       description,
       url: `${SITE_URL}/category/${params.category}`,
       type: "website",
+      images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
     },
   };
 }

@@ -19,6 +19,7 @@ export const metadata: Metadata = {
       "Check latest Sarkari Result 2026. Direct links to official government exam result pages.",
     url: `${SITE_URL}/results`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

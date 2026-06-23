@@ -20,7 +20,7 @@ import { getEntranceExamPosts, getJobsByCategory, getSchemePosts } from "@/lib/c
 import { blogToExams, blogToSchemes } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 interface GuidePageProps {
   params: { slug: string };

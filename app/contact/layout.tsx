@@ -14,6 +14,7 @@ export const metadata: Metadata = {
       "Contact SarkariDarapan for queries about government jobs, government schemes, exam results, admit cards, content corrections, or feedback.",
     url: `${SITE_URL}/contact`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

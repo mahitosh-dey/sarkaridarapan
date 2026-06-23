@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
       description: `Latest government jobs and sarkari yojana in ${stateData.name}.`,
       url: `${SITE_URL}/state/${params.state}`,
       type: "website",
+      images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
     },
   };
 }

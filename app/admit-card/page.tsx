@@ -18,6 +18,7 @@ export const metadata: Metadata = {
       "Download latest admit cards and hall tickets for government exams 2026.",
     url: `${SITE_URL}/admit-card`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

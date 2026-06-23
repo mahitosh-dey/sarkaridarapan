@@ -15,6 +15,7 @@ export const metadata: Metadata = {
       "Privacy Policy for SarkariDarapan. Learn how we collect, use, and protect your personal information.",
     url: `${SITE_URL}/privacy-policy`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

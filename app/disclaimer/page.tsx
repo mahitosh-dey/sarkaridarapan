@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/disclaimer`,
   },
+  openGraph: {
+    title: `Disclaimer | SarkariDarapan`,
+    description:
+      "Disclaimer for SarkariDarapan - Important information about the use of content and services provided on our website.",
+    url: `${SITE_URL}/disclaimer`,
+    type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
+  },
 };
 
 export default function DisclaimerPage() {

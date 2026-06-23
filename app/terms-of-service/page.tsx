@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/terms-of-service`,
   },
+  openGraph: {
+    title: `Terms of Service | SarkariDarapan`,
+    description:
+      "Terms of Service for SarkariDarapan - Rules and guidelines for using our government jobs and schemes information website.",
+    url: `${SITE_URL}/terms-of-service`,
+    type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
+  },
 };
 
 export default function TermsOfServicePage() {

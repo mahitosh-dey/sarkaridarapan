@@ -25,6 +25,7 @@ export const metadata: Metadata = {
       "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, and more.",
     url: `${SITE_URL}/sarkari-naukri`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

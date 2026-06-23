@@ -10,7 +10,7 @@ import { getAllGuides, GUIDE_CATEGORIES } from "@/lib/guides";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const POSTS_PER_PAGE = 12;
 
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
       "Comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and application help.",
     url: `${SITE_URL}/blog`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

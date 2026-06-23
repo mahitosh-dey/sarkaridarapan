@@ -25,6 +25,7 @@ export const metadata: Metadata = {
       "Complete list of upcoming entrance exams 2026 in India with exam dates, eligibility, and application details.",
     url: `${SITE_URL}/entrance-exams`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 

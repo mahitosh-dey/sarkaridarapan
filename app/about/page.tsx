@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       "SarkariDarapan was built by Mahitosh Dey, a developer from West Bengal, who saw that no clean, fast, reliable Sarkari Naukri site existed with proper guides for all states across India. So he built one.",
     url: `${SITE_URL}/about`,
     type: "website",
+    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
   },
 };
 
