@@ -103,6 +103,26 @@ const nextConfig = {
         destination: '/sarkari-yojana/:slug',
         permanent: true,
       },
+      {
+        source: '/blog/rn-ntpc-2026-posts-eligibility-exam-pattern-preparation-guide',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/blog/best-government-jobs-for-women-in-india-2026-career-guide',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/blog/ibps-po-2026-preparation-guide',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/blog/upsc-mains-2026-preparation-strategy-8-week-plan',
+        destination: '/blog',
+        permanent: true,
+      },
     ];
   },
 };
