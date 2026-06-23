@@ -141,6 +141,8 @@ export default function RootLayout({
       <head>
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://analytics.ahrefs.com/analytics.js" data-key="rknVu7I9//P4c5+RFwBL1A" async></script>
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col bg-gray-50 text-gray-900 antialiased`}>
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
@@ -168,11 +170,6 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "x8xyemigwr");
           `}
         </Script>
-        <Script
-          src="https://analytics.ahrefs.com/analytics.js"
-          data-key="rknVu7I9//P4c5+RFwBL1A"
-          strategy="afterInteractive"
-        />
         <AdSenseScript />
         <Header />
         <main className="flex-1">{children}</main>
