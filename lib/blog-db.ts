@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { supabaseContent } from "@/lib/supabase-content";
 import type { Guide } from "@/lib/guides";
 
 export interface DbBlogPost {
@@ -37,7 +37,7 @@ export function dbPostToGuide(post: DbBlogPost): Guide {
 export const getPublishedDbPosts = unstable_cache(
   async (): Promise<Guide[]> => {
     try {
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await supabaseContent
         .from("blog_posts")
         .select("*")
         .eq("is_active", true)
@@ -57,7 +57,7 @@ export async function getPostsByAuthor(author: string): Promise<Guide[]> {
   return unstable_cache(
     async () => {
       try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabaseContent
           .from("blog_posts")
           .select("*")
           .eq("is_active", true)
@@ -79,7 +79,7 @@ export async function getDbPostBySlug(slug: string): Promise<Guide | null> {
   return unstable_cache(
     async () => {
       try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabaseContent
           .from("blog_posts")
           .select("*")
           .eq("slug", slug)
