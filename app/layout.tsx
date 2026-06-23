@@ -168,6 +168,11 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "x8xyemigwr");
           `}
         </Script>
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="rknVu7I9//P4c5+RFwBL1A"
+          strategy="afterInteractive"
+        />
         <AdSenseScript />
         <Header />
         <main className="flex-1">{children}</main>
