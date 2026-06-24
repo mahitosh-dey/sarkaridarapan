@@ -19,13 +19,17 @@ import { HOME_FAQS } from "@/lib/faq-data";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
-export const metadata: Metadata = {
-  title: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana 2026`,
-  description: SITE_DESCRIPTION,
-  alternates: {
-    canonical: SITE_URL,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const jobs = await getJobPosts().catch(() => []);
+  const jobCount = jobs.length;
+  return {
+    title: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana 2026`,
+    description: `${jobCount}+ active government job notifications for 2026 — SSC, Railway, Banking, UPSC, Defence, State PSC. Salary details, eligibility & last dates updated daily.`,
+    alternates: {
+      canonical: SITE_URL,
+    },
+  };
+}
 
 export default async function HomePage() {
   const [jobs, schemes, entranceExams, guides] = await Promise.all([
@@ -92,16 +96,6 @@ export default async function HomePage() {
       }
     : null;
 
-  const homeFaqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: HOME_FAQS.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: { "@type": "Answer", text: faq.answer },
-    })),
-  };
-
   const siteSchema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -122,10 +116,20 @@ export default async function HomePage() {
         "@type": "Organization",
         name: SITE_NAME,
         url: SITE_URL,
-        logo: `${SITE_URL}/images/logo.png`,
+        logo: {
+          "@type": "ImageObject",
+          url: `${SITE_URL}/images/logo.png`,
+          width: 200,
+          height: 60,
+        },
         description: SITE_DESCRIPTION,
         foundingDate: "2026",
-        founder: { "@type": "Person", name: "Mahitosh Dey" },
+        founder: {
+          "@type": "Person",
+          name: "Mahitosh Dey",
+          url: `${SITE_URL}/about`,
+          sameAs: "https://www.linkedin.com/in/mahitosh-dey-b70575147/",
+        },
         sameAs: [
           "https://t.me/sarkaridarapaninfo",
           "https://whatsapp.com/channel/0029VbCHYsIDeON1dKiWuk1A",
@@ -136,13 +140,22 @@ export default async function HomePage() {
           contactType: "customer support",
           url: `${SITE_URL}/contact`,
         },
+        areaServed: "IN",
+        inLanguage: "en-IN",
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: HOME_FAQS.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
       },
     ],
   };
 
   return (
     <>
-      <JsonLd data={homeFaqSchema} />
       <JsonLd data={siteSchema} />
       {specialAnnouncementsSchema && <JsonLd data={specialAnnouncementsSchema} />}
 
