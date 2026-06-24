@@ -18,9 +18,9 @@ import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
 import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
 import { getEntranceExamPosts, getJobsByCategory, getSchemePosts } from "@/lib/content";
 import { blogToExams, blogToSchemes } from "@/lib/related-links";
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 
-export const revalidate = 300;
+export const revalidate = REVALIDATE_INTERVAL;
 
 interface GuidePageProps {
   params: { slug: string };
