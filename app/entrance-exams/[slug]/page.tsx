@@ -10,6 +10,7 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { getEntranceExamPosts, getEntranceExamBySlug } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { examToBlogs } from "@/lib/related-links";
@@ -123,63 +124,94 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
 
   const pageUrl = `${SITE_URL}/entrance-exams/${params.slug}`;
   const examDateIso = toIsoDate(exam.examDate);
+  const applicationEndIso = toIsoDate(exam.applicationEnd);
+  const isAllIndia =
+    !exam.state ||
+    exam.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
 
-  const eventSchema: Record<string, unknown> = {
+  const combinedSchema = {
     "@context": "https://schema.org",
-    "@type": "Event",
-    name: exam.title,
-    ...(examDateIso ? { startDate: examDateIso, endDate: examDateIso } : {}),
-    description: exam.description || "",
-    organizer: {
-      "@type": "Organization",
-      name: exam.conductingBody || "Government of India",
-    },
-    location: {
-      "@type": "Place",
-      name: "India",
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "IN",
+    "@graph": [
+      {
+        "@type": "Event",
+        name: exam.title,
+        ...(examDateIso ? { startDate: examDateIso, endDate: examDateIso } : {}),
+        description: exam.description || "",
+        organizer: {
+          "@type": "Organization",
+          name: exam.conductingBody || "Government of India",
+        },
+        location: {
+          "@type": "Place",
+          name: isAllIndia ? "India" : exam.state,
+          address: {
+            "@type": "PostalAddress",
+            addressCountry: "IN",
+          },
+        },
+        ...(applicationEndIso
+          ? {
+              offers: {
+                "@type": "Offer",
+                url: pageUrl,
+                validThrough: `${applicationEndIso}T23:59:59+05:30`,
+              },
+            }
+          : {}),
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        url: pageUrl,
       },
-    },
-    eventStatus: "https://schema.org/EventScheduled",
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-    url: pageUrl,
-  };
-
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: exam.title,
-    description: exam.description,
-    datePublished: exam.publishedAt,
-    dateModified: exam.updatedAt || exam.publishedAt,
-    author: {
-      "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
-      logo: {
-        "@type": "ImageObject",
-        url: `${SITE_URL}/logo.png`,
+      {
+        "@type": "Article",
+        headline: exam.title.slice(0, 110),
+        description: exam.description,
+        image: {
+          "@type": "ImageObject",
+          url: exam.image || `${SITE_URL}/images/og-default.jpg`,
+          width: 1200,
+          height: 630,
+        },
+        datePublished: exam.publishedAt,
+        dateModified: exam.updatedAt || exam.publishedAt,
+        author: {
+          "@type": "Person",
+          name: "Mahitosh Dey",
+          url: `${SITE_URL}/about`,
+          sameAs: "https://www.linkedin.com/in/mahitosh-dey-b70575147/",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: SITE_NAME,
+          url: SITE_URL,
+          logo: {
+            "@type": "ImageObject",
+            url: `${SITE_URL}/images/logo.png`,
+            width: 200,
+            height: 60,
+          },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/entrance-exams/${params.slug}`,
+        },
+        articleSection: exam.category,
+        inLanguage: "en-IN",
       },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/entrance-exams/${params.slug}`,
-    },
+    ],
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
-
-      <JsonLd data={eventSchema} />
-      <JsonLd data={articleSchema} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Entrance Exams", url: `${SITE_URL}/entrance-exams` },
+          { name: exam.title, url: pageUrl },
+        ]}
+      />
+      <JsonLd data={combinedSchema} />
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content */}

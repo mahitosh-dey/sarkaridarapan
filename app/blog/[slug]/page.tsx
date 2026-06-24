@@ -116,6 +116,12 @@ export default async function GuidePage({ params }: GuidePageProps) {
     "@type": "Article",
     headline: guide.title.slice(0, 110),
     description: guide.description,
+    image: {
+      "@type": "ImageObject",
+      url: guide.image || `${SITE_URL}/images/og-default.jpg`,
+      width: 1200,
+      height: 630,
+    },
     author: {
       "@type": "Person",
       name: "Mahitosh Dey",
@@ -125,9 +131,12 @@ export default async function GuidePage({ params }: GuidePageProps) {
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
+      url: SITE_URL,
       logo: {
         "@type": "ImageObject",
         url: `${SITE_URL}/images/logo.png`,
+        width: 200,
+        height: 60,
       },
     },
     datePublished: guide.publishedAt,
@@ -136,7 +145,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
       "@type": "WebPage",
       "@id": `${SITE_URL}/blog/${params.slug}`,
     },
-    image: guide.image || `${SITE_URL}/images/og-default.jpg`,
+    articleSection: guide.category,
+    inLanguage: "en-IN",
   };
 
   const faqSchema = guide.faqs?.length
@@ -215,7 +225,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                       className="h-7 w-7 rounded-full object-cover ring-2 ring-indigo-100"
                     />
                     <span className="font-semibold text-indigo-700 group-hover:underline transition-colors">
-                      {guide.author}
+                      Mahitosh Dey
                     </span>
                   </Link>
 

@@ -121,45 +121,62 @@ export default async function SchemePage({ params }: SchemePageProps) {
         }
       : null;
 
-  const govtServiceSchema = {
+  const combinedSchema = {
     "@context": "https://schema.org",
-    "@type": "GovernmentService",
-    name: scheme.title,
-    description: scheme.objective || scheme.description,
-    serviceType: "Government Welfare Scheme",
-    provider: {
-      "@type": "GovernmentOrganization",
-      name: scheme.ministry || "Government of India",
-    },
-    areaServed: isAllIndia ? "India" : scheme.state,
-    url: `${SITE_URL}/sarkari-yojana/${params.slug}`,
-  };
-
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: scheme.title,
-    description: scheme.description,
-    datePublished: scheme.publishedAt,
-    dateModified: scheme.verifiedAt || scheme.updatedAt || scheme.publishedAt,
-    author: {
-      "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
-      logo: {
-        "@type": "ImageObject",
-        url: `${SITE_URL}/logo.png`,
+    "@graph": [
+      {
+        "@type": "GovernmentService",
+        name: scheme.title,
+        description: (scheme.objective || scheme.description || "").slice(0, 300),
+        serviceType: "Government Welfare Scheme",
+        provider: {
+          "@type": "GovernmentOrganization",
+          name: scheme.ministry || "Government of India",
+        },
+        areaServed: {
+          "@type": "Place",
+          name: isAllIndia ? "India" : scheme.state,
+        },
+        inLanguage: "en-IN",
+        url: `${SITE_URL}/sarkari-yojana/${params.slug}`,
       },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/sarkari-yojana/${params.slug}`,
-    },
+      {
+        "@type": "Article",
+        headline: scheme.title.slice(0, 110),
+        description: scheme.description,
+        image: {
+          "@type": "ImageObject",
+          url: scheme.image || `${SITE_URL}/images/og-default.jpg`,
+          width: 1200,
+          height: 630,
+        },
+        datePublished: scheme.publishedAt,
+        dateModified: scheme.verifiedAt || scheme.updatedAt || scheme.publishedAt,
+        author: {
+          "@type": "Person",
+          name: "Mahitosh Dey",
+          url: `${SITE_URL}/about`,
+          sameAs: "https://www.linkedin.com/in/mahitosh-dey-b70575147/",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: SITE_NAME,
+          url: SITE_URL,
+          logo: {
+            "@type": "ImageObject",
+            url: `${SITE_URL}/images/logo.png`,
+            width: 200,
+            height: 60,
+          },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/sarkari-yojana/${params.slug}`,
+        },
+        articleSection: scheme.category,
+        inLanguage: "en-IN",
+      },
+    ],
   };
 
   return (
@@ -172,8 +189,7 @@ export default async function SchemePage({ params }: SchemePageProps) {
           { name: scheme.title, url: `${SITE_URL}/sarkari-yojana/${params.slug}` },
         ]}
       />
-      <JsonLd data={govtServiceSchema} />
-      <JsonLd data={articleSchema} />
+      <JsonLd data={combinedSchema} />
       {faqSchema && <JsonLd data={faqSchema} />}
 
       <div className="flex flex-col lg:flex-row gap-8">
