@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/admit-card`,
   },
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   openGraph: {
     title: `Admit Card 2026 - Download Government Exam Hall Tickets | ${SITE_NAME}`,
     description:
