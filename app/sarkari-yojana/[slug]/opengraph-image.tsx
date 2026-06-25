@@ -120,7 +120,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
                     fontWeight: 600,
                   }}
                 >
-                  🏛️ {ministryDisplay}
+                  {`🏛️ ${ministryDisplay}`}
                 </div>
                 <div
                   style={{
