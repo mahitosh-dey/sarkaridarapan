@@ -1,178 +1,198 @@
 import { ImageResponse } from "next/og";
-import { getJobBySlug } from "@/lib/content";
+import { supabaseContent } from "@/lib/supabase-content";
+import { isClosingSoon } from "@/lib/utils";
 
+export const runtime = "edge";
+export const revalidate = 3600;
+export const alt = "SarkariDarapan — Sarkari Naukri";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function Image({ params }: { params: { slug: string } }) {
-  let title = "Sarkari Naukri";
-  let organization = "Government of India";
-  let vacancies = "";
-  let lastDate = "";
+const INDIGO = "#4F46E5";
+const FONT = "system-ui, -apple-system, sans-serif";
 
-  try {
-    const job = await getJobBySlug(params.slug);
-    if (job) {
-      title = job.title;
-      organization = job.organization || "Government of India";
-      vacancies =
-        job.vacancies > 0 ? job.vacancies.toLocaleString("en-IN") : "";
-      const raw =
-        job.importantDates?.lastDate || job.lastDate || "";
-      if (raw) {
-        const d = new Date(raw);
-        lastDate = isNaN(d.getTime())
-          ? raw
-          : d.toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            });
+function formatDate(raw: string | null | undefined): string {
+  if (!raw) return "";
+  const s = raw.trim();
+  let iso: string | null = null;
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    iso = s.slice(0, 10);
+  } else {
+    const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+    if (slash) {
+      iso = `${slash[3]}-${slash[2].padStart(2, "0")}-${slash[1].padStart(2, "0")}`;
+    } else {
+      const dot = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(s);
+      if (dot) {
+        iso = `${dot[3]}-${dot[2].padStart(2, "0")}-${dot[1].padStart(2, "0")}`;
       }
     }
-  } catch {
-    // fall through to defaults
   }
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  if (isNaN(dt.getTime())) return "";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${String(d).padStart(2, "0")} ${months[m - 1]} ${y}`;
+}
 
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "1200px",
-          height: "630px",
-          backgroundColor: "#ffffff",
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
-        {/* Indigo header bar */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "#4F46E5",
-            padding: "0 48px",
-            height: "90px",
-            flexShrink: 0,
-          }}
-        >
-          <span style={{ color: "#ffffff", fontSize: "28px", fontWeight: 700, letterSpacing: "-0.5px" }}>
-            SarkariDarapan
-          </span>
-          <span style={{ color: "#a5b4fc", fontSize: "20px", marginLeft: "16px" }}>
-            — Sarkari Naukri
-          </span>
-        </div>
+export default async function Image({ params }: { params: { slug: string } }) {
+  try {
+    const { data } = await supabaseContent
+      .from("jobs")
+      .select("title, organization, post_name, vacancies, important_dates, last_date")
+      .eq("slug", params.slug)
+      .single();
 
-        {/* Body */}
+    if (!data) throw new Error("not found");
+
+    const org = (data.organization as string | null) || "Government of India";
+    const rawTitle =
+      (data.post_name as string | null) || (data.title as string | null) || "Government Job";
+    const title = rawTitle.length > 80 ? rawTitle.slice(0, 79) + "…" : rawTitle;
+
+    const vacanciesRaw = data.vacancies as number | null;
+    const vacanciesText =
+      vacanciesRaw && vacanciesRaw > 0
+        ? `👥 ${vacanciesRaw.toLocaleString("en-IN")} Vacancies`
+        : "👥 Check Notification";
+
+    const importantDates = data.important_dates as Record<string, string> | null;
+    const rawLastDate =
+      importantDates?.lastDate || (data.last_date as string | null) || null;
+    const lastDateFormatted = formatDate(rawLastDate);
+    const lastDateText = lastDateFormatted
+      ? `📅 Last Date: ${lastDateFormatted}`
+      : "📅 See Official Notice";
+    const closing = rawLastDate ? isClosingSoon(rawLastDate) : false;
+
+    return new ImageResponse(
+      (
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            flex: 1,
-            padding: "48px 48px 36px",
-            justifyContent: "space-between",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#ffffff",
+            fontFamily: FONT,
           }}
         >
-          {/* Organization */}
+          {/* Top bar */}
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#EEF2FF",
-              borderRadius: "8px",
-              padding: "10px 20px",
-              alignSelf: "flex-start",
-            }}
-          >
-            <span style={{ color: "#4F46E5", fontSize: "22px", fontWeight: 600 }}>
-              {organization}
-            </span>
-          </div>
+            style={{ width: "100%", height: 12, backgroundColor: INDIGO, flexShrink: 0 }}
+          />
 
-          {/* Job title */}
+          {/* Content */}
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               flex: 1,
-              alignItems: "center",
-              padding: "24px 0",
+              padding: "40px 48px",
+              justifyContent: "space-between",
             }}
           >
-            <span
-              style={{
-                color: "#111827",
-                fontSize: title.length > 60 ? "40px" : "52px",
-                fontWeight: 800,
-                lineHeight: 1.2,
-                letterSpacing: "-1px",
-              }}
-            >
-              {title}
-            </span>
-          </div>
-
-          {/* Stats row */}
-          <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
-            {vacancies && (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {/* Organization */}
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  backgroundColor: "#F0FDF4",
-                  borderRadius: "12px",
-                  padding: "14px 24px",
-                  minWidth: "160px",
+                  color: "#6B7280",
+                  fontSize: 14,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  marginBottom: 16,
                 }}
               >
-                <span style={{ color: "#6B7280", fontSize: "16px", fontWeight: 500 }}>
-                  Vacancies
-                </span>
-                <span style={{ color: "#16A34A", fontSize: "30px", fontWeight: 700 }}>
-                  {vacancies}
-                </span>
+                {org}
               </div>
-            )}
-            {lastDate && (
+
+              {/* Title */}
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  backgroundColor: "#FFF7ED",
-                  borderRadius: "12px",
-                  padding: "14px 24px",
-                  minWidth: "200px",
+                  color: "#111827",
+                  fontSize: 46,
+                  fontWeight: 700,
+                  lineHeight: 1.18,
+                  marginBottom: 36,
                 }}
               >
-                <span style={{ color: "#6B7280", fontSize: "16px", fontWeight: 500 }}>
-                  Last Date
-                </span>
-                <span style={{ color: "#EA580C", fontSize: "26px", fontWeight: 700 }}>
-                  {lastDate}
-                </span>
+                {title}
               </div>
-            )}
 
-            {/* Domain — pushed right */}
-            <div style={{ display: "flex", marginLeft: "auto" }}>
-              <span style={{ color: "#9CA3AF", fontSize: "22px" }}>
-                www.sarkaridarapan.com
-              </span>
+              {/* Badges */}
+              <div style={{ display: "flex", flexDirection: "row", gap: 12 }}>
+                <div
+                  style={{
+                    backgroundColor: INDIGO,
+                    color: "#ffffff",
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    fontSize: 20,
+                    fontWeight: 600,
+                  }}
+                >
+                  {vacanciesText}
+                </div>
+                <div
+                  style={{
+                    backgroundColor: closing ? "#EA580C" : "#374151",
+                    color: "#ffffff",
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    fontSize: 20,
+                    fontWeight: 600,
+                  }}
+                >
+                  {lastDateText}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom label */}
+            <div style={{ color: INDIGO, fontSize: 16, fontWeight: 600 }}>
+              Sarkari Naukri 2026
             </div>
           </div>
-        </div>
 
-        {/* Bottom indigo stripe */}
+          {/* Bottom bar */}
+          <div
+            style={{
+              width: "100%",
+              height: 50,
+              backgroundColor: INDIGO,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <span style={{ color: "#ffffff", fontSize: 18 }}>sarkaridarapan.com</span>
+          </div>
+        </div>
+      ),
+      { width: 1200, height: 630 }
+    );
+  } catch {
+    return new ImageResponse(
+      (
         <div
           style={{
-            height: "8px",
-            backgroundColor: "#4F46E5",
-            flexShrink: 0,
+            display: "flex",
+            width: "100%",
+            height: "100%",
+            backgroundColor: INDIGO,
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: FONT,
           }}
-        />
-      </div>
-    ),
-    { width: 1200, height: 630 }
-  );
+        >
+          <span style={{ color: "#ffffff", fontSize: 52, fontWeight: 700 }}>
+            SarkariDarapan
+          </span>
+        </div>
+      ),
+      { width: 1200, height: 630 }
+    );
+  }
 }
