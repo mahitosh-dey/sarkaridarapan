@@ -60,6 +60,33 @@ const admitCards = [
     status: "Available",
     officialLink: "https://hpsc.gov.in",
   },
+  {
+    id: 5,
+    examName: "FMGE June 2026 Admit Card",
+    organization: "National Board of Examinations in Medical Sciences (NBEMS)",
+    examDate: "2026-06-28",
+    downloadDate: "2026-06-24",
+    status: "Available",
+    officialLink: "https://natboard.edu.in",
+  },
+  {
+    id: 6,
+    examName: "APSSB CGLE Stenography Proficiency Test 2026 Admit Card",
+    organization: "Arunachal Pradesh Staff Selection Board (APSSB)",
+    examDate: "2026-07-04",
+    downloadDate: "2026-06-22",
+    status: "Available",
+    officialLink: "https://apssb.nic.in",
+  },
+  {
+    id: 7,
+    examName: "APSC CCE Prelims 2026 Admit Card",
+    organization: "Assam Public Service Commission (APSC)",
+    examDate: "2026-07-05",
+    downloadDate: "2026-06-15",
+    status: "Available",
+    officialLink: "https://apsc.nic.in",
+  },
 ];
 
 export default function AdmitCardPage() {
