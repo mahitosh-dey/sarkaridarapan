@@ -238,9 +238,7 @@ export default async function JobPage({ params }: JobPageProps) {
         "@type": "PostalAddress",
         addressCountry: "IN",
         addressRegion,
-        addressLocality: isAllIndia ? "All India" : job.state,
-        streetAddress: "Government Office",
-        postalCode: "110001",
+        addressLocality: isAllIndia ? "New Delhi" : job.state,
       },
     },
     identifier: {
