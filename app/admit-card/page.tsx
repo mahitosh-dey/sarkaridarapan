@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/admit-card`,
   },
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   openGraph: {
     title: `Admit Card 2026 - Download Government Exam Hall Tickets | ${SITE_NAME}`,
     description:
@@ -23,78 +23,15 @@ export const metadata: Metadata = {
   },
 };
 
-const sampleAdmitCards = [
+const admitCards = [
   {
     id: 1,
-    examName: "SSC CGL 2026 Tier-I Admit Card",
-    organization: "Staff Selection Commission",
-    examDate: "2026-03-01",
-    downloadDate: "2026-02-15",
+    examName: "RRB NTPC UG CBT-1 2026 Admit Card (CEN 07/2025)",
+    organization: "Railway Recruitment Board (RRB)",
+    examDate: "2026-06-20",
+    downloadDate: "2026-05-03",
     status: "Available",
-    officialLink: "https://ssc.nic.in",
-  },
-  {
-    id: 2,
-    examName: "UPSC CSE 2026 Prelims Admit Card",
-    organization: "Union Public Service Commission",
-    examDate: "2026-06-01",
-    downloadDate: "2026-05-15",
-    status: "Upcoming",
-    officialLink: "https://upsc.gov.in",
-  },
-  {
-    id: 3,
-    examName: "RRB Group D 2026 CBT Admit Card",
-    organization: "Railway Recruitment Board",
-    examDate: "2026-02-20",
-    downloadDate: "2026-02-05",
-    status: "Available",
-    officialLink: "https://rrbcdg.gov.in",
-  },
-  {
-    id: 4,
-    examName: "IBPS Clerk Mains 2026 Admit Card",
-    organization: "Institute of Banking Personnel Selection",
-    examDate: "2026-02-25",
-    downloadDate: "2026-02-10",
-    status: "Available",
-    officialLink: "https://ibps.in",
-  },
-  {
-    id: 5,
-    examName: "NTA CUET UG 2026 Admit Card",
-    organization: "National Testing Agency",
-    examDate: "2026-05-15",
-    downloadDate: "2026-05-01",
-    status: "Upcoming",
-    officialLink: "https://cuet.samarth.ac.in",
-  },
-  {
-    id: 6,
-    examName: "UPPSC PCS 2026 Prelims Admit Card",
-    organization: "Uttar Pradesh Public Service Commission",
-    examDate: "2026-04-20",
-    downloadDate: "2026-04-05",
-    status: "Upcoming",
-    officialLink: "https://uppsc.up.nic.in",
-  },
-  {
-    id: 7,
-    examName: "SSC CHSL 2026 Tier-I Admit Card",
-    organization: "Staff Selection Commission",
-    examDate: "2026-03-10",
-    downloadDate: "2026-02-25",
-    status: "Available",
-    officialLink: "https://ssc.nic.in",
-  },
-  {
-    id: 8,
-    examName: "Indian Army Agniveer 2026 Admit Card",
-    organization: "Indian Army",
-    examDate: "2026-03-15",
-    downloadDate: "2026-03-01",
-    status: "Upcoming",
-    officialLink: "https://joinindianarmy.nic.in",
+    officialLink: "https://rrb.digialm.com",
   },
 ];
 
@@ -104,8 +41,8 @@ export default function AdmitCardPage() {
     { label: "Admit Card" },
   ];
 
-  const availableCards = sampleAdmitCards.filter((c) => c.status === "Available");
-  const upcomingCards = sampleAdmitCards.filter((c) => c.status === "Upcoming");
+  const availableCards = admitCards.filter((c) => c.status === "Available");
+  const upcomingCards = admitCards.filter((c) => c.status === "Upcoming");
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -122,7 +59,7 @@ export default function AdmitCardPage() {
 
       <div className="rounded-lg border border-blue-200 bg-blue-50 px-5 py-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <p className="text-blue-900 text-sm font-medium">
-          Admit card updates coming soon. Join our Telegram channel for instant alerts.
+          Get instant admit card alerts the moment they are released. Join our free Telegram channel.
         </p>
         <a
           href="https://t.me/sarkaridarapaninfo"
