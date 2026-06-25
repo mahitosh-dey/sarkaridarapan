@@ -30,18 +30,23 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const jobs = await getJobsByCategory(params.category).catch(() => []);
   const count = jobs.length;
 
+  const title =
+    count > 0
+      ? `${categoryData.name} Government Jobs 2026 — ${count} Latest Opening${count === 1 ? "" : "s"} | ${SITE_NAME}`
+      : `${categoryData.name} Government Jobs 2026 — Latest Sarkari Naukri | ${SITE_NAME}`;
+
   const description =
     count > 0
       ? `${categoryData.name} government jobs 2026 — ${count} latest opening${count === 1 ? "" : "s"}, eligibility, salary, and application details.`
       : `Latest ${categoryData.name} government job vacancies 2026. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`;
 
   return {
-    title: `${categoryData.name} Jobs 2026 - Government Job Vacancies`,
+    title,
     description,
     alternates: {
       canonical: `${SITE_URL}/category/${params.category}`,
     },
-    robots: { index: true, follow: true },
+    robots: count >= 5 ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `${categoryData.name} Jobs 2026 | ${SITE_NAME}`,
       description,
@@ -67,6 +72,17 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     categoryJobs = await getJobsByCategory(params.category);
   } catch {
     categoryJobs = [];
+  }
+
+  // Fetch 4 recent fallback jobs when this category is empty
+  let fallbackJobs: import("@/lib/types").JobPost[] = [];
+  if (categoryJobs.length === 0) {
+    try {
+      const all = await getJobPosts();
+      fallbackJobs = all.slice(0, 4);
+    } catch {
+      fallbackJobs = [];
+    }
   }
 
   // Build related categories from all jobs — count per category, pick top 3
@@ -133,12 +149,36 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Jobs Found</h3>
-              <p className="text-gray-500">
-                No {categoryData.name.toLowerCase()} government jobs are currently available. Check back soon for new openings.
-              </p>
-            </div>
+            <>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-5 py-4 mb-8">
+                <p className="text-amber-800 text-sm font-medium">
+                  No {categoryData.name} government jobs currently available. Browse latest all-India jobs below.
+                </p>
+              </div>
+              {fallbackJobs.length > 0 && (
+                <>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Latest government jobs — open to all eligible candidates
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {fallbackJobs.map((job) => (
+                      <JobCard key={job.slug} job={job} />
+                    ))}
+                  </div>
+                  <div className="mt-6">
+                    <Link
+                      href="/sarkari-naukri"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-700 hover:text-blue-900 hover:underline"
+                    >
+                      View all government jobs
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                        <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
+                      </svg>
+                    </Link>
+                  </div>
+                </>
+              )}
+            </>
           )}
 
           {/* Pagination */}

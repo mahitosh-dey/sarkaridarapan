@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/admit-card`,
   },
+  robots: { index: false, follow: true },
   openGraph: {
     title: `Admit Card 2026 - Download Government Exam Hall Tickets | ${SITE_NAME}`,
     description:
@@ -117,6 +118,20 @@ export default function AdmitCardPage() {
         <p className="text-gray-600 text-lg">
           Download your government exam admit cards and hall tickets. Get direct links to official portals for SSC, UPSC, Railway, Banking, and more.
         </p>
+      </div>
+
+      <div className="rounded-lg border border-blue-200 bg-blue-50 px-5 py-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-blue-900 text-sm font-medium">
+          Admit card updates coming soon. Join our Telegram channel for instant alerts.
+        </p>
+        <a
+          href="https://t.me/sarkaridarapaninfo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm font-medium rounded-lg hover:bg-blue-800 transition-colors"
+        >
+          Join Telegram
+        </a>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">

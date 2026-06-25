@@ -7,7 +7,7 @@ import SchemeCard from "@/components/ui/SchemeCard";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
-import { getJobsByState, getSchemesByState } from "@/lib/content";
+import { getJobsByState, getSchemesByState, getJobPosts } from "@/lib/content";
 import { SITE_NAME, SITE_URL, STATES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -27,20 +27,25 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const stateData = STATES.find((s) => s.slug === params.state);
   if (!stateData) return { title: "State Not Found" };
 
-  const [jobs, schemes] = await Promise.all([
-    getJobsByState(params.state).catch(() => []),
-    getSchemesByState(params.state).catch(() => []),
-  ]);
+  const jobs = await getJobsByState(params.state).catch(() => []);
+  const count = jobs.length;
+
+  const title = `${stateData.name} Government Jobs 2026 — Latest Sarkari Naukri | ${SITE_NAME}`;
+  const description =
+    count > 0
+      ? `${count} latest government job${count === 1 ? "" : "s"} in ${stateData.name} 2026. Check eligibility, salary & last date.`
+      : `Browse latest government jobs in ${stateData.name} 2026 on SarkariDarapan. Updated daily.`;
+
   return {
-    title: `${stateData.name} Government Jobs & Schemes 2026`,
-    description: `Latest government jobs and sarkari yojana in ${stateData.name}. Find state government vacancies, central govt jobs, and government schemes available in ${stateData.name}.`,
+    title,
+    description,
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
-    robots: { index: true, follow: true },
+    robots: count >= 5 ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
-      title: `${stateData.name} Government Jobs & Schemes 2026 | ${SITE_NAME}`,
-      description: `Latest government jobs and sarkari yojana in ${stateData.name}.`,
+      title: `${stateData.name} Government Jobs 2026 | ${SITE_NAME}`,
+      description,
       url: `${SITE_URL}/state/${params.state}`,
       type: "website",
       images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
@@ -72,12 +77,12 @@ export default async function StatePage({ params, searchParams }: StatePageProps
     stateSchemes = [];
   }
 
-  // Fetch all-india fallback jobs only when this state has none
+  // Fetch 4 recent all-India jobs as fallback when this state has none
   let fallbackJobs: import("@/lib/types").JobPost[] = [];
   if (stateJobs.length === 0) {
     try {
-      const allIndia = await getJobsByState("all-india");
-      fallbackJobs = allIndia.slice(0, 5);
+      const allJobs = await getJobPosts();
+      fallbackJobs = allJobs.slice(0, 4);
     } catch {
       fallbackJobs = [];
     }
@@ -156,7 +161,7 @@ export default async function StatePage({ params, searchParams }: StatePageProps
                   {/* Empty state message */}
                   <div className="rounded-lg border border-amber-200 bg-amber-50 px-5 py-4 mb-8">
                     <p className="text-amber-800 text-sm font-medium">
-                      No jobs currently available for {stateData.name}. Browse all-India jobs below.
+                      No government jobs currently available for {stateData.name}. Browse latest all-India jobs below.
                     </p>
                   </div>
 
