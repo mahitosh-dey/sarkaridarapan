@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/admit-card`,
   },
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: true },
   openGraph: {
     title: `Admit Card 2026 - Download Government Exam Hall Tickets | ${SITE_NAME}`,
     description:
@@ -26,12 +26,39 @@ export const metadata: Metadata = {
 const admitCards = [
   {
     id: 1,
-    examName: "RRB NTPC UG CBT-1 2026 Admit Card (CEN 07/2025)",
-    organization: "Railway Recruitment Board (RRB)",
-    examDate: "2026-06-20",
-    downloadDate: "2026-05-03",
+    examName: "OSSSC CRE 2025 Admit Card (Revised Schedule)",
+    organization: "Odisha Sub-Ordinate Staff Selection Commission",
+    examDate: "2026-06-28",
+    downloadDate: "2026-06-24",
     status: "Available",
-    officialLink: "https://rrb.digialm.com",
+    officialLink: "https://osssc.gov.in",
+  },
+  {
+    id: 2,
+    examName: "Punjab Police Constable 2026 Admit Card",
+    organization: "Punjab Police Department",
+    examDate: "2026-07-01",
+    downloadDate: "2026-06-23",
+    status: "Available",
+    officialLink: "https://punjabpolice.gov.in",
+  },
+  {
+    id: 3,
+    examName: "UPTET 2026 Admit Card",
+    organization: "Uttar Pradesh Education Service Selection Commission",
+    examDate: "2026-07-02",
+    downloadDate: "2026-06-30",
+    status: "Upcoming",
+    officialLink: "https://upessc.up.gov.in",
+  },
+  {
+    id: 4,
+    examName: "Haryana PSC ADA Screening Test 2026 Admit Card",
+    organization: "Haryana Public Service Commission",
+    examDate: "2026-07-05",
+    downloadDate: "2026-06-25",
+    status: "Available",
+    officialLink: "https://hpsc.gov.in",
   },
 ];
 
@@ -44,7 +71,42 @@ export default function AdmitCardPage() {
   const availableCards = admitCards.filter((c) => c.status === "Available");
   const upcomingCards = admitCards.filter((c) => c.status === "Upcoming");
 
+  const admitCardSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        name: "Admit Card 2026 — Download Government Exam Hall Tickets",
+        description: "Download latest admit cards and hall tickets for government exams 2026. Direct links to official portals.",
+        url: `${SITE_URL}/admit-card`,
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Admit Card", item: `${SITE_URL}/admit-card` },
+          ],
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "Government Exam Admit Cards 2026",
+        url: `${SITE_URL}/admit-card`,
+        itemListElement: admitCards.map((card, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: card.examName,
+          url: card.officialLink,
+        })),
+      },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(admitCardSchema) }}
+      />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
 
@@ -215,5 +277,6 @@ export default function AdmitCardPage() {
         </aside>
       </div>
     </div>
+    </>
   );
 }

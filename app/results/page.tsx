@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/results`,
   },
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   openGraph: {
     title: `Sarkari Result 2026 - Latest Government Exam Results | ${SITE_NAME}`,
     description:
@@ -24,78 +24,69 @@ export const metadata: Metadata = {
   },
 };
 
-const sampleResults = [
+const results = [
   {
     id: 1,
-    examName: "SSC CGL 2024 Tier-II Result",
-    organization: "Staff Selection Commission",
-    resultDate: "2026-01-15",
+    examName: "BPSC 70th CCE Final Result 2026",
+    organization: "Bihar Public Service Commission",
+    resultDate: "2026-06-20",
     status: "Declared",
-    officialLink: "https://ssc.nic.in",
-    totalCandidates: "50,000+",
+    officialLink: "https://bpsc.bihar.gov.in",
+    totalCandidates: "2,027 selected",
   },
   {
     id: 2,
-    examName: "UPSC Civil Services 2024 Final Result",
-    organization: "Union Public Service Commission",
-    resultDate: "2026-01-10",
+    examName: "RRB NTPC Graduate CBT-1 Result 2026 (CEN 06/2025)",
+    organization: "Railway Recruitment Board (RRB)",
+    resultDate: "2026-06-11",
     status: "Declared",
-    officialLink: "https://upsc.gov.in",
-    totalCandidates: "1,00,000+",
+    officialLink: "https://rrb.digialm.com",
+    totalCandidates: "87,337 shortlisted for CBT-2",
   },
   {
     id: 3,
-    examName: "RRB NTPC CBT-2 Result 2024",
-    organization: "Railway Recruitment Board",
-    resultDate: "2026-01-20",
-    status: "Expected",
-    officialLink: "https://rrbcdg.gov.in",
-    totalCandidates: "1,25,000+",
+    examName: "SSC CGL Final Result 2025-26",
+    organization: "Staff Selection Commission",
+    resultDate: "2026-05-14",
+    status: "Declared",
+    officialLink: "https://ssc.gov.in",
+    totalCandidates: "15,118 selected",
   },
   {
     id: 4,
-    examName: "IBPS PO Mains 2024 Result",
+    examName: "IBPS Clerk Mains Result 2026",
     organization: "Institute of Banking Personnel Selection",
-    resultDate: "2026-01-12",
+    resultDate: "2026-03-02",
     status: "Declared",
     officialLink: "https://ibps.in",
-    totalCandidates: "75,000+",
+    totalCandidates: "15,701 vacancies filled",
   },
   {
     id: 5,
-    examName: "UPPSC PCS 2024 Prelims Result",
-    organization: "Uttar Pradesh Public Service Commission",
-    resultDate: "2026-01-18",
-    status: "Expected",
-    officialLink: "https://uppsc.up.nic.in",
-    totalCandidates: "2,00,000+",
+    examName: "SBI Clerk Mains Result 2026",
+    organization: "State Bank of India",
+    resultDate: "2026-02-27",
+    status: "Declared",
+    officialLink: "https://sbi.co.in",
+    totalCandidates: "6,589 selected",
   },
   {
     id: 6,
-    examName: "NTA UGC NET December 2024 Result",
-    organization: "National Testing Agency",
-    resultDate: "2026-01-25",
+    examName: "SSC MTS / Havaldar Result 2026",
+    organization: "Staff Selection Commission",
+    resultDate: "2026-06-30",
     status: "Expected",
-    officialLink: "https://ugcnet.nta.nic.in",
-    totalCandidates: "10,00,000+",
+    officialLink: "https://ssc.gov.in",
+    totalCandidates: "—",
   },
   {
     id: 7,
-    examName: "SSC CHSL 2024 Tier-I Result",
-    organization: "Staff Selection Commission",
-    resultDate: "2026-01-08",
-    status: "Declared",
-    officialLink: "https://ssc.nic.in",
-    totalCandidates: "30,00,000+",
-  },
-  {
-    id: 8,
-    examName: "RPSC RAS 2024 Prelims Result",
-    organization: "Rajasthan Public Service Commission",
-    resultDate: "2026-01-22",
+    examName: "RRB NTPC UG CBT-1 Result 2026 (CEN 07/2025)",
+    organization: "Railway Recruitment Board (RRB)",
+    resultDate: "2026-07-15",
     status: "Expected",
-    officialLink: "https://rpsc.rajasthan.gov.in",
-    totalCandidates: "3,50,000+",
+    officialLink: "https://rrb.digialm.com",
+    totalCandidates: "—",
   },
 ];
 
@@ -105,10 +96,45 @@ export default function ResultsPage() {
     { label: "Results" },
   ];
 
-  const declaredResults = sampleResults.filter((r) => r.status === "Declared");
-  const expectedResults = sampleResults.filter((r) => r.status === "Expected");
+  const declaredResults = results.filter((r) => r.status === "Declared");
+  const expectedResults = results.filter((r) => r.status === "Expected");
+
+  const resultsSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        name: "Sarkari Result 2026 — Latest Government Exam Results",
+        description: "Check latest government exam results for SSC, UPSC, Railway, Banking, and State PSC exams. Direct links to official result pages.",
+        url: `${SITE_URL}/results`,
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Results", item: `${SITE_URL}/results` },
+          ],
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "Government Exam Results 2026",
+        url: `${SITE_URL}/results`,
+        itemListElement: declaredResults.map((r, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: r.examName,
+          url: r.officialLink,
+        })),
+      },
+    ],
+  };
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(resultsSchema) }}
+      />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Breadcrumbs items={breadcrumbs} />
 
@@ -217,7 +243,9 @@ export default function ResultsPage() {
                             })}
                           </strong>
                         </span>
-                        <span>Candidates: <strong className="text-gray-700">{result.totalCandidates}</strong></span>
+                        {result.totalCandidates !== "—" && (
+                          <span>Candidates: <strong className="text-gray-700">{result.totalCandidates}</strong></span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -259,5 +287,6 @@ export default function ResultsPage() {
         </aside>
       </div>
     </div>
+    </>
   );
 }
