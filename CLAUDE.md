@@ -1,5 +1,12 @@
 # SarkariDarapan — Project Guide for Claude Code
 
+## HARD RULES — Non-Negotiable
+
+**NEVER run `git push`, `vercel deploy`, or any deployment command without explicit permission from the owner.**
+Ask first, every single time, with no exceptions — even if the change looks small or safe.
+
+---
+
 ## What This Project Is
 
 **SarkariDarapan** is an Indian government jobs & schemes portal at **https://www.sarkaridarapan.com**
@@ -180,6 +187,26 @@ All platforms use `@sarkaridarapaninfo`:
 These rules apply to every blog post, job page, scheme page, and exam page — new or edited.
 **For old content:** modify ONE piece per day. Always ask the owner before starting.
 
+The **humanizer skill** is installed at `~/.claude/skills/humanizer/`. Use `/humanizer` to review and clean up any draft content before publishing. The skill runs a draft → audit → final rewrite loop against all 30 patterns below.
+
+### Writing process for every piece of content
+
+1. Write the draft.
+2. Run `/humanizer` on it (or manually apply the patterns below).
+3. Ask: "What makes this obviously AI-generated?" Fix those tells.
+4. Final rewrite must have zero em dashes, zero chatbot artifacts, zero significance inflation.
+
+### Personality and soul (blog posts and guides only)
+
+Sterile, voiceless writing is as obvious as slop. For blog posts, essays, and guides — not for job/scheme/exam listing pages — add a human voice:
+
+- Have opinions. React to facts, don't just report them.
+- Vary sentence length. Short punchy sentences. Then a longer one that takes its time.
+- Let some mess in. Perfect structure feels algorithmic.
+- Use first-person when it fits. "I" is more human than "one."
+
+For job/scheme/exam listing pages, neutral and factual is correct. Do not inject opinions there.
+
 ---
 
 ### Part A — 30 Anti-AI Writing Patterns
@@ -226,6 +253,15 @@ These rules apply to every blog post, job page, scheme page, and exam page — n
 31. **No manufactured punchlines / staccato drama.** Don't stack short declarative sentences to fake drama. Bad: "It had no preference. No aesthetic. No nostalgia." → Merge into one real sentence.
 32. **No aphorism formulas.** Cut "X is the Y of Z", "X becomes a trap", "X is not a tool but a mirror", "the language of", "the currency of". Replace with the concrete claim.
 33. **No conversational rhetorical openers.** Cut standalone "Honestly?", "Look,", "Here's the thing,", "The thing is,", "Real talk," used as fake-candid hooks. Just say the thing.
+
+#### What NOT to flag (false positives)
+
+A real human writer can hit several patterns above without AI involvement. Don't gut legitimate prose based on isolated tells. Look for clusters, not single occurrences.
+
+- Perfect grammar and consistent style is not an AI tell — many writers are professionals.
+- One em dash is not evidence. Em dashes are evidence only when stacked with other AI tells.
+- Formal or academic vocabulary is not an AI tell — only the specific AI-overused words in pattern #7 count.
+- A single "additionally" or "moreover" is not an AI tell — only when they pile up.
 
 ---
 
