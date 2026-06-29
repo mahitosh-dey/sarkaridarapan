@@ -1,6 +1,26 @@
 import { unstable_cache } from "next/cache";
 import { supabaseContent } from "@/lib/supabase-content";
-import type { Guide } from "@/lib/guides";
+import type { Guide, FAQItem } from "@/lib/guides";
+
+function parseFaqsFromMarkdown(content: string): FAQItem[] | undefined {
+  const sectionMatch = content.match(
+    /##\s*frequently asked questions\s*\n+([\s\S]*?)(?:\n---|\n##\s|$)/i
+  );
+  if (!sectionMatch) return undefined;
+
+  const section = sectionMatch[1];
+  const faqs: FAQItem[] = [];
+  const regex = /\*\*([^*]+?\?)\*\*\n([\s\S]+?)(?=\n\n\*\*|\n\*\*|$)/g;
+
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(section)) !== null) {
+    const question = m[1].trim();
+    const answer = m[2].trim().replace(/\n+/g, " ");
+    if (question && answer) faqs.push({ question, answer });
+  }
+
+  return faqs.length > 0 ? faqs : undefined;
+}
 
 export interface DbBlogPost {
   id: string;
@@ -20,6 +40,7 @@ export interface DbBlogPost {
 }
 
 export function dbPostToGuide(post: DbBlogPost): Guide {
+  const faqs = parseFaqsFromMarkdown(post.content);
   return {
     slug: post.slug,
     title: post.title,
@@ -31,6 +52,7 @@ export function dbPostToGuide(post: DbBlogPost): Guide {
     image: post.image || undefined,
     content: post.content,
     tags: post.tags || [],
+    ...(faqs ? { faqs } : {}),
   };
 }
 
