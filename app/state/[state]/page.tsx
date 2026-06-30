@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
-    robots: count >= 5 ? { index: true, follow: true } : { index: false, follow: true },
+    robots: count >= 1 ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `${stateData.name} Government Jobs 2026 | ${SITE_NAME}`,
       description,
