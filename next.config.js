@@ -114,11 +114,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/blog/ibps-po-2026-preparation-guide',
-        destination: '/blog',
-        permanent: true,
-      },
-      {
         source: '/blog/upsc-mains-2026-preparation-strategy-8-week-plan',
         destination: '/blog',
         permanent: true,
