@@ -78,7 +78,7 @@ const nextConfig = {
           },
         ],
       },
-      // Noindex filtered/parameterized listing URLs (defence-in-depth alongside
+      // Noindex filtered/parameterized listing URLs  (defence-in-depth alongside
       // the robots meta tag set in each page's generateMetadata).
       {
         source: '/sarkari-yojana',
