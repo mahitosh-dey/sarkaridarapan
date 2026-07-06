@@ -42,8 +42,12 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
   const guide = (await getDbPostBySlug(params.slug)) || getGuideBySlug(params.slug);
   if (!guide) return { title: "Guide Not Found" };
 
+  // Trust the DB title verbatim — it's validated to 50-65 chars at write time
+  // and already follows the "{main keyword}: {what user gets} [{year}]" pattern.
+  // Google auto-appends the site name in SERPs, so dropping it here buys back
+  // characters for the keyword-rich portion that actually drives CTR.
   return {
-    title: `${guide.title} | ${SITE_NAME}`,
+    title: guide.title,
     description: guide.description,
     alternates: {
       canonical: `${SITE_URL}/blog/${guide.slug}`,

@@ -96,37 +96,26 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     const rawLastDate = job.importantDates?.lastDate || job.lastDate;
     const lastDateShort = formatDateShort(rawLastDate);
     const lastDateFull = safeFormatDate(rawLastDate, "", "short");
-    const vacanciesLabel = job.vacancies > 0
-      ? `${job.vacancies.toLocaleString("en-IN")} Vacancies`
-      : "";
+    const vacanciesNum = job.vacancies > 0 ? job.vacancies : null;
 
-    // Build the middle segment: "9,144 Vacancies, Apply Online by 29 Jul"
-    const midParts = [
-      vacanciesLabel,
-      lastDateShort ? `Apply Online by ${lastDateShort}` : "",
-    ].filter(Boolean).join(", ");
-    const suffix = ` ${year}${midParts ? `: ${midParts}` : ""} | ${SITE_NAME}`;
-
-    // Primary: fit post_name so total stays at or under 65 chars (Bing limit).
-    // Fallback: when the suffix alone is close to 65 chars, drop vacancy/date
-    // detail and fall back to the shorter "Name Year | Site" format.
-    const budget = Math.max(15, 65 - suffix.length);
-    const displayName =
-      postName.length > budget
-        ? postName.slice(0, budget - 1).trimEnd() + "…"
-        : postName;
-    const rawTitle = `${displayName}${suffix}`;
-    const title = rawTitle.length <= 65
-      ? rawTitle
-      : (() => {
-          const shortSuffix = ` ${year} | ${SITE_NAME}`;
-          const shortBudget = Math.max(15, 65 - shortSuffix.length);
-          const shortName =
-            postName.length > shortBudget
-              ? postName.slice(0, shortBudget - 1).trimEnd() + "…"
-              : postName;
-          return `${shortName}${shortSuffix}`;
-        })();
+    // Format: "{post_name} {year} — {N} Vacancies | Apply by {DD MMM}"
+    // Under 60 chars total; vacancies and date segments drop out gracefully
+    // when the underlying fields are missing. Post name is truncated last so
+    // the freshness/urgency signals survive on long-title records.
+    const segments = [`${postName} ${year}`];
+    if (vacanciesNum) {
+      segments.push(` — ${vacanciesNum.toLocaleString("en-IN")} Vacancies`);
+    }
+    if (lastDateShort) {
+      segments.push(` | Apply by ${lastDateShort}`);
+    }
+    let title = segments.join("");
+    if (title.length > 60) {
+      const suffix = title.slice(postName.length);
+      const budget = Math.max(15, 60 - suffix.length);
+      const truncated = postName.slice(0, budget - 1).trimEnd() + "…";
+      title = `${truncated}${suffix}`;
+    }
 
     // Description: "Apply for {post_name} {year} — {vacancies} vacancies, last date {last_date}.
     //               Check eligibility, salary {salary_range}, exam pattern and direct apply link."
