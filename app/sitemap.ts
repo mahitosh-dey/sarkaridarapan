@@ -85,10 +85,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch { /* skip on error */ }
 
-  // Job category pages — only include categories that have at least one job
-  const categoriesWithJobs = new Set(rawJobs.map((j) => j.category).filter(Boolean));
+  // Threshold must match the noindex threshold in
+  // app/state/[state]/page.tsx and app/category/[category]/page.tsx —
+  // otherwise the sitemap advertises noindexed pages, which trips
+  // "Noindex page in sitemap" audit warnings and wastes crawl budget.
+  // Category pages count jobs only. State pages count jobs + schemes since
+  // the state view renders both.
+  const INDEX_THRESHOLD = 3;
+
+  const jobCountByCategory = new Map<string, number>();
+  const contentCountByState = new Map<string, number>();
+  for (const job of rawJobs) {
+    if (job.category) {
+      jobCountByCategory.set(job.category, (jobCountByCategory.get(job.category) ?? 0) + 1);
+    }
+    if (job.state) {
+      contentCountByState.set(job.state, (contentCountByState.get(job.state) ?? 0) + 1);
+    }
+  }
+  for (const scheme of rawSchemes) {
+    if (scheme.state) {
+      contentCountByState.set(scheme.state, (contentCountByState.get(scheme.state) ?? 0) + 1);
+    }
+  }
+
   const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES
-    .filter((cat) => categoriesWithJobs.has(cat.slug))
+    .filter((cat) => (jobCountByCategory.get(cat.slug) ?? 0) >= INDEX_THRESHOLD)
     .map((cat) => ({
       url: `${SITE_URL}/category/${cat.slug}`,
       lastModified: new Date(),
@@ -96,13 +118,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-  // State pages — only include states that have at least one job or scheme
-  const statesWithContent = new Set([
-    ...rawJobs.map((j) => j.state).filter(Boolean),
-    ...rawSchemes.map((s) => s.state).filter(Boolean),
-  ]);
   const statePages: MetadataRoute.Sitemap = STATES
-    .filter((state) => statesWithContent.has(state.slug))
+    .filter((state) => (contentCountByState.get(state.slug) ?? 0) >= INDEX_THRESHOLD)
     .map((state) => ({
       url: `${SITE_URL}/state/${state.slug}`,
       lastModified: new Date(),

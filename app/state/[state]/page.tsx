@@ -7,7 +7,11 @@ import SchemeCard from "@/components/ui/SchemeCard";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
-import { getJobsByState, getSchemesByState, getJobPosts } from "@/lib/content";
+import {
+  getJobsByState,
+  getSchemesByState,
+  getJobPosts,
+} from "@/lib/content";
 import { SITE_NAME, SITE_URL, STATES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -27,13 +31,23 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const stateData = STATES.find((s) => s.slug === params.state);
   if (!stateData) return { title: "State Not Found" };
 
-  const jobs = await getJobsByState(params.state).catch(() => []);
-  const count = jobs.length;
+  // Count jobs + STATE-SPECIFIC schemes only. getSchemesByState also returns
+  // all-India central schemes for display, but those duplicate across every
+  // state page — counting them would falsely inflate every state's score.
+  // Fetch in parallel to avoid extra latency.
+  const [jobs, schemes] = await Promise.all([
+    getJobsByState(params.state).catch(() => []),
+    getSchemesByState(params.state).catch(() => []),
+  ]);
+  const jobCount = jobs.length;
+  const stateSpecificSchemes = schemes.filter((s) => s.state !== "all-india");
+  const schemeCount = stateSpecificSchemes.length;
+  const count = jobCount + schemeCount;
 
   const title = `${stateData.name} Government Jobs 2026 — Latest Sarkari Naukri | ${SITE_NAME}`;
   const description =
     count > 0
-      ? `${count} latest government job${count === 1 ? "" : "s"} in ${stateData.name} 2026. Check eligibility, salary & last date.`
+      ? `${jobCount} government job${jobCount === 1 ? "" : "s"} and ${schemeCount} state scheme${schemeCount === 1 ? "" : "s"} in ${stateData.name} 2026. Check eligibility, salary & last date.`
       : `Browse latest government jobs in ${stateData.name} 2026 on SarkariDarapan. Updated daily.`;
 
   // 3-tier robots policy so Google stops wasting crawl budget on thin pages.
