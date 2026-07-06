@@ -12,25 +12,35 @@ import { isDatePast } from "@/lib/date-utils";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
-export const metadata: Metadata = {
-  title: "Entrance Exams 2026 - Upcoming Entrance Exams in India",
-  description:
-    "Complete list of upcoming entrance exams 2026 in India. Find exam dates, eligibility, syllabus, admit card, and results for engineering, medical, management, law, and more.",
-  alternates: {
-    canonical: `${SITE_URL}/entrance-exams`,
-  },
-  openGraph: {
-    title: `Entrance Exams 2026 - Upcoming Entrance Exams in India | ${SITE_NAME}`,
-    description:
-      "Complete list of upcoming entrance exams 2026 in India with exam dates, eligibility, and application details.",
-    url: `${SITE_URL}/entrance-exams`,
-    type: "website",
-    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
-  },
-};
-
 interface EntranceExamsListPageProps {
   searchParams: { page?: string; category?: string };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: EntranceExamsListPageProps): Promise<Metadata> {
+  const hasCategory = Boolean(searchParams.category);
+  const canonicalUrl = `${SITE_URL}/entrance-exams`;
+
+  return {
+    title: "Entrance Exams 2026 - Upcoming Entrance Exams in India",
+    description:
+      "Complete list of upcoming entrance exams 2026 in India. Find exam dates, eligibility, syllabus, admit card, and results for engineering, medical, management, law, and more.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: hasCategory
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+    openGraph: {
+      title: `Entrance Exams 2026 - Upcoming Entrance Exams in India | ${SITE_NAME}`,
+      description:
+        "Complete list of upcoming entrance exams 2026 in India with exam dates, eligibility, and application details.",
+      url: canonicalUrl,
+      type: "website",
+      images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default async function EntranceExamsPage({ searchParams }: EntranceExamsListPageProps) {

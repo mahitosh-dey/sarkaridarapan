@@ -12,25 +12,35 @@ import { isDatePast } from "@/lib/date-utils";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
-export const metadata: Metadata = {
-  title: "Latest Sarkari Naukri 2026 - Government Jobs",
-  description:
-    "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, banking jobs, railway jobs, and more.",
-  alternates: {
-    canonical: `${SITE_URL}/sarkari-naukri`,
-  },
-  openGraph: {
-    title: `Latest Sarkari Naukri 2026 - Government Jobs | ${SITE_NAME}`,
-    description:
-      "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, and more.",
-    url: `${SITE_URL}/sarkari-naukri`,
-    type: "website",
-    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
-  },
-};
-
 interface SarkariNaukriPageProps {
   searchParams: { page?: string; category?: string };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: SarkariNaukriPageProps): Promise<Metadata> {
+  const hasCategory = Boolean(searchParams.category);
+  const canonicalUrl = `${SITE_URL}/sarkari-naukri`;
+
+  return {
+    title: "Latest Sarkari Naukri 2026 - Government Jobs",
+    description:
+      "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, banking jobs, railway jobs, and more.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: hasCategory
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+    openGraph: {
+      title: `Latest Sarkari Naukri 2026 - Government Jobs | ${SITE_NAME}`,
+      description:
+        "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, and more.",
+      url: canonicalUrl,
+      type: "website",
+      images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default async function SarkariNaukriPage({ searchParams }: SarkariNaukriPageProps) {

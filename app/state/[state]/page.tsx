@@ -36,13 +36,22 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
       ? `${count} latest government job${count === 1 ? "" : "s"} in ${stateData.name} 2026. Check eligibility, salary & last date.`
       : `Browse latest government jobs in ${stateData.name} 2026 on SarkariDarapan. Updated daily.`;
 
+  // 3-tier robots policy so Google stops wasting crawl budget on thin pages.
+  // Empty pages get nofollow too — nothing worth passing signal through.
+  const robots =
+    count === 0
+      ? { index: false, follow: false }
+      : count < 3
+        ? { index: false, follow: true }
+        : { index: true, follow: true };
+
   return {
     title,
     description,
     alternates: {
       canonical: `${SITE_URL}/state/${params.state}`,
     },
-    robots: count >= 1 ? { index: true, follow: true } : { index: false, follow: true },
+    robots,
     openGraph: {
       title: `${stateData.name} Government Jobs 2026 | ${SITE_NAME}`,
       description,

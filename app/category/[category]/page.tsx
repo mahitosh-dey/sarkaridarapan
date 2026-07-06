@@ -40,13 +40,22 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       ? `${categoryData.name} government jobs 2026 — ${count} latest opening${count === 1 ? "" : "s"}, eligibility, salary, and application details.`
       : `Latest ${categoryData.name} government job vacancies 2026. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`;
 
+  // 3-tier robots policy so Google stops wasting crawl budget on thin pages.
+  // Empty pages get nofollow too — nothing worth passing signal through.
+  const robots =
+    count === 0
+      ? { index: false, follow: false }
+      : count < 3
+        ? { index: false, follow: true }
+        : { index: true, follow: true };
+
   return {
     title,
     description,
     alternates: {
       canonical: `${SITE_URL}/category/${params.category}`,
     },
-    robots: count >= 1 ? { index: true, follow: true } : { index: false, follow: true },
+    robots,
     openGraph: {
       title: `${categoryData.name} Jobs 2026 | ${SITE_NAME}`,
       description,

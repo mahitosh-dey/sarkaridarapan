@@ -11,25 +11,35 @@ import { SITE_NAME, SITE_URL, SCHEME_CATEGORIES, REVALIDATE_INTERVAL } from "@/l
 
 export const revalidate = REVALIDATE_INTERVAL;
 
-export const metadata: Metadata = {
-  title: "Sarkari Yojana 2026 - Government Schemes List",
-  description:
-    "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes. Find eligibility, benefits, application process for PM Yojana, state schemes, and more.",
-  alternates: {
-    canonical: `${SITE_URL}/sarkari-yojana`,
-  },
-  openGraph: {
-    title: `Sarkari Yojana 2026 - Government Schemes List | ${SITE_NAME}`,
-    description:
-      "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes for all citizens.",
-    url: `${SITE_URL}/sarkari-yojana`,
-    type: "website",
-    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
-  },
-};
-
 interface SarkariYojanaListPageProps {
   searchParams: { page?: string; category?: string };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: SarkariYojanaListPageProps): Promise<Metadata> {
+  const hasCategory = Boolean(searchParams.category);
+  const canonicalUrl = `${SITE_URL}/sarkari-yojana`;
+
+  return {
+    title: "Sarkari Yojana 2026 - Government Schemes List",
+    description:
+      "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes. Find eligibility, benefits, application process for PM Yojana, state schemes, and more.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: hasCategory
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+    openGraph: {
+      title: `Sarkari Yojana 2026 - Government Schemes List | ${SITE_NAME}`,
+      description:
+        "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes for all citizens.",
+      url: canonicalUrl,
+      type: "website",
+      images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default async function SarkariYojanaPage({ searchParams }: SarkariYojanaListPageProps) {

@@ -78,6 +78,29 @@ const nextConfig = {
           },
         ],
       },
+      // Noindex filtered/parameterized listing URLs (defence-in-depth alongside
+      // the robots meta tag set in each page's generateMetadata).
+      {
+        source: '/sarkari-yojana',
+        has: [{ type: 'query', key: 'category' }],
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, follow' },
+        ],
+      },
+      {
+        source: '/sarkari-naukri',
+        has: [{ type: 'query', key: 'category' }],
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, follow' },
+        ],
+      },
+      {
+        source: '/entrance-exams',
+        has: [{ type: 'query', key: 'category' }],
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, follow' },
+        ],
+      },
     ];
   },
   async redirects() {
