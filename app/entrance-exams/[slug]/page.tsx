@@ -15,6 +15,7 @@ import { getEntranceExamPosts, getEntranceExamBySlug } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { examToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { parseFaqsFromMarkdown, buildFaqPageSchema } from "@/lib/faq-parser";
 
 // Normalises any stored date string to YYYY-MM-DD for schema.org.
 // Handles ISO timestamps, YYYY-MM-DD, DD/MM/YYYY, and DD.MM.YYYY.
@@ -129,9 +130,13 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
     !exam.state ||
     exam.state.toLowerCase().replace(/-/g, " ").trim() === "all india";
 
+  const faqs = parseFaqsFromMarkdown(exam.content);
+  const faqSchema = buildFaqPageSchema(faqs);
+
   const combinedSchema = {
     "@context": "https://schema.org",
     "@graph": [
+      ...(faqSchema ? [faqSchema] : []),
       {
         "@type": "Event",
         name: exam.title,

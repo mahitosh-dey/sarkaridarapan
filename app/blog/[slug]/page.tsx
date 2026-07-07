@@ -19,6 +19,7 @@ import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
 import { getEntranceExamPosts, getJobsByCategory, getSchemePosts } from "@/lib/content";
 import { blogToExams, blogToSchemes } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -153,11 +154,14 @@ export default async function GuidePage({ params }: GuidePageProps) {
     inLanguage: "en-IN",
   };
 
-  const faqSchema = guide.faqs?.length
+  const effectiveGuideFaqs = guide.faqs?.length
+    ? guide.faqs
+    : parseFaqsFromMarkdown(guide.content);
+  const faqSchema = effectiveGuideFaqs.length
     ? {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: guide.faqs.map((faq) => ({
+        mainEntity: effectiveGuideFaqs.map((faq) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: {

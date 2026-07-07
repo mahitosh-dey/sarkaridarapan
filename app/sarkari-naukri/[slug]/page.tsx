@@ -16,6 +16,7 @@ import { getPublishedDbPosts } from "@/lib/blog-db";
 import { safeFormatDate } from "@/lib/date-utils";
 import { isClosingSoon, getDaysRemaining } from "@/lib/utils";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
 
 // Converts any stored date string to YYYY-MM-DD for schema.org.
 // Handles ISO timestamps, YYYY-MM-DD, DD/MM/YYYY, DD.MM.YYYY.
@@ -273,10 +274,13 @@ export default async function JobPage({ params }: JobPageProps) {
     },
   ];
 
+  const markdownFaqs = parseFaqsFromMarkdown(job.content);
+  const mergedFaqs = [...markdownFaqs, ...jobFaqs];
+
   const faqSchema = {
     "@type": "FAQPage",
     "@id": `${pageUrl}/#faq`,
-    mainEntity: jobFaqs.map((faq) => ({
+    mainEntity: mergedFaqs.map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: { "@type": "Answer", text: faq.answer },

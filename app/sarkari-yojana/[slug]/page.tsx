@@ -15,6 +15,7 @@ import { getSchemePosts, getSchemeBySlug, getJobsByState } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { schemeToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -104,13 +105,17 @@ export default async function SchemePage({ params }: SchemePageProps) {
     { label: scheme.title },
   ];
 
-  // Build FAQPage schema if FAQs exist
-  const faqSchema =
+  // Build FAQPage schema from DB faqs field, falling back to markdown content.
+  const effectiveFaqs =
     scheme.faqs && scheme.faqs.length > 0
+      ? scheme.faqs
+      : parseFaqsFromMarkdown(scheme.content);
+  const faqSchema =
+    effectiveFaqs.length > 0
       ? {
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: scheme.faqs.map((faq: { question: string; answer: string }) => ({
+          mainEntity: effectiveFaqs.map((faq: { question: string; answer: string }) => ({
             "@type": "Question",
             name: faq.question,
             acceptedAnswer: {
