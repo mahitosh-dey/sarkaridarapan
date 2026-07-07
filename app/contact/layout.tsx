@@ -2,16 +2,16 @@ import { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Contact Us",
+  title: "Contact SarkariDarapan: Corrections, Feedback & Queries",
   description:
-    "Contact SarkariDarapan for queries about government jobs, Sarkari Naukri, government schemes, exam results, admit cards, content corrections, or feedback. We respond within 24-48 hours.",
+    "Contact SarkariDarapan for corrections, feedback, government job queries, scheme questions, or partnership requests. We respond within 24 to 48 hours by email.",
   alternates: {
     canonical: `${SITE_URL}/contact`,
   },
   openGraph: {
-    title: `Contact Us | ${SITE_NAME}`,
+    title: `Contact SarkariDarapan: Corrections, Feedback & Queries`,
     description:
-      "Contact SarkariDarapan for queries about government jobs, government schemes, exam results, admit cards, content corrections, or feedback.",
+      "Contact SarkariDarapan for corrections, feedback, government job queries, scheme questions, or partnership requests. We respond within 24 to 48 hours by email.",
     url: `${SITE_URL}/contact`,
     type: "website",
     images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],

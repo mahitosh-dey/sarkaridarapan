@@ -4,16 +4,16 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 const SITE_URL = "https://www.sarkaridarapan.com";
 
 export const metadata: Metadata = {
-  title: "About Us – SarkariDarapan | Built by a Developer, for Every Indian Aspirant",
+  title: "About SarkariDarapan: Built for Every Indian Aspirant",
   description:
-    "SarkariDarapan was built by Mahitosh Dey, a developer from West Bengal, who saw that no clean, fast, reliable Sarkari Naukri site existed with proper guides for all states across India. So he built one.",
+    "SarkariDarapan is built by Mahitosh Dey, a developer from West Bengal, to give every Indian aspirant a clean, fast, reliable Sarkari Naukri and Yojana portal.",
   alternates: {
     canonical: `${SITE_URL}/about`,
   },
   openGraph: {
-    title: "About Us – SarkariDarapan | Built by a Developer, for Every Indian Aspirant",
+    title: "About SarkariDarapan: Built for Every Indian Aspirant",
     description:
-      "SarkariDarapan was built by Mahitosh Dey, a developer from West Bengal, who saw that no clean, fast, reliable Sarkari Naukri site existed with proper guides for all states across India. So he built one.",
+      "SarkariDarapan is built by Mahitosh Dey, a developer from West Bengal, to give every Indian aspirant a clean, fast, reliable Sarkari Naukri and Yojana portal.",
     url: `${SITE_URL}/about`,
     type: "website",
     images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],

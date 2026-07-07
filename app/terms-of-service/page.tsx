@@ -3,16 +3,16 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
+  title: "Terms of Service: SarkariDarapan Usage Rules & Rights",
   description:
-    "Terms of Service for SarkariDarapan - Rules and guidelines for using our government jobs and schemes information website.",
+    "SarkariDarapan Terms of Service: rules for using the government jobs and schemes portal, permitted uses, prohibited actions, IP rights, and dispute steps.",
   alternates: {
     canonical: `${SITE_URL}/terms-of-service`,
   },
   openGraph: {
-    title: `Terms of Service | SarkariDarapan`,
+    title: `Terms of Service: SarkariDarapan Usage Rules & Rights`,
     description:
-      "Terms of Service for SarkariDarapan - Rules and guidelines for using our government jobs and schemes information website.",
+      "SarkariDarapan Terms of Service: rules for using the government jobs and schemes portal, permitted uses, prohibited actions, IP rights, and dispute steps.",
     url: `${SITE_URL}/terms-of-service`,
     type: "website",
     images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],

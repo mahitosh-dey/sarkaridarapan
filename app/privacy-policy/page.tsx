@@ -3,16 +3,16 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
+  title: "Privacy Policy: How SarkariDarapan Handles Your Data",
   description:
-    "Privacy Policy for SarkariDarapan (sarkaridarapan.com). Learn how we collect, use, and protect your personal information when you use our government jobs and schemes information website.",
+    "SarkariDarapan Privacy Policy: how we collect, use, and protect your data, cookies used, Google AdSense and Analytics practices, and your data rights.",
   alternates: {
     canonical: `${SITE_URL}/privacy-policy`,
   },
   openGraph: {
-    title: `Privacy Policy | ${SITE_NAME}`,
+    title: `Privacy Policy: How SarkariDarapan Handles Your Data`,
     description:
-      "Privacy Policy for SarkariDarapan. Learn how we collect, use, and protect your personal information.",
+      "SarkariDarapan Privacy Policy: how we collect, use, and protect your data, cookies used, Google AdSense and Analytics practices, and your data rights.",
     url: `${SITE_URL}/privacy-policy`,
     type: "website",
     images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],

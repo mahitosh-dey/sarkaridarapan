@@ -3,16 +3,16 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Disclaimer",
+  title: "Disclaimer: SarkariDarapan is Not a Government Website",
   description:
-    "Disclaimer for SarkariDarapan - Important information about the use of content and services provided on our website.",
+    "SarkariDarapan is a private information portal, not a government body. Verify all notifications, dates, and eligibility from official government sources.",
   alternates: {
     canonical: `${SITE_URL}/disclaimer`,
   },
   openGraph: {
-    title: `Disclaimer | SarkariDarapan`,
+    title: `Disclaimer: SarkariDarapan is Not a Government Website`,
     description:
-      "Disclaimer for SarkariDarapan - Important information about the use of content and services provided on our website.",
+      "SarkariDarapan is a private information portal, not a government body. Verify all notifications, dates, and eligibility from official government sources.",
     url: `${SITE_URL}/disclaimer`,
     type: "website",
     images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
