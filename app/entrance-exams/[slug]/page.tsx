@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import EntranceExamDetail from "@/components/content/EntranceExamDetail";
 import EntranceExamCard from "@/components/ui/EntranceExamCard";
+import JobCard from "@/components/ui/JobCard";
 import GuideCard from "@/components/GuideCard";
 import MarkdownContent from "@/components/content/MarkdownContent";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
@@ -11,7 +12,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
-import { getEntranceExamPosts, getEntranceExamBySlug } from "@/lib/content";
+import { getEntranceExamPosts, getEntranceExamBySlug, getJobsByCategory } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { examToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
@@ -115,6 +116,18 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
     }
   } catch {
     relatedBlogs = [];
+  }
+
+  // Cross-link to jobs that this exam qualifies you for (same category).
+  // Helps GATE → PSU jobs, UPSC prep → SSC CGL, etc.
+  let relatedJobs: import("@/lib/types").JobPost[] = [];
+  try {
+    if (exam.category) {
+      const categoryJobs = await getJobsByCategory(exam.category);
+      relatedJobs = categoryJobs.slice(0, 4);
+    }
+  } catch {
+    relatedJobs = [];
   }
 
   const breadcrumbs = [
@@ -244,6 +257,21 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedExams.map((relExam) => (
                   <EntranceExamCard key={relExam.slug} exam={relExam} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Related Jobs (career outcomes from this exam) */}
+          {relatedJobs.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Related government jobs</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Current recruitments in the same category as this exam.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedJobs.map((job) => (
+                  <JobCard key={job.slug} job={job} />
                 ))}
               </div>
             </section>

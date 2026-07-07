@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 import JobDetail from "@/components/content/JobDetail";
 import MarkdownContent from "@/components/content/MarkdownContent";
 import JobCard from "@/components/ui/JobCard";
+import SchemeCard from "@/components/ui/SchemeCard";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Sidebar from "@/components/layout/Sidebar";
 import InArticleAd from "@/components/ads/InArticleAd";
 import JsonLd from "@/components/seo/JsonLd";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import GuideCard from "@/components/GuideCard";
-import { getJobPosts, getJobBySlug, getJobsByCategory } from "@/lib/content";
+import { getJobPosts, getJobBySlug, getJobsByCategory, getJobsByState, getSchemesByState } from "@/lib/content";
 import { getRelatedGuidesForJob } from "@/lib/guides";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { safeFormatDate } from "@/lib/date-utils";
@@ -99,13 +100,13 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     const lastDateFull = safeFormatDate(rawLastDate, "", "short");
     const vacanciesNum = job.vacancies > 0 ? job.vacancies : null;
 
-    // Format: "{post_name} {year} — {N} Vacancies | Apply by {DD MMM}"
+    // Format: "{post_name} {year}: {N} Vacancies | Apply by {DD MMM}"
     // Under 60 chars total; vacancies and date segments drop out gracefully
     // when the underlying fields are missing. Post name is truncated last so
     // the freshness/urgency signals survive on long-title records.
     const segments = [`${postName} ${year}`];
     if (vacanciesNum) {
-      segments.push(` — ${vacanciesNum.toLocaleString("en-IN")} Vacancies`);
+      segments.push(`: ${vacanciesNum.toLocaleString("en-IN")} Vacancies`);
     }
     if (lastDateShort) {
       segments.push(` | Apply by ${lastDateShort}`);
@@ -118,14 +119,14 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       title = `${truncated}${suffix}`;
     }
 
-    // Description: "Apply for {post_name} {year} — {vacancies} vacancies, last date {last_date}.
+    // Description: "Apply for {post_name} {year}: {vacancies}, last date {last_date}.
     //               Check eligibility, salary {salary_range}, exam pattern and direct apply link."
     const vacanciesCount = job.vacancies > 0
       ? `${job.vacancies.toLocaleString("en-IN")} vacancies`
       : "";
     let description = `Apply for ${postName} ${year}`;
     if (vacanciesCount || lastDateFull) {
-      description += " —";
+      description += ":";
       if (vacanciesCount) description += ` ${vacanciesCount}`;
       if (lastDateFull) description += `${vacanciesCount ? "," : ""} last date ${lastDateFull}`;
     }
@@ -176,10 +177,16 @@ export default async function JobPage({ params }: JobPageProps) {
   const hardcodedGuides = getRelatedGuidesForJob(job.category);
   let similarJobs: import("@/lib/types").JobPost[] = [];
   let relatedGuides = hardcodedGuides;
+  let stateJobs: import("@/lib/types").JobPost[] = [];
+  let stateSchemes: import("@/lib/types").SchemePost[] = [];
+  const jobStateNormalized = job.state?.toLowerCase().replace(/-/g, " ").trim();
+  const jobHasSpecificState = !!jobStateNormalized && jobStateNormalized !== "all india";
   try {
-    const [categoryJobs, allDbPosts] = await Promise.all([
+    const [categoryJobs, allDbPosts, stateJobsRes, stateSchemesRes] = await Promise.all([
       getJobsByCategory(job.category),
       getPublishedDbPosts(),
+      jobHasSpecificState ? getJobsByState(job.state!) : Promise.resolve([]),
+      jobHasSpecificState ? getSchemesByState(job.state!) : Promise.resolve([]),
     ]);
     similarJobs = categoryJobs.filter((j) => j.slug !== job.slug).slice(0, 3);
     const dbGuides = allDbPosts.filter((b) => b.category === job.category).slice(0, 3);
@@ -187,9 +194,15 @@ export default async function JobPage({ params }: JobPageProps) {
       const seen = new Set(dbGuides.map((g) => g.slug));
       relatedGuides = [...dbGuides, ...hardcodedGuides.filter((g) => !seen.has(g.slug))].slice(0, 3);
     }
+    stateJobs = (stateJobsRes as import("@/lib/types").JobPost[])
+      .filter((j) => j.slug !== job.slug && j.category !== job.category)
+      .slice(0, 3);
+    stateSchemes = (stateSchemesRes as import("@/lib/types").SchemePost[]).slice(0, 3);
   } catch {
     similarJobs = [];
     relatedGuides = hardcodedGuides;
+    stateJobs = [];
+    stateSchemes = [];
   }
 
   const breadcrumbs = [
@@ -385,6 +398,37 @@ export default async function JobPage({ params }: JobPageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedGuides.map((guide) => (
                   <GuideCard key={guide.slug} guide={guide} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Other jobs in the same state (cross-category state hub) */}
+          {stateJobs.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Other jobs in {job.state}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {stateJobs.map((relJob) => (
+                  <JobCard key={relJob.slug} job={relJob} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* State schemes cross-linked from job (helps state residents) */}
+          {stateSchemes.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Government schemes in {job.state}
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Welfare schemes available to residents of {job.state}.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {stateSchemes.map((scheme) => (
+                  <SchemeCard key={scheme.slug} scheme={scheme} />
                 ))}
               </div>
             </section>
