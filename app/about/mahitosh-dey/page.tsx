@@ -21,14 +21,14 @@ const AUTHOR = {
 };
 
 export const metadata: Metadata = {
-  title: `${AUTHOR.name} — ${AUTHOR.jobTitle} | ${SITE_NAME}`,
+  title: `${AUTHOR.name}, ${AUTHOR.jobTitle} | ${SITE_NAME}`,
   description: `${AUTHOR.name} is the founder and developer of SarkariDarapan, an Indian government jobs and schemes portal based in West Bengal.`,
   alternates: {
     canonical: `${SITE_URL}/about/${AUTHOR.slug}`,
   },
   openGraph: {
     title: `${AUTHOR.name} | ${SITE_NAME}`,
-    description: `Founder & Developer of SarkariDarapan — government jobs and schemes portal.`,
+    description: `Founder & Developer of SarkariDarapan, an Indian government jobs and schemes portal.`,
     url: `${SITE_URL}/about/${AUTHOR.slug}`,
     type: "profile",
     images: [

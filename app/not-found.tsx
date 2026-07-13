@@ -35,7 +35,7 @@ export default function NotFound() {
           Coming Soon
         </h1>
         <p className="text-gray-500 text-lg mb-8">
-          This page is under construction. Check back soon — we&apos;re working on it.
+          This page is under construction. Check back soon, we&apos;re working on it.
         </p>
 
         {/* Navigation Links */}
@@ -67,26 +67,26 @@ export default function NotFound() {
             <li>
               <Link href="/sarkari-naukri" className="text-blue-700 hover:underline">
                 Sarkari Naukri
-              </Link>{" "}
-              — Latest government job notifications
+              </Link>
+              : Latest government job notifications
             </li>
             <li>
               <Link href="/sarkari-yojana" className="text-blue-700 hover:underline">
                 Sarkari Yojana
-              </Link>{" "}
-              — Government schemes and benefits
+              </Link>
+              : Government schemes and benefits
             </li>
             <li>
               <Link href="/entrance-exams" className="text-blue-700 hover:underline">
                 Entrance Exams
-              </Link>{" "}
-              — Exam dates, eligibility, and results
+              </Link>
+              : Exam dates, eligibility, and results
             </li>
             <li>
               <Link href="/blog" className="text-blue-700 hover:underline">
                 Blog
-              </Link>{" "}
-              — Preparation guides and career tips
+              </Link>
+              : Preparation guides and career tips
             </li>
           </ul>
         </div>

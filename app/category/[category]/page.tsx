@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
   const title =
     count > 0
-      ? `${categoryData.name} Government Jobs 2026 — ${count} Latest Opening${count === 1 ? "" : "s"} | ${SITE_NAME}`
-      : `${categoryData.name} Government Jobs 2026 — Latest Sarkari Naukri | ${SITE_NAME}`;
+      ? `${categoryData.name} Government Jobs 2026: ${count} Latest Opening${count === 1 ? "" : "s"} | ${SITE_NAME}`
+      : `${categoryData.name} Government Jobs 2026: Latest Sarkari Naukri | ${SITE_NAME}`;
 
   const description =
     count > 0
-      ? `${categoryData.name} government jobs 2026 — ${count} latest opening${count === 1 ? "" : "s"}, eligibility, salary, and application details.`
+      ? `${categoryData.name} government jobs 2026: ${count} latest opening${count === 1 ? "" : "s"}, eligibility, salary, and application details.`
       : `Latest ${categoryData.name} government job vacancies 2026. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`;
 
   // 3-tier robots policy so Google stops wasting crawl budget on thin pages.
@@ -167,7 +167,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               {fallbackJobs.length > 0 && (
                 <>
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Latest government jobs — open to all eligible candidates
+                    Latest government jobs, open to all eligible candidates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {fallbackJobs.map((job) => (

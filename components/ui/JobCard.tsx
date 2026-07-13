@@ -20,7 +20,7 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job }: JobCardProps) {
-  const formattedDate = safeFormatDate(job.publishedAt, "—");
+  const formattedDate = safeFormatDate(job.publishedAt, "N/A");
   const lastDate = safeFormatDate(job.importantDates.lastDate, "N/A");
 
   // A job is closed if the DB marks it inactive OR if the last date has passed

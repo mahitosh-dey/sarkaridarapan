@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const jobCount = jobs.length;
   return {
     title: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana 2026`,
-    description: `${jobCount}+ active government job notifications for 2026 — SSC, Railway, Banking, UPSC, Defence, State PSC. Salary details, eligibility & last dates updated daily.`,
+    description: `${jobCount}+ active government job notifications for 2026: SSC, Railway, Banking, UPSC, Defence, State PSC. Salary details, eligibility & last dates updated daily.`,
     alternates: {
       canonical: SITE_URL,
     },
@@ -179,7 +179,7 @@ export default async function HomePage() {
       <div className="bg-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-medium">
-            Get instant job alerts — join our free channels!
+            Get instant job alerts. Join our free channels!
           </p>
           <div className="flex gap-3">
             <a

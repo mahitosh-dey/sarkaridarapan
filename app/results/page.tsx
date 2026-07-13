@@ -77,7 +77,7 @@ const results = [
     resultDate: "2026-06-30",
     status: "Expected",
     officialLink: "https://ssc.gov.in",
-    totalCandidates: "—",
+    totalCandidates: "N/A",
   },
   {
     id: 7,
@@ -86,7 +86,7 @@ const results = [
     resultDate: "2026-07-15",
     status: "Expected",
     officialLink: "https://rrb.digialm.com",
-    totalCandidates: "—",
+    totalCandidates: "N/A",
   },
   {
     id: 8,
@@ -95,7 +95,7 @@ const results = [
     resultDate: "2026-06-25",
     status: "Declared",
     officialLink: "https://ptetvmoukota2026.in",
-    totalCandidates: "—",
+    totalCandidates: "N/A",
   },
   {
     id: 9,
@@ -104,7 +104,7 @@ const results = [
     resultDate: "2026-06-24",
     status: "Declared",
     officialLink: "https://caresults.icai.org",
-    totalCandidates: "—",
+    totalCandidates: "N/A",
   },
   {
     id: 10,
@@ -113,7 +113,7 @@ const results = [
     resultDate: "2026-05-08",
     status: "Declared",
     officialLink: "https://upsc.gov.in",
-    totalCandidates: "—",
+    totalCandidates: "N/A",
   },
   {
     id: 11,
@@ -131,7 +131,7 @@ const results = [
     resultDate: "2026-05-22",
     status: "Declared",
     officialLink: "https://mppsc.mp.gov.in",
-    totalCandidates: "—",
+    totalCandidates: "N/A",
   },
 ];
 
@@ -149,7 +149,7 @@ export default function ResultsPage() {
     "@graph": [
       {
         "@type": "CollectionPage",
-        name: "Sarkari Result 2026 — Latest Government Exam Results",
+        name: "Sarkari Result 2026: Latest Government Exam Results",
         description: "Check latest government exam results for SSC, UPSC, Railway, Banking, and State PSC exams. Direct links to official result pages.",
         url: `${SITE_URL}/results`,
         breadcrumb: {
@@ -288,7 +288,7 @@ export default function ResultsPage() {
                             })}
                           </strong>
                         </span>
-                        {result.totalCandidates !== "—" && (
+                        {result.totalCandidates !== "N/A" && (
                           <span>Candidates: <strong className="text-gray-700">{result.totalCandidates}</strong></span>
                         )}
                       </div>

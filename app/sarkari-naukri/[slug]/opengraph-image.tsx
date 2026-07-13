@@ -4,7 +4,7 @@ import { isClosingSoon } from "@/lib/utils";
 
 export const runtime = "edge";
 export const revalidate = 3600;
-export const alt = "SarkariDarapan — Sarkari Naukri";
+export const alt = "SarkariDarapan Sarkari Naukri";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

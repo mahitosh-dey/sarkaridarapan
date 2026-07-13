@@ -327,7 +327,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                 Apply for these jobs
               </h2>
               <p className="text-sm text-gray-500 mb-6">
-                Government vacancies matching this guide&apos;s category — check last dates before applying.
+                Government vacancies matching this guide&apos;s category. Check last dates before applying.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {relatedJobs.map((job) => (

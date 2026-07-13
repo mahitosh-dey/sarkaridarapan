@@ -1,5 +1,5 @@
 // =============================================================================
-// Groq AI Pipeline — Entrance Exams
+// Groq AI Pipeline:Entrance Exams
 // =============================================================================
 
 import { callGroq, parseStructuredResponse, calculateReadingTime } from "./groq";
@@ -62,15 +62,15 @@ export const EXAM_FIELD_MAP: Record<string, string> = {
 const EXAM_SYSTEM_PROMPT = `You are an entrance exam content writer for an Indian education and exam portal.
 You must ONLY use the data provided. Never guess, assume, or invent any \
 information. If a field is missing, write 'Details awaited from official \
-notification' — never fabricate dates, eligibility, or exam pattern details.
+notification':never fabricate dates, eligibility, or exam pattern details.
 
 IMPORTANT:
 - These are competitive entrance exams, NOT government jobs.
-- NEVER mention salary, pay scale, or compensation — entrance exams have none.
+- NEVER mention salary, pay scale, or compensation:entrance exams have none.
 - Do NOT write a Salary & Benefits section.
 - Focus on exam preparation, eligibility, dates, and application process.
 
-BANNED PHRASES — never write any of these in the article:
+BANNED PHRASES:never write any of these in the article:
 - 'certain date'
 - 'will be announced'
 - 'may vary'
@@ -123,7 +123,7 @@ export function buildExamPrompt(exam: ExamRow): [string, string] {
 
 ${scrapedJson}
 
-IMPORTANT — MINING SOURCE TEXT:
+IMPORTANT:MINING SOURCE TEXT:
 The source_page_text field contains raw text scraped from the official page. Extract any additional details from it even if they aren't in the structured fields:
 - Eligibility criteria (age, education, nationality)
 - Exam pattern details (sections, questions, marks, duration, negative marking)
@@ -132,8 +132,8 @@ The source_page_text field contains raw text scraped from the official page. Ext
 - Application fee details
 - Any other structured data that would make the article more useful
 
-STRICT RULES — read carefully:
-- NEVER mention salary, pay scale, or compensation — entrance exams have none
+STRICT RULES:read carefully:
+- NEVER mention salary, pay scale, or compensation:entrance exams have none
 - Never invent dates not present in the data
 - Never invent eligibility criteria not in the data
 - Never invent exam pattern details not in the data
@@ -141,7 +141,7 @@ STRICT RULES — read carefully:
 - Keep tone simple and helpful for Indian students and exam aspirants
 - Write like a mentor who's been through the process, not a Wikipedia article
 
-BANNED PHRASES — do NOT use any of these anywhere in the article:
+BANNED PHRASES:do NOT use any of these anywhere in the article:
 - 'certain date'
 - 'will be announced'
 - 'may vary'
@@ -181,7 +181,7 @@ Use this EXACT schema (use null for any field NOT present in the data above):
 - ONLY use values that appear in the scraped data above (including source_page_text)
 - Unknown fields = null. Do NOT guess or fill in from general knowledge
 - exam_pattern: populate sections array from data; set entire object to null if no exam pattern data exists
-- NEVER include salary — entrance exams have no salary
+- NEVER include salary:entrance exams have no salary
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PART 2: Markdown Article (1500 words)
@@ -190,25 +190,25 @@ PART 2: Markdown Article (1500 words)
 After the JSON block, write a 1500-word original article for Indian exam aspirants.
 
 **Structure (use ## for section headings):**
-1. ## Overview — what this exam is, who should appear, conducting body
-2. ## Eligibility — age limits, education requirements, nationality, category relaxations (ONLY from data)
-3. ## Exam Pattern — markdown table (Section | Questions | Marks | Duration). Include total marks, duration, negative marking details
-4. ## Syllabus — key topics and subjects covered
-5. ## Important Dates — markdown table (Event | Date). Application start/end, exam date, admit card, result dates
-6. ## Application Process — step by step, include the official website URL
-7. ## Admit Card — how to download, when available
-8. ## Results — how to check, expected timeline
-9. ## Preparation Tips — genuine, practical advice. Be specific — mention book names, previous year papers, time management strategies
-10. ## Frequently Asked Questions — 3 to 5 Q&As, conversational tone. ONLY factual answers.
-11. ## Official Links — bullet list with markdown links
-12. *Disclaimer* — italic paragraph telling readers to verify on the official source
+1. ## Overview:what this exam is, who should appear, conducting body
+2. ## Eligibility:age limits, education requirements, nationality, category relaxations (ONLY from data)
+3. ## Exam Pattern:markdown table (Section | Questions | Marks | Duration). Include total marks, duration, negative marking details
+4. ## Syllabus:key topics and subjects covered
+5. ## Important Dates:markdown table (Event | Date). Application start/end, exam date, admit card, result dates
+6. ## Application Process:step by step, include the official website URL
+7. ## Admit Card:how to download, when available
+8. ## Results:how to check, expected timeline
+9. ## Preparation Tips:genuine, practical advice. Be specific:mention book names, previous year papers, time management strategies
+10. ## Frequently Asked Questions:3 to 5 Q&As, conversational tone. ONLY factual answers.
+11. ## Official Links:bullet list with markdown links
+12. *Disclaimer*:italic paragraph telling readers to verify on the official source
 
 **Output rules:**
 - Output ONLY the JSON block followed by the markdown body
 - Do NOT start the markdown with # (the page already has the h1 title). Start with ##
 - No YAML frontmatter, no --- delimiters
-- Every sentence must be originally written — zero copy-paste from any source
-- Aim for at least 1500 words — cover each section with real depth, not filler`;
+- Every sentence must be originally written:zero copy-paste from any source
+- Aim for at least 1500 words:cover each section with real depth, not filler`;
 
   return [EXAM_SYSTEM_PROMPT, userPrompt];
 }
@@ -228,7 +228,7 @@ export function checkExamContentQuality(
     }
   }
 
-  // 2. Salary check — entrance exams should never have salary
+  // 2. Salary check:entrance exams should never have salary
   const groqSalary = structuredData.salary;
   if (
     groqSalary &&

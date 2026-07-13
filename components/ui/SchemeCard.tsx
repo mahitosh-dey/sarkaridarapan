@@ -17,7 +17,7 @@ interface SchemeCardProps {
 }
 
 export default function SchemeCard({ scheme }: SchemeCardProps) {
-  const formattedDate = safeFormatDate(scheme.publishedAt, "—");
+  const formattedDate = safeFormatDate(scheme.publishedAt, "N/A");
 
   return (
     <article className="relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 border-l-4 border-l-sarkari-green overflow-hidden">

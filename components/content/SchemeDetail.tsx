@@ -11,8 +11,8 @@ interface SchemeDetailProps {
 export default function SchemeDetail({ scheme }: SchemeDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const updatedDate = safeFormatDate(scheme.updatedAt, "—", "long");
-  const publishedDate = safeFormatDate(scheme.publishedAt, "—", "long");
+  const updatedDate = safeFormatDate(scheme.updatedAt, "N/A", "long");
+  const publishedDate = safeFormatDate(scheme.publishedAt, "N/A", "long");
 
   async function handleCopyLink() {
     try {
@@ -302,7 +302,7 @@ export default function SchemeDetail({ scheme }: SchemeDetailProps) {
       {/* ------------------------------------------------------------------ */}
       <div className="rounded-lg border border-green-200 bg-green-50 p-4 sm:p-5">
         <p className="mb-3 text-sm font-semibold text-green-900">
-          Get instant scheme updates — join our channels:
+          Get instant scheme updates. Join our channels:
         </p>
         <div className="flex flex-wrap gap-3">
           <a

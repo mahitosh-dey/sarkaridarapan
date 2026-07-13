@@ -11,8 +11,8 @@ interface EntranceExamDetailProps {
 export default function EntranceExamDetail({ exam }: EntranceExamDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const updatedDate = safeFormatDate(exam.updatedAt, "—", "long");
-  const publishedDate = safeFormatDate(exam.publishedAt, "—", "long");
+  const updatedDate = safeFormatDate(exam.updatedAt, "N/A", "long");
+  const publishedDate = safeFormatDate(exam.publishedAt, "N/A", "long");
   const formatDate = (dateStr: string) => safeFormatDate(dateStr, "TBA", "long");
 
   async function handleCopyLink() {

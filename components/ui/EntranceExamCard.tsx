@@ -17,7 +17,7 @@ interface EntranceExamCardProps {
 }
 
 export default function EntranceExamCard({ exam }: EntranceExamCardProps) {
-  const formattedDate = safeFormatDate(exam.publishedAt, "—");
+  const formattedDate = safeFormatDate(exam.publishedAt, "N/A");
   const examDate = safeFormatDate(exam.examDate, "TBA", "short", true);
   const applicationEnd = safeFormatDate(exam.applicationEnd, "N/A", "short", true);
 

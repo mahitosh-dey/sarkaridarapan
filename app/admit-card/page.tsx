@@ -103,7 +103,7 @@ export default function AdmitCardPage() {
     "@graph": [
       {
         "@type": "CollectionPage",
-        name: "Admit Card 2026 — Download Government Exam Hall Tickets",
+        name: "Admit Card 2026: Download Government Exam Hall Tickets",
         description: "Download latest admit cards and hall tickets for government exams 2026. Direct links to official portals.",
         url: `${SITE_URL}/admit-card`,
         breadcrumb: {

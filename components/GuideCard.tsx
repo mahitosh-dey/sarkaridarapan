@@ -10,7 +10,7 @@ interface GuideCardProps {
 }
 
 export default function GuideCard({ guide }: GuideCardProps) {
-  const formattedDate = safeFormatDate(guide.publishedAt, "—");
+  const formattedDate = safeFormatDate(guide.publishedAt, "N/A");
 
   return (
     <article className="relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 border-l-4 border-l-indigo-600 overflow-hidden">

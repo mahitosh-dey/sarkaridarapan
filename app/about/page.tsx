@@ -102,13 +102,13 @@ const coverItems = [
     emoji: "\uD83D\uDDFA\uFE0F",
     title: "All-State Coverage",
     description:
-      "Dedicated guides for every state — UP, Bihar, Rajasthan, WB, MP, Maharashtra and 22 more",
+      "Dedicated guides for every state: UP, Bihar, Rajasthan, WB, MP, Maharashtra and 22 more",
   },
 ];
 
 const editorialPromises = [
   "Every notification is sourced from official government portals only",
-  "We always link to the original official source — verify everything yourself",
+  "We always link to the original official source so you can verify everything yourself",
   "If a date or detail changes, we update our content within 24 hours",
   "All information is free. We will never charge you for government information.",
   "No fake jobs, no paid listings. Only real government notifications.",
@@ -154,7 +154,7 @@ export default function AboutPage() {
         </h1>
         <p className="text-lg text-gray-700 leading-relaxed">
           This isn&apos;t a big media company or a government agency. SarkariDarapan
-          is built and maintained by one person — a developer from West Bengal — who
+          is built and maintained by one person, a developer from West Bengal, who
           got tired of seeing aspirants miss deadlines because reliable information
           was impossible to find in one place.
         </p>
@@ -171,19 +171,19 @@ export default function AboutPage() {
               with the same problem: finding accurate, up-to-date information about government
               jobs and schemes. The official websites are scattered, often slow, and rarely
               explain things in plain language. The private &quot;sarkari result&quot; sites
-              aren&apos;t much better — most of them are cluttered, outdated, and don&apos;t
+              aren&apos;t much better. Most of them are cluttered, outdated, and don&apos;t
               cover all states properly.
             </p>
             <p>
               In 2026, I decided to stop complaining about the problem and start solving it.
-              I built SarkariDarapan from scratch — not as a business venture, but as a
+              I built SarkariDarapan from scratch, not as a business venture but as a
               genuine attempt to create the one resource I wished existed. A clean, fast,
               reliable platform where any aspirant can find job notifications, scheme details,
               and step-by-step guides without confusion.
             </p>
             <p>
-              The goal was simple from day one: one platform where every aspirant — from UP
-              to Kerala, from Bihar to West Bengal — can get the information they need without
+              The goal was simple from day one: one platform where every aspirant, from UP
+              to Kerala and Bihar to West Bengal, can get the information they need without
               hopping between ten different websites. That goal hasn&apos;t changed.
               SarkariDarapan covers all states across India, and I update it every single day.
             </p>
@@ -197,7 +197,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
           <p className="text-gray-800 text-lg leading-relaxed">
             To build India&apos;s most reliable, state-wise Sarkari Naukri and Yojana
-            platform — where every aspirant gets accurate, timely, and easy-to-understand
+            platform where every aspirant gets accurate, timely, and easy-to-understand
             information, completely free, no matter which state they are from.
           </p>
         </div>
@@ -207,7 +207,7 @@ export default function AboutPage() {
       <section className="max-w-4xl mx-auto px-4 mb-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">What We Cover</h2>
         <p className="text-gray-600 text-center mb-8">
-          From your first application to your final result — we have got you covered.
+          From your first application to your final result, we have got you covered.
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {coverItems.map((item) => (
@@ -257,10 +257,10 @@ export default function AboutPage() {
           </div>
           <p className="text-gray-700 leading-relaxed mb-5">
             I&apos;m a developer from West Bengal. I built SarkariDarapan in 2026 because
-            I kept seeing a real gap — lakhs of aspirants across India searching for
+            I kept seeing a real gap. Lakhs of aspirants across India were searching for
             government job information across dozens of scattered, slow, and unreliable
             websites. I wanted to fix that. This platform is my attempt to give every
-            Indian aspirant — regardless of their state or language — one clean, fast,
+            Indian aspirant, regardless of their state or language, one clean, fast,
             and honest place to find what they need.
           </p>
           <a

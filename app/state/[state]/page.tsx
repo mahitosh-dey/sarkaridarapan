@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const schemeCount = stateSpecificSchemes.length;
   const count = jobCount + schemeCount;
 
-  const title = `${stateData.name} Government Jobs 2026 — Latest Sarkari Naukri | ${SITE_NAME}`;
+  const title = `${stateData.name} Government Jobs 2026: Latest Sarkari Naukri | ${SITE_NAME}`;
   const description =
     count > 0
       ? `${jobCount} government job${jobCount === 1 ? "" : "s"} and ${schemeCount} state scheme${schemeCount === 1 ? "" : "s"} in ${stateData.name} 2026. Check eligibility, salary & last date.`
@@ -130,7 +130,7 @@ export default async function StatePage({ params, searchParams }: StatePageProps
 
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
-          {stateData.name} — Government Jobs &amp; Schemes
+          {stateData.name}: Government Jobs &amp; Schemes
         </h1>
         <p className="text-gray-600 text-lg">
           Browse all government job vacancies and sarkari yojana available in {stateData.name}.
@@ -192,7 +192,7 @@ export default async function StatePage({ params, searchParams }: StatePageProps
                   {fallbackJobs.length > 0 && (
                     <>
                       <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                        All-India Government Jobs — open to candidates from all states
+                        All-India Government Jobs, open to candidates from all states
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {fallbackJobs.map((job) => (

@@ -14,7 +14,7 @@ interface JobDetailProps {
 export default function JobDetail({ job, closingSoon = false, daysLeft = null }: JobDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const updatedDate = safeFormatDate(job.updatedAt, "—", "long");
+  const updatedDate = safeFormatDate(job.updatedAt, "N/A", "long");
   const formatDate = (dateStr: string | undefined) =>
     safeFormatDate(dateStr, "To be announced", "long");
 
@@ -380,7 +380,7 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
       {/* ------------------------------------------------------------------ */}
       <div className="rounded-lg border border-green-200 bg-green-50 p-4 sm:p-5">
         <p className="mb-3 text-sm font-semibold text-green-900">
-          Get instant job alerts — join our channels:
+          Get instant job alerts. Join our channels:
         </p>
         <div className="flex flex-wrap gap-3">
           <a
