@@ -1,0 +1,27 @@
+import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+const env = fs.readFileSync(".env.local", "utf8");
+const url = env.match(/NEXT_PUBLIC_SUPABASE_URL=(.+)/)[1].trim();
+const key = env.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/)[1].trim();
+const supabase = createClient(url, key);
+const { data, error } = await supabase.from("blog_posts").select("slug, title, description, content, is_active, created_at, updated_at").eq("slug", "government-jobs-vs-private-jobs-india-2026").single();
+if (error) { console.error(error); process.exit(1); }
+console.log("TITLE:", data.title, `(${data.title.length} chars)`);
+console.log("DESCRIPTION:", data.description, `(${(data.description||"").length} chars)`);
+console.log("IS_ACTIVE:", data.is_active);
+console.log("UPDATED:", data.updated_at);
+console.log("WORDS:", (data.content||"").split(/\s+/).length);
+const emDashes = (data.content||"").match(/—/g) || [];
+const enDashes = (data.content||"").match(/–/g) || [];
+const smartQuotes = (data.content||"").match(/[“”‘’]/g) || [];
+const inlineBoldLabels = (data.content||"").match(/\*\*[^*\n]+\*\*:/g) || [];
+const bulletedBoldLabels = (data.content||"").match(/^\s*-\s*\*\*[^*\n]+\*\*/gm) || [];
+console.log("EM DASHES:", emDashes.length);
+console.log("EN DASHES:", enDashes.length);
+console.log("SMART QUOTES:", smartQuotes.length);
+console.log("INLINE BOLD LABELS:", inlineBoldLabels.length);
+console.log(inlineBoldLabels.slice(0,10));
+console.log("BULLETED BOLD LABELS:", bulletedBoldLabels.length);
+console.log(bulletedBoldLabels.slice(0,10));
+fs.writeFileSync("/tmp/src-blog-content.md", data.content);
+console.log("Content saved to /tmp/src-blog-content.md");
