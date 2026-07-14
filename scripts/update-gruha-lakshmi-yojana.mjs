@@ -234,7 +234,7 @@ Related pages on this site:
 - [PM Suraksha Bima Yojana (PMSBY)](https://www.sarkaridarapan.com/sarkari-yojana/pm-suraksha-bima-yojana)
 - [Mahtari Vandana Yojana Chhattisgarh](https://www.sarkaridarapan.com/sarkari-yojana/mahtari-vandana-yojana-chhattisgarh)
 - [Subhadra Yojana Odisha](https://www.sarkaridarapan.com/sarkari-yojana/subhadra-yojana-odisha)
-- [Mukhyamantri Majhi Ladki Bahin Yojana Maharashtra](https://www.sarkaridarapan.com/sarkari-yojana/mukhyamantri-majhi-ladki-bahin-yojana-maharashtra)
+- [Majhi Ladki Bahin Yojana Maharashtra](https://www.sarkaridarapan.com/sarkari-yojana/majhi-ladki-bahin-yojana-maharashtra)
 - [Government schemes in Karnataka](https://www.sarkaridarapan.com/state/karnataka)`;
 
 // Validation
