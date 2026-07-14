@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Coming Soon",
-  description: "This page is coming soon. Browse government jobs, schemes, and entrance exams in the meantime.",
+  title: "Coming Soon: Content Being Prepared on SarkariDarapan",
+  description: "This page is being prepared. Browse the latest government jobs, sarkari yojana, entrance exams, and preparation guides on SarkariDarapan meanwhile.",
   robots: { index: false, follow: true },
 };
 

@@ -41,7 +41,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: GuidePageProps): Promise<Metadata> {
   const guide = (await getDbPostBySlug(params.slug)) || getGuideBySlug(params.slug);
-  if (!guide) return { title: "Guide Not Found" };
+  if (!guide) return { title: "Coming Soon: Preparation Guide Being Updated on SarkariDarapan", robots: { index: false, follow: true } };
 
   // Trust the DB title verbatim — it's validated to 50-65 chars at write time
   // and already follows the "{main keyword}: {what user gets} [{year}]" pattern.

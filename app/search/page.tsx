@@ -13,10 +13,12 @@ interface SearchPageProps {
 export function generateMetadata({ searchParams }: SearchPageProps): Metadata {
   const query = searchParams.q || "";
   return {
-    title: query ? `Search Results for "${query}"` : "Search",
+    title: query
+      ? `Search Results for "${query}" on SarkariDarapan`
+      : "Search SarkariDarapan: Government Jobs, Schemes, Exams",
     description: query
-      ? `Search results for "${query}" - Find government jobs, schemes, results and more on SarkariDarapan.`
-      : "Search government jobs, sarkari yojana, exam results, admit cards and more.",
+      ? `Search results for "${query}". Find government jobs, schemes, entrance exams, results, and admit cards on SarkariDarapan for Indian aspirants.`
+      : "Search across government jobs, sarkari yojana, entrance exams, results, and admit cards on SarkariDarapan. Find every notification in one search box.",
     robots: { index: false, follow: true },
   };
 }

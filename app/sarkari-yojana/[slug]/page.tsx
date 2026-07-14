@@ -37,7 +37,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: SchemePageProps): Promise<Metadata> {
   try {
     const scheme = await getSchemeBySlug(params.slug);
-    if (!scheme) return { title: "Scheme Not Found" };
+    if (!scheme) return { title: "Coming Soon: Government Scheme Details Being Updated", robots: { index: false, follow: true } };
 
     return {
       title: scheme.title,
@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: SchemePageProps): Promise<Met
       },
     };
   } catch {
-    return { title: "Scheme Not Found" };
+    return { title: "Coming Soon: Government Scheme Details Being Updated", robots: { index: false, follow: true } };
   }
 }
 

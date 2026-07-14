@@ -89,7 +89,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
   try {
     const job = await getJobBySlug(params.slug);
-    if (!job) return { title: "Job Not Found" };
+    if (!job) return { title: "Coming Soon: Government Job Listing Being Updated Soon", robots: { index: false, follow: true } };
 
     const postName = job.postName || job.title;
     const year = job.publishedAt
@@ -157,7 +157,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       },
     };
   } catch {
-    return { title: "Job Not Found" };
+    return { title: "Coming Soon: Government Job Listing Being Updated Soon", robots: { index: false, follow: true } };
   }
 }
 

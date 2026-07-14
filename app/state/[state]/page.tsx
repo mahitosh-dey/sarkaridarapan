@@ -29,7 +29,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: StatePageProps): Promise<Metadata> {
   const stateData = STATES.find((s) => s.slug === params.state);
-  if (!stateData) return { title: "State Not Found" };
+  if (!stateData) return { title: "Coming Soon: State Government Jobs Listing Being Updated", robots: { index: false, follow: true } };
 
   // Count jobs + STATE-SPECIFIC schemes only. getSchemesByState also returns
   // all-India central schemes for display, but those duplicate across every

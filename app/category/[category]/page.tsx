@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const categoryData = JOB_CATEGORIES.find((c) => c.slug === params.category);
-  if (!categoryData) return { title: "Category Not Found" };
+  if (!categoryData) return { title: "Coming Soon: Category Listing Being Updated on SarkariDarapan", robots: { index: false, follow: true } };
 
   const jobs = await getJobsByCategory(params.category).catch(() => []);
   const count = jobs.length;

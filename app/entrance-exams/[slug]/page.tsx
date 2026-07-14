@@ -51,7 +51,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: ExamPageProps): Promise<Metadata> {
   try {
     const exam = await getEntranceExamBySlug(params.slug);
-    if (!exam) return { title: "Entrance Exam Not Found" };
+    if (!exam) return { title: "Coming Soon: Entrance Exam Details Being Updated Soon", robots: { index: false, follow: true } };
 
     const fallbackDesc = `${exam.title} - Complete details including exam date, eligibility, syllabus, admit card, and results.`;
     const rawDesc = exam.description || fallbackDesc;
@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: ExamPageProps): Promise<Metad
       },
     };
   } catch {
-    return { title: "Entrance Exam Not Found" };
+    return { title: "Coming Soon: Entrance Exam Details Being Updated Soon", robots: { index: false, follow: true } };
   }
 }
 
