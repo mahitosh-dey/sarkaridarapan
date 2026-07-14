@@ -12,6 +12,14 @@ Priority order (owner's preference):
 ## Progress log
 
 **2026-07-14**
+- ✅ **Phase A: State PSC template built + first-5 batch shipped.** Multi-dimensional readiness scorecard framework introduced (replaces the "20 deep pages = AdSense ready" heuristic). Built reusable State PSC job page expansion template at `blog-drafts/template-state-psc-expansion.md` covering 12-section structure, humanizer validation rules, cross-linking guidance for cluster reinforcement, and session cadence discipline. Applied to first-5 State PSC targets ranked by state population, exam recency, and search-volume signals:
+  - **(1) `/sarkari-naukri/bpsc-70th-cce-2026` from 657 → 3,306 words (5.0x).** Bihar (12.4 cr population, largest single-state aspirant base). New title "BPSC 70th CCE 2026: Bihar Civil Services Recruitment Guide" (58c). Highlights: 2,035 vacancies for Deputy Collector + DSP + BDO + 11 other posts, 1 in 220 selection ratio, no domicile bar for General category, Bihar-specific history angle (Champaran, Mauryan, Buddhism), 34 optional subjects, 900-mark Mains + 120 Interview.
+  - **(2) `/sarkari-naukri/mppsc-state-service-exam-2026` from 763 → 3,529 words (4.6x).** Madhya Pradesh. New title "MPPSC State Service Exam 2026: Madhya Pradesh Civil Services" (60c). Highlights: 155 vacancies, 1 in 1,900 ratio, unique 3-marks-per-Q Prelims pattern with negative marking (new 2026), Hindi-medium-only Mains, no optional subject, uncapped upper age for MP-domicile women (unique among Indian State PSCs), Level 12 pay entry (higher than BPSC's Level 10), 1,400-mark Mains + 175 Interview.
+  - **(3) `/sarkari-naukri/mpsc-rajyaseva-2026` from 569 → 3,417 words (6.0x).** Maharashtra. New title "MPSC Rajyaseva 2026: Maharashtra State Services Recruitment" (59c). Highlights: 275 vacancies, 1 in 1,800 ratio, Maharashtra domicile is HARD requirement (unlike BPSC/MPPSC), bilingual medium (Marathi or English answers with qualifying papers in both), lowest Interview weight of the 5 pages (75 marks), 700-mark Mains + 75 Interview, Chhatrapati Shivaji + Maratha history angle.
+  - **(4) `/sarkari-naukri/gpsc-class-1-2-2026` from 481 → 3,361 words (7.0x).** Gujarat. New title "GPSC Class 1-2 2026: Gujarat Civil Services Recruitment Guide" (61c). Highlights: 400 vacancies, 1 in 750 ratio (best of the 5), BOTH Prelims papers count for merit (unique among State PSCs, no negative marking), Optional Subject with 400 marks, no domicile bar for General category, Dholera SIR + GIFT City + textile industry economic angle, 1,100-mark Mains + 100 Interview, Gujarat State Portal SSO integration.
+  - **(5) `/sarkari-naukri/kpsc-kas-2026` from 498 → 3,389 words (6.8x).** Karnataka. New title "KPSC KAS 2026: Karnataka Civil Services Prep and Salary Guide" (61c). Highlights: 215 vacancies, 1 in 1,600 ratio, Kannada tested in BOTH Prelims (100m) AND Mains (150m merit), unique 5-tier OBC classification (Category I / II-A / II-B / III-A / III-B), Vijayanagara + Mysore Kingdom + Kannada literature (Pampa, Ranna, Kuvempu) angles, 500-mark Optional Subject weight, 1,300-mark Mains + 100 Interview, Bangalore One / Karnataka One offline application channels.
+- ✅ **Cross-linking mesh established across all 5 PSC pages.** Each of the 5 pages internally links to the other 4 (bi-directional cluster). Additional links to SSC CGL preparation blog, UPSC EPFO / IES ISS / IB ACIO peer pages, and Government-vs-Private career-decision blog. This creates the same LLM-friendly and Google-friendly link mesh built earlier for the 4-state women cash-transfer cluster.
+- 📊 **Session output**: 5 State PSC expansions, ~17,002 words humanizer-clean shipped. Cumulative day-14 total: 11 major page expansions (~53,721 words including cluster + very-thin sweep + PSC batch). **Site-wide thin-content movement:** Thin (<800w) bucket 83 → 78 (-5). Deep (≥2500w) 18 → 23 (+5). Site thin % 43.6% → 40.0%. **Phase A gate progress: thin % at 40% (target < 15%), deep pages at 23 (target >= 40).** Continued work needed on remaining 78 thin pages and 34 pages that fell into borderline (800-1499w) bucket.
 - ✅ **Two very-thin schemes expanded (bottom-up thin-content sweep starts).** After the site-wide thin-content audit revealed 85 thin pages (43.6% of site) with 2 very-thin at under 300 words, prioritised the 2 worst offenders for immediate humanizer-clean rewrite. **(a) `/sarkari-yojana/mukhyamantri-bijli-mitra-scheme-150-units-free-rajasthan-2026` from 258 → 2,706 words (10.5x).** Rajasthan Bijli Mitra Yojana (150 units free electricity for domestic consumers). Title changed from "Mukhyamantri Bijli Mitra Scheme Rajasthan 2026: 150 Units Free" (62 chars) to "Bijli Mitra Yojana Rajasthan 2026: 150 Units Free Electricity" (61 chars, keyword-tightened). Description rewritten with consumer number + bijlimitra.com portal hook (150 chars). Sections added: at-a-glance with CM Bhajanlal Sharma Feb 2024 launch + 1.05 crore beneficiaries + Rs. 8,000 crore state budget allocation, 5-condition eligibility 5-row table with no-income-cap universal-domestic design flagged, tariff-slab math with 100/150/200/300 unit worked examples, 8-step bijlimitra.com walkthrough, alternative registration channels (DISCOM offices, E-Mitra kiosks, CSCs), 3-document checklist, 3-DISCOM coverage (JVVNL 42 lakh + AVVNL 36 lakh + JDVVNL 27 lakh connections mapped by district), bill-check guide with subsidy line-item explainer, 3 common problems (Aadhaar name mismatch, multiple connections, meter reclassification), **11-column 4-way state comparison table** (Bijli Mitra vs Karnataka Gruha Jyothi vs Punjab 300 units vs Delhi free electricity), what-not-covered boundaries (commercial, industrial, agricultural, fixed charges continue), political-story section (BJP Nov 2023 win, Rs. 8,000 crore allocation, RERC oversight, CAG fiscal deficit concerns), 10-Q FAQ, sources with 6 primary portals + 4 internal cross-links. **(b) `/sarkari-yojana/mahila-evam-kishori-samman-yojana-haryana-2026` from 297 → 2,816 words (9.5x).** Haryana Mahila Evam Kishori Samman Yojana (free sanitary napkins for BPL women aged 11 to 45). Title changed from "Mahila Evam Kishori Samman Yojana Haryana 2026: Free Sanitary" (61 chars, incomplete word "Sanitary" at cutoff) to "Mahila Kishori Samman Yojana Haryana 2026: Free Sanitary Pads" (61 chars, complete). Description rewritten with 11-45 age band + Anganwadi + school distribution channels (158 chars). Sections added: at-a-glance with 22 lakh beneficiaries + Rs. 40 crore annual budget + RKSK parallel programme note, period-poverty context with NFHS-5 statistics (57.6% national vs 74.4% Haryana on hygienic menstrual products), 3-condition eligibility table with Parivar Pehchan Patra (PPP) family-ID mechanism explained, monthly-kit contents (6 regular-flow napkins, Uttam/Freedays state brands), 6-step Anganwadi enrolment flow, dedicated school enrolment section (11-18 age band via school health committee), 3-document checklist including PPP integration, post-enrolment SMS-notification + monthly-window mechanics, 4 access-issue categories (stock-outs, PPP mismatches, distribution timing, school channel gaps), **7-column 4-way state comparison table** (Mahila Kishori Samman Haryana vs UP Kishori Suraksha vs MP Udita vs Delhi Free Pads), central-schemes-stacking guide (RKSK + Jan Aushadhi Suvidha Rs. 1 pads + Poshan Abhiyaan + PMSBY + PMMVY), health-context section with 23% school-attendance uplift stat from Population Council 2023 study, 10-Q FAQ, sources with 6 primary portals + 4 internal cross-links (PMSBY + Gruha Lakshmi + Ladki Bahin + Haryana state page). **Both humanizer clean from write**: zero em/en dashes, zero smart quotes, zero banned AI vocab (caught 1 "actually" in Bijli Mitra draft, rewrote to "genuinely"), zero bulleted-bold-labels, zero inline-bold-labels, zero For-**X**: opener. All validation clean in the two update scripts. LIVE + revalidated. Live-verified: Bijli Mitra 64 "150 units" + 59 "bijlimitra.com" + 14 "Bhajanlal" + 18 JVVNL + 2 FAQPage schemas. Haryana 128 Anganwadi + 111 BPL + 81 sanitary + 60 PPP + 18 Parivar Pehchan + 2 FAQPage schemas. **Content-depth counter: 18 → 20/20 (100% of AdSense re-review precondition hit).** **Actual deep-page count (raw >=2500w) went 16 → 18 across the site.** **Very-thin (<300w) bucket cleared: 0 pages left in the worst tier.** Site now has zero very-thin pages, all thin-content risk sits in the 300-799w bucket (83 pages remain).
 - ✅ **Quora answer posted (11 total live)**: [How do I apply for the Mukhya Mantri Majhi Ladki Bahin Yojana in Maharashtra?](https://qr.ae/pFkasE) — 5-step application guide covering eligibility (21-65 with Jan 2025 unmarried 21-25 amendment carve-out), 8-document checklist, Nari Shakti Doot app walkthrough (with fake-app warning), offline fallback via Anganwadi / Setu / Aaple Sarkar centres, and 4-stage post-application verification flow. **First-mover on a zero-answer thread** (last requested 2y ago, recurring interest but no competing answers). **Full-name search targeting**: uses "Mukhya Mantri Majhi Ladki Bahin" to match high-intent official-name searchers. Includes 2025 re-verification drive salvage guidance for readers whose payments stopped (5 lakh removals, 60-day appeal window). **4 backlinks to sarkaridarapan.com from a single Quora answer**, all pointing at today's shipped cluster (Ladki Bahin primary + Gruha Lakshmi + Subhadra + Mahtari Vandana cross-references in a comparison paragraph). Draft saved at `blog-drafts/quora-11-women-cash-transfer-2026.md` with both application-intent (posted version) and comparison-intent (backup) drafts, plus 5 alternate target questions for future recycling. Humanizer-clean: zero em/en dashes, zero smart quotes, zero banned AI vocab, zero chatbot artifacts, contractions used naturally, sentence variety. **Quora count: 10 → 11 (target 25 by end of July, 60 by 90d).** **This is the highest-leverage Quora post to date**: one answer back-links all 4 pages of today's newly shipped women cash-transfer cluster, meaning any Google or LLM crawler that indexes the Quora URL will discover 4 fresh sarkaridarapan.com pages in a single hop.
 - ✅ **Ahrefs Site Audit second pass: 11 short-title pages fixed + soft-404 fallback rewrite.** Owner shared updated Ahrefs report after title-template fix landed. Report showed Health Score 100, 0 errors, and 6 new "Title too short" + 3 "Title too short (not indexable)" flags. Diagnosis: after removing the " | SarkariDarapan" template suffix earlier today, pages with < 30 char DB or bare titles fell below the Ahrefs too-short threshold. Root causes across the 11 flagged pages: (a) 9 entrance exams with 9-28 char DB titles ("CLAT 2026", "AIBE 2026", "CUCET 2026", "CUET UG 2026", "NEET PG 2026", "JEE Main 2027", "NMAT 2026 by GMAC", "NEET UG 2026 MCC Counselling", "IBPS PO 2026 (CRP PO/MT-XVI)"), (b) 1 scheme with 24 char DB title ("Ayushman Bharat (PM-JAY)"), (c) /search page with hardcoded "Search" (6 chars), (d) not-found fallbacks in 6 detail routes ("Job Not Found", "Scheme Not Found", "Entrance Exam Not Found", "Guide Not Found", "State Not Found", "Category Not Found") plus not-found.tsx "Coming Soon" (11 chars). Also found: 4 of the 10 DB pages had garbage 2000-char scraped descriptions (CLAT desc "CLAT 2026" 9 chars, AIBE / CUCET / CUET UG had scraped HTML noise); 5 others had 230-244 char descs over the 160 limit. Built `scripts/fix-short-titles.mjs` (dry-run mode + hardened validation for 50-65 title / 150-160 desc / no em-dash / no smart-quote / no AI vocab) that updated all 10 DB pages and revalidated each. New titles are keyword-first with commas as separators (no en/em dashes), all descriptions are clean humanizer-safe 150-160 char summaries. Code fixes for /search metadata (title now "Search SarkariDarapan: Government Jobs, Schemes, Exams" 54 chars) and 7 Coming Soon fallbacks (55-58 chars each, all set robots.index=false per owner's instruction to keep HTTP 200 with a "Coming Soon" pattern rather than proper 404s). TypeScript compile clean. **Requires Vercel deploy for the code changes**; DB updates are already live via revalidation.
@@ -304,61 +312,123 @@ While waiting on ad networks:
 
 ---
 
-## What to do this week (2026-07-07 → 2026-07-13)
+## Multi-dimensional readiness scorecard (updated 2026-07-14)
 
-Concrete daily plan, ordered by leverage:
+**Rule:** Never declare "AdSense ready" or any strategic milestone based on a single metric. This scorecard is the gate. Update every Sunday.
 
-**Monday**
-- Post 1 helpful answer on Quora, 1 comment on Reddit (r/Indiajobs or r/UPSC)
-- Republish top blog post on Medium with rel=canonical
+| Dimension | Baseline (2026-07-07) | Current (2026-07-14) | AdSense-ready target | Status |
+|---|---|---|---|---|
+| Content depth: thin % | ~50% | 43.6% (83/195 thin) | < 15% | ❌ |
+| Content depth: deep (>=2500w) | ~6 pages | 18 pages | >=40 pages | ❌ |
+| GSC indexed pages | 34 / 169 (20%) | (needs GSC check) | >= 60% | ❌ |
+| GSC "Crawled — not indexed" | 128 | (needs GSC check) | < 30 | ❌ |
+| Bing indexed pages | 173 / 197 (88%) | (needs WMT check) | >= 80% | ✅ |
+| Ahrefs DR | 0 | 0 | >= 5 | ❌ |
+| Real referring domains | ~5 | 5 (Medium) + Connectively passive | >= 15 | ❌ |
+| Google organic share (GA4) | 8% | (needs GA4 check) | >= 20% | ❌ |
+| Bing / LLM traffic | 722 Bing AI citations/7d | (needs WMT check) | >= 1,200/7d | ✅ (strong sleeper) |
+| Trust pages quality | Audited clean | Audited clean | Clean | ✅ |
+| Days since AdSense rejection | 0 | 7 | >= 45 | ❌ |
+| **Score** | **1/11 green** | **3/11 green** | **>= 9/11 green** | **NOT READY** |
 
-**Tuesday**
-- Expand 3 highest-Bing-impression pages (mh set 2026, mh set exam 2026, PMSBY guide)
-- Add FAQPage JSON-LD to each
-
-**Wednesday**
-- Audit About/Contact/Privacy/Terms/Disclaimer pages — fix any template-quality copy
-- Post 1 Quora + 1 Reddit comment
-
-**Thursday**
-- Export Ahrefs spam list. Build disavow file.
-- Expand 3 more pages (SSC CGL guide, Agniveer result guide, Punjab PCS SDM)
-
-**Friday**
-- Submit disavow file to GSC
-- Post 1 Quora + 1 Reddit comment
-- Republish 2nd top blog on Medium
-
-**Saturday**
-- Add FAQPage JSON-LD to next 10 pages
-- Fix IndexNow errors from Bing WMT
-
-**Sunday**
-- Submit re-indexing requests in GSC for all 6 upgraded pages
-- Republish 3rd blog on Medium
-- Weekly review: check GSC indexing delta, Bing AI citation delta, GA4 sessions delta
-
-**NOT this week:** AdSense re-review, Ezoic/Media.net application, guest posts, HARO. Those need Priority 1-2 wins first.
+Any submission with fewer than 9-of-11 dimensions green will fail. Google's re-rejection cost is real (longer cooldown, worse odds on the next attempt).
 
 ---
 
-## Rolling KPI dashboard (check weekly, every Sunday)
+## Phased execution roadmap (2026-07-14 → mid-October 2026)
 
-| Metric | 2026-07-07 baseline | 30-day target | 90-day target |
-|---|---|---|---|
-| Traffic (GA4 monthly sessions) | ~450 | 1,200 | 2,500 |
-| Reddit karma | 1 | 100 | 500 |
-| Quora answers live | 6 | 25 | 60 |
-| Medium articles | 0 | 5 | 15 |
-| Bing AI citations / 7 days | 722 | 1,200 | 2,000+ |
-| GSC indexed pages | 34 | 80 | 150+ |
-| GSC "Crawled — not indexed" | 128 | 60 | < 30 |
-| Bing search clicks / 30 days | ~15 | 50 | 200 |
-| Ahrefs DR | 0 | 5 | 15 |
-| Real (non-spam) referring domains | ~5 | 15 | 40 |
-| AdSense status | Rejected | Re-review submitted | Approved |
-| Media.net | Not applied | Not applied | Applied + approved |
+Phases run in dependency order but overlap. Each has explicit success gates. When a gate is missed, the next phase is delayed, not skipped.
+
+### Phase A — Bulk thin-content sweep (weeks 1-6)
+
+Goal: cut thin bucket from 83 → <25 pages. Deep pages 18 → 40+. Thin % 43.6% → <15%.
+
+- [x] Site-wide thin-content audit (2026-07-14)
+- [x] Clear very-thin (<300w) bucket to zero (2 pages: Bijli Mitra Rajasthan, Mahila Kishori Haryana)
+- [ ] Build state PSC job page expansion template (structure + validation harness)
+- [ ] Expand 39 state PSC job pages using template (5 per session, ~8 sessions)
+- [ ] Expand 38 remaining thin state schemes (5 per session, ~8 sessions)
+- [ ] Expand 7 thin entrance exams (NEET PG, JEE Main 2027, NEET UG MCC, AILET, XAT, plus 2 more)
+- [ ] Re-run thin-content audit at end of each week; track bucket movement
+- [ ] Success gate: thin bucket < 25 pages, deep pages >= 40, thin % < 15%
+
+### Phase B — Backlinks + indexing signal (weeks 3-8, overlaps A)
+
+Goal: DR 0 → 5+. GSC indexed 20% → 60%. "Crawled — not indexed" 128 → <30.
+
+- [ ] Quora #12-25 (14 more by end-July at ~1/day)
+- [ ] Quora #26-60 (35 more by 90d, ~2/week)
+- [ ] Medium reposts #6-10 (5 more by mid-August)
+- [ ] Medium reposts #11-15 (5 more by 90d)
+- [ ] Connectively / HARO passive responses (0 → 3+ real backlinks in 90d)
+- [ ] Broken-link outreach to .edu.in Indian coaching sites (0 → 5 attempts in 90d)
+- [ ] Weekly GSC URL Inspection requests on newly-expanded pages
+- [ ] Monthly disavow file refresh (next: 2026-08-07)
+- [ ] Success gate: DR >= 5, "Crawled — not indexed" < 30, GSC indexed >= 60%
+
+### Phase C — Traffic + LLM citation optimization (weeks 5-10, overlaps B)
+
+Goal: Google organic 8% → 20%+. GA4 sessions 425 → 1,000+/month. Bing AI citations 722 → 1,500+/wk.
+
+- [ ] Add FAQPage JSON-LD to all top-20 Bing-cited pages (partial from earlier work)
+- [ ] Add inline attributions (AI-2) to all Phase A-expanded pages
+- [ ] Add comparison tables (AI-6) where relevant on top-cited pages
+- [ ] Target Bing near-miss queries pos 5-15 with real impressions (weekly review)
+- [ ] Fix Bing IndexNow errors (2 high-severity still open in WMT)
+- [ ] Track weekly deltas: GSC / Bing WMT / Ahrefs / GA4
+- [ ] Success gate: Google organic >= 20% of traffic, weekly sessions >= 250
+
+### Phase D — Pre-submission audit + AdSense re-review (weeks 10-12)
+
+Goal: 9-of-11 readiness dimensions green, then submit.
+
+- [ ] Re-run full readiness scorecard weekly from week 8 onward
+- [ ] Fix any residual thin pages
+- [ ] Ensure disavow is fresh, backlink profile clean
+- [ ] Confirm 45+ days since last AdSense rejection
+- [ ] Update `public/ads.txt` with real publisher ID BEFORE submitting (currently placeholder)
+- [ ] Submit AdSense re-review
+- [ ] Wait 2-4 weeks for verdict
+- [ ] Success gate: AdSense approved. If rejected, read the reason, extend Phase A / B / C by 4 weeks, do not re-apply within 30 days
+
+**Realistic AdSense-ready date: mid-September 2026 to mid-October 2026.**
 
 ---
 
-*Plan revised 2026-07-07 after adding Quora/Reddit/Medium context. Priority order: Traffic → SEO → DR → AdSense → alt-ads.*
+## Rolling KPI dashboard (weekly Sunday review)
+
+| Metric | Baseline (2026-07-07) | Current (2026-07-14) | 30-day target (2026-08-07) | 90-day target (2026-10-07) |
+|---|---|---|---|---|
+| Deep pages (>=2500w) | ~6 | **18** | 30 | 60 |
+| Thin pages (<800w) | ~100 | 83 | 40 | < 25 |
+| Thin % of site | ~55% | 43.6% | 20% | < 15% |
+| GA4 monthly sessions | 425 | (needs check) | 1,000 | 2,500 |
+| Google organic share | 8% | (needs check) | 12% | 20% |
+| Quora answers live | 6 | **11** | 25 | 60 |
+| Medium articles | 0 | **5** | 10 | 15 |
+| Bing AI citations / 7d | 722 | (needs check) | 1,200 | 2,000 |
+| GSC indexed pages | 34 | (needs check) | 80 | 150+ |
+| GSC "Crawled — not indexed" | 128 | (needs check) | 60 | < 30 |
+| Bing search clicks / 30d | ~15 | (needs check) | 50 | 200 |
+| Ahrefs DR | 0 | 0 | 3 | 8 |
+| Real referring domains | ~5 | 5 (Medium reposts) | 10 | 25 |
+| AdSense status | Rejected | Rejected + 7d cooldown | Not submitted | Submitted, verdict pending |
+
+**Weekly Sunday ritual:**
+1. Pull fresh numbers from GSC, Bing WMT, GA4, Ahrefs
+2. Fill in Current column above
+3. Compare against last week's Current column
+4. Re-run readiness scorecard
+5. Adjust the phase you're in if a gate is off track
+
+---
+
+## Priority framework (lens, not sequence)
+
+The original Priority 1-5 sections above (Traffic, SEO, DR, AdSense, Alt-ads) are still valid as *lenses* for weighing which task to pick. The phased plan replaces them as the *execution sequence*.
+
+When picking work in a session, ask: which phase am I in, which gate am I chasing, and does this task move that gate? If a task is orthogonal to the current phase, defer it.
+
+---
+
+*Plan v2 revised 2026-07-14 after multi-dimensional readiness scorecard framework replaced the "20 deep pages = AdSense ready" heuristic. Priority: measurable readiness across content + SEO + DR + traffic + trust, not single-lever declarations.*
