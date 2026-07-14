@@ -173,7 +173,7 @@ Maharashtra's Ladki Bahin drew directly from Madhya Pradesh's Ladli Behna Yojana
 | Marital filter | Married, widowed, divorced, abandoned, destitute (or unmarried 21-25) | No marital filter | No marital filter | No marital filter |
 | Head-of-family rule | Not required | Must be head of ration card | Not required | Not required |
 | Launch date | June 28, 2024 | August 19, 2023 | June 5, 2023 | September 17, 2024 |
-| Delivery mechanism | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account | DBT to Subhadra debit card |
+| Delivery mechanism | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account plus branded Subhadra RuPay card |
 | Portal | ladakibahin.maharashtra.gov.in | sevasindhu.karnataka.gov.in | cmladlibahna.mp.gov.in | subhadra.odisha.gov.in |
 
 Ladki Bahin has the largest beneficiary base of the four because the eligibility screen deliberately avoided the head-of-family filter that limits Karnataka's Gruha Lakshmi. Karnataka's per-beneficiary transfer is higher, but Maharashtra's total outlay is bigger at around Rs. 46,000 crore per year.

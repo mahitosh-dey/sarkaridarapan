@@ -157,7 +157,7 @@ Several states have launched similar direct cash transfers to women in the last 
 | Marital status | No requirement | No requirement | No requirement | Married only (widows and divorcees also eligible) |
 | Head-of-family rule | Must be head of ration card family | Not required | Not required | Not required |
 | Launch date | August 19, 2023 | July 1, 2024 | September 17, 2024 | March 1, 2024 |
-| Delivery mechanism | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account | DBT to Subhadra debit card (separate account) | DBT via Aadhaar-seeded account |
+| Delivery mechanism | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account | DBT via Aadhaar-seeded account plus branded Subhadra RuPay card | DBT via Aadhaar-seeded account |
 | Portal | sevasindhu.karnataka.gov.in | ladakibahin.maharashtra.gov.in | subhadra.odisha.gov.in | mahtarivandan.cgstate.gov.in |
 
 Karnataka's per-beneficiary payout is the highest of the four, but the head-of-family filter also makes it the hardest to qualify for. Maharashtra's Ladki Bahin has the largest beneficiary base because it uses the simplest eligibility screen. Odisha's Subhadra is unique in that it delivers through a separate branded debit card rather than the existing bank account, which reduces the risk of the money being spent on shared household expenses.
