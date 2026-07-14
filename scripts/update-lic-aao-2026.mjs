@@ -355,7 +355,7 @@ Related pages:
 - [SEBI Grade A 2026 recruitment guide](https://www.sarkaridarapan.com/sarkari-naukri/sebi-grade-a-2026)
 - [IRDAI Assistant Manager 2026: 50 vacancies](https://www.sarkaridarapan.com/sarkari-naukri/irdai-assistant-manager-2026)
 - [UPSC EPFO 2026: EO and AO recruitment](https://www.sarkaridarapan.com/sarkari-naukri/upsc-epfo-2026)
-- [SSC CGL 2026 preparation guide](https://www.sarkaridarapan.com/blog/ssc-cgl-2026-preparation-guide)
+- [SSC CGL 2026 preparation guide](https://www.sarkaridarapan.com/blog/ssc-cgl-2026-syllabus-preparation-guide)
 - [Government Jobs vs Private Jobs in India 2026](https://www.sarkaridarapan.com/blog/government-jobs-vs-private-jobs-india-2026)`;
 
 // Validation

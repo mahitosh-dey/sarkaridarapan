@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${SITE_NAME} - Latest Government Jobs & Sarkari Yojana`,
-    template: `%s | ${SITE_NAME}`,
+    template: `%s`,
   },
   icons: {
     icon: [

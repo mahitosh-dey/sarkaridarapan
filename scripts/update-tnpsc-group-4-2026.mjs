@@ -337,7 +337,7 @@ Related pages:
 - [TNPSC Group 2 2026: Tamil Nadu State Services Recruitment](https://www.sarkaridarapan.com/sarkari-naukri/tnpsc-group-2-2026)
 - [SSC MTS 2026 recruitment guide](https://www.sarkaridarapan.com/sarkari-naukri/ssc-mts-2026)
 - [Government Jobs vs Private Jobs in India 2026](https://www.sarkaridarapan.com/blog/government-jobs-vs-private-jobs-india-2026)
-- [SSC CGL 2026 preparation guide](https://www.sarkaridarapan.com/blog/ssc-cgl-2026-preparation-guide)`;
+- [SSC CGL 2026 preparation guide](https://www.sarkaridarapan.com/blog/ssc-cgl-2026-syllabus-preparation-guide)`;
 
 // Validation
 const emCount = (NEW_CONTENT.match(/—/g) || []).length;

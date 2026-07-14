@@ -317,7 +317,7 @@ Minimum height 152.5 cm (relaxation for North East, Ladakh, Sikkim, Andaman cand
 Related pages:
 
 - [Agniveer Army CEE Result 2026: how to check](https://www.sarkaridarapan.com/blog/agniveer-army-cee-result-2026-how-to-check)
-- [SSC CGL 2026 preparation guide](https://www.sarkaridarapan.com/blog/ssc-cgl-2026-preparation-guide)
+- [SSC CGL 2026 preparation guide](https://www.sarkaridarapan.com/blog/ssc-cgl-2026-syllabus-preparation-guide)
 - [Government Jobs vs Private Jobs in India 2026](https://www.sarkaridarapan.com/blog/government-jobs-vs-private-jobs-india-2026)
 - [IB ACIO 2026: intelligence bureau recruitment guide](https://www.sarkaridarapan.com/sarkari-naukri/ib-acio-2026)`;
 
