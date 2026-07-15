@@ -2,8 +2,28 @@
 
 ## HARD RULES — Non-Negotiable
 
-**NEVER run `git push`, `vercel deploy`, or any deployment command without explicit permission from the owner.**
-Ask first, every single time, with no exceptions — even if the change looks small or safe.
+These rules are the source of truth. They live in this file (git-tracked) so they survive any Claude memory loss. If you are a fresh Claude session, read every rule here before touching anything.
+
+### 1. Never deploy without permission
+**NEVER run `git push`, `vercel deploy`, or any deployment command without explicit permission from the owner.** Ask first, every single time, with no exceptions — even if the change looks small or safe.
+
+### 2. Verify the live site after every change (setup integrity check)
+Every task ends with a live verification, not just a DB write or a successful revalidate response. Before declaring work done:
+- Curl the affected live URL and confirm the change is actually rendered (`<title>`, `<meta name="description">`, JSON-LD `<script type="application/ld+json">`, canonical, robots meta).
+- Re-fetch `https://www.sarkaridarapan.com/sitemap.xml` and confirm the affected slug is present with a fresh `<lastmod>`.
+- If you edited any file under `app/`, `lib/`, `components/`, `next.config.js`, or `middleware.ts`, curl at least one live page in each affected route and confirm nothing regressed (meta, JSON-LD, robots).
+- Owner lost 2 weeks of indexing progress on 2026-07-15 because 66 job pages had their DB titles updated but the rendered HTML kept serving auto-generated template titles. Do not repeat this. If you cannot see the change in a live curl, the change is not done.
+
+### 3. Always apply humanizer rules to every content type
+Every piece of user-facing content must be humanizer-clean, no matter the surface. This includes: blog posts, job pages, scheme pages, entrance exam pages, admit-card content, result content, Quora answers, Medium reposts, Reddit comments, and any social channel drafts. All 30 anti-AI patterns + AI-1 to AI-6 citation rules + 10 human-voice rules apply. No content surface is exempt. Run `/humanizer` or self-audit against Part A / B / C in this file before shipping.
+
+### 4. Research-first workflow — always research top 20 before writing
+Before writing any content (page, blog, Quora, Medium, Reddit, or anything else), do deep research on the current top 20 results / competitors / sources for the target query. Show the research findings to the owner first. Wait for owner approval. Then write.
+
+Research must cover: (a) top 10 Google organic results for the target query, (b) top 5 competing pages on other sarkari sites (SarkariResult, FreeJobAlert, SarkariExam, JobRiya), (c) top 5 authoritative primary sources (government portals, official notifications, PIB releases), (d) what those results are missing that this page could add. Never write on general knowledge alone — the field changes fast and the owner needs the freshest, most-differentiated angle.
+
+### 5. Hard rules durability
+All hard rules must live in this `CLAUDE.md` file. Auto-memory in `~/.claude/projects/*/memory/` is a supplement, not the source of truth. If Claude memory is ever lost, the owner can restore full context by reading this file. Whenever a new hard rule is agreed with the owner, save it here first, then mirror to auto-memory for redundancy.
 
 ---
 
