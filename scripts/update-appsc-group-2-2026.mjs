@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { pingIndexNow } from "./lib/indexnow.mjs";
 
 const supabase = createClient(
   "https://xtjbijvxxeoopcqxycpz.supabase.co",
@@ -286,5 +287,7 @@ console.log("Content word count:", NEW_CONTENT.split(/\s+/).length);
 const revalRes = await fetch(`https://www.sarkaridarapan.com/api/revalidate?path=/sarkari-naukri/${SLUG}`);
 const revalJson = await revalRes.json().catch(() => ({}));
 console.log("Revalidate:", revalJson.revalidated ? "OK" : "FAIL", revalJson);
+
+await pingIndexNow(SLUG, "/sarkari-naukri");
 
 console.log("\nUpdate successful. Verify at https://www.sarkaridarapan.com/sarkari-naukri/" + SLUG);

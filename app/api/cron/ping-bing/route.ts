@@ -11,7 +11,17 @@ export const dynamic = "force-dynamic";
 // Bing, Yandex, Naver, Seznam, and Yep in one call. Google indexing must be
 // requested manually via GSC Sitemaps and URL Inspection.
 export async function GET(req: NextRequest) {
-  if (req.headers.get("x-cron-secret") !== process.env.CRON_SECRET) {
+  // Accept both custom x-cron-secret header (for manual/curl invocation) and
+  // Vercel Cron's standard Authorization: Bearer <CRON_SECRET> header. Vercel
+  // Cron automatically injects the bearer token when CRON_SECRET env var is
+  // set on the project.
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: "CRON_SECRET env var not set" }, { status: 500 });
+  }
+  const customHeader = req.headers.get("x-cron-secret");
+  const bearer = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (customHeader !== cronSecret && bearer !== cronSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
