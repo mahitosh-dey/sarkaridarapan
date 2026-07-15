@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SITE_URL } from "@/lib/constants";
 
-const INDEXNOW_KEY = process.env.INDEXNOW_KEY || "your-indexnow-key-here";
+// Hardcoded fallback matches /public/7bb5c385693a45bf923313146b6cf086.txt so
+// IndexNow verification works even when INDEXNOW_KEY env var is missing. Prior
+// fallback of "your-indexnow-key-here" pointed at a 404 keyLocation and the
+// IndexNow API silently rejected every submission with HTTP 422.
+const INDEXNOW_KEY = process.env.INDEXNOW_KEY || "7bb5c385693a45bf923313146b6cf086";
 
 /**
  * POST /api/indexnow
@@ -35,14 +39,18 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(payload),
     });
 
+    const body = response.ok ? null : await response.text().catch(() => "");
+
     return NextResponse.json({
       success: response.ok,
       status: response.status,
       submitted: fullUrls.length,
+      keyLocation: payload.keyLocation,
+      error: body || undefined,
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to submit to IndexNow" },
+      { error: "Failed to submit to IndexNow", detail: String(error) },
       { status: 500 }
     );
   }

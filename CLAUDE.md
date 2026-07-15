@@ -117,7 +117,8 @@ The owner's goal is to earn money through **Google AdSense** and affiliate marke
 - Google Search Console verified + sitemap submitted
 - Bing Webmaster Tools verified + sitemap submitted
 - Google Analytics 4 installed
-- IndexNow configured for instant Bing indexing
+- IndexNow endpoint at `/api/indexnow` (fixed 2026-07-15; prior version silently returned HTTP 422 because `INDEXNOW_KEY` env var pointed at a 404 key file. Route now hardcodes the correct key `7bb5c385693a45bf923313146b6cf086` as fallback, matching `/public/7bb5c385693a45bf923313146b6cf086.txt`)
+- Note: Google deprecated its sitemap-ping endpoint in June 2023 and Bing did the same in May 2022. Sitemap refresh to Google requires manual GSC → Sitemaps → Resubmit. Only IndexNow reaches Bing/Yandex/Naver/Seznam/Yep automatically.
 - OG meta tags fixed — all pages now show image preview when shared
 - ads.txt in place (has placeholder publisher ID — see warning below)
 
