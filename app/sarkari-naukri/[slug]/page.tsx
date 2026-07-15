@@ -100,40 +100,57 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     const lastDateFull = safeFormatDate(rawLastDate, "", "short");
     const vacanciesNum = job.vacancies > 0 ? job.vacancies : null;
 
-    // Format: "{post_name} {year}: {N} Vacancies | Apply by {DD MMM}"
-    // Under 60 chars total; vacancies and date segments drop out gracefully
-    // when the underlying fields are missing. Post name is truncated last so
-    // the freshness/urgency signals survive on long-title records.
-    const segments = [`${postName} ${year}`];
-    if (vacanciesNum) {
-      segments.push(`: ${vacanciesNum.toLocaleString("en-IN")} Vacancies`);
-    }
-    if (lastDateShort) {
-      segments.push(` | Apply by ${lastDateShort}`);
-    }
-    let title = segments.join("");
-    if (title.length > 60) {
-      const suffix = title.slice(postName.length);
-      const budget = Math.max(15, 60 - suffix.length);
-      const truncated = postName.slice(0, budget - 1).trimEnd() + "…";
-      title = `${truncated}${suffix}`;
+    // Prefer curated DB metadata when it exists and passes SEO length rules
+    // (title 40-70 chars, description 100-160 chars). This lets Ahrefs / SEO
+    // fixes shipped to Supabase actually reach the rendered HTML. Falls back
+    // to the auto-generated template below when DB fields are missing or
+    // out-of-spec so legacy records still render clean metadata.
+    const dbTitle = job.title?.trim() ?? "";
+    const dbDescription = job.description?.trim() ?? "";
+    const dbTitleUsable = dbTitle.length >= 40 && dbTitle.length <= 70;
+    const dbDescriptionUsable = dbDescription.length >= 100 && dbDescription.length <= 160;
+
+    let title: string;
+    if (dbTitleUsable) {
+      title = dbTitle;
+    } else {
+      // Format: "{post_name} {year}: {N} Vacancies | Apply by {DD MMM}"
+      // Under 60 chars total; vacancies and date segments drop out gracefully
+      // when the underlying fields are missing.
+      const segments = [`${postName} ${year}`];
+      if (vacanciesNum) {
+        segments.push(`: ${vacanciesNum.toLocaleString("en-IN")} Vacancies`);
+      }
+      if (lastDateShort) {
+        segments.push(` | Apply by ${lastDateShort}`);
+      }
+      title = segments.join("");
+      if (title.length > 60) {
+        const suffix = title.slice(postName.length);
+        const budget = Math.max(15, 60 - suffix.length);
+        const truncated = postName.slice(0, budget - 1).trimEnd() + "…";
+        title = `${truncated}${suffix}`;
+      }
     }
 
-    // Description: "Apply for {post_name} {year}: {vacancies}, last date {last_date}.
-    //               Check eligibility, salary {salary_range}, exam pattern and direct apply link."
-    const vacanciesCount = job.vacancies > 0
-      ? `${job.vacancies.toLocaleString("en-IN")} vacancies`
-      : "";
-    let description = `Apply for ${postName} ${year}`;
-    if (vacanciesCount || lastDateFull) {
-      description += ":";
-      if (vacanciesCount) description += ` ${vacanciesCount}`;
-      if (lastDateFull) description += `${vacanciesCount ? "," : ""} last date ${lastDateFull}`;
+    let description: string;
+    if (dbDescriptionUsable) {
+      description = dbDescription;
+    } else {
+      const vacanciesCount = job.vacancies > 0
+        ? `${job.vacancies.toLocaleString("en-IN")} vacancies`
+        : "";
+      description = `Apply for ${postName} ${year}`;
+      if (vacanciesCount || lastDateFull) {
+        description += ":";
+        if (vacanciesCount) description += ` ${vacanciesCount}`;
+        if (lastDateFull) description += `${vacanciesCount ? "," : ""} last date ${lastDateFull}`;
+      }
+      description += ". Check eligibility";
+      if (job.salary) description += `, salary ${job.salary}`;
+      description += ", exam pattern and direct apply link.";
+      if (description.length > 155) description = description.slice(0, 154).trimEnd() + "…";
     }
-    description += ". Check eligibility";
-    if (job.salary) description += `, salary ${job.salary}`;
-    description += ", exam pattern and direct apply link.";
-    if (description.length > 155) description = description.slice(0, 154).trimEnd() + "…";
 
     return {
       title,
