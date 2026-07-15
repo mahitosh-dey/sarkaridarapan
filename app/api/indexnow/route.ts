@@ -5,7 +5,12 @@ import { SITE_URL } from "@/lib/constants";
 // IndexNow verification works even when INDEXNOW_KEY env var is missing. Prior
 // fallback of "your-indexnow-key-here" pointed at a 404 keyLocation and the
 // IndexNow API silently rejected every submission with HTTP 422.
-const INDEXNOW_KEY = process.env.INDEXNOW_KEY || "7bb5c385693a45bf923313146b6cf086";
+//
+// Trim is critical. INDEXNOW_KEY was set in Vercel via copy-paste from the key
+// file, which included a trailing newline. IndexNow rejects any key with
+// non-alphanumeric characters, so the raw env var produced 422 responses with
+// keyLocation ending in "\n.txt". Trim strips this class of whitespace bugs.
+const INDEXNOW_KEY = (process.env.INDEXNOW_KEY || "7bb5c385693a45bf923313146b6cf086").trim();
 
 /**
  * POST /api/indexnow

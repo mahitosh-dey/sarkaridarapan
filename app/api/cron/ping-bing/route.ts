@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, submitted: 0, note: "No content updated in last 24h" });
   }
 
-  const key = process.env.INDEXNOW_KEY || "7bb5c385693a45bf923313146b6cf086";
+  const key = (process.env.INDEXNOW_KEY || "7bb5c385693a45bf923313146b6cf086").trim();
   const payload = {
     host: new URL(SITE_URL).hostname,
     key,
