@@ -11,6 +11,17 @@ Priority order (owner's preference):
 
 ## Progress log
 
+**2026-07-15 (batch 3)**
+- ✅ **Phase A: State PSC third-5 batch shipped (North Indian Hindi-belt cluster).** Continuing Phase A after the second-5 batch earlier the same day. Applied the reusable expansion template to the remaining thin State PSC pages, effectively clearing the thin (< 400w) PSC bucket. This batch focuses on North Indian Hindi-belt states: Punjab + Chhattisgarh + Uttarakhand + Haryana + Himachal Pradesh.
+  - **(1) `/sarkari-naukri/ppsc-pcs-2026` from 311 → 3,654 words (11.7x).** Punjab (3.0 cr population, Sikh heritage + partition history + Green Revolution economic angle). New title "PPSC PCS 2026: Punjab Civil Services Recruitment and Prep" (57c). Highlights: 186 vacancies for SDM / DSP / DDPO / ETO / BDPO, 1 in 800 selection ratio, Punjabi in Gurmukhi script at Matriculation as hard eligibility gate, 7-paper Mains with 1,350 merit marks, Sikh Gurus + Anglo-Sikh Wars + Jallianwala Bagh + Bhagat Singh + Partition 1947 + Green Revolution + Farm Laws 2020 protest + Kartarpur Corridor + SYL canal + drug abuse policy political-economic angle, Punjabi Literature as one of 22 optional subjects.
+  - **(2) `/sarkari-naukri/cgpsc-state-service-2026` from 323 → 3,742 words (11.6x).** Chhattisgarh (2.9 cr population, tribal welfare + mineral economy + Bastar administration). New title "CGPSC 2026: Chhattisgarh State Service Exam and Prep Guide" (58c). Highlights: 246 vacancies for Deputy Collector / DSP / BDO / District Registrar, 1 in 730 selection ratio, Fifth Schedule tribal areas + PESA requirement, 7-paper Mains with 1,400 merit marks, Kalachuri dynasty + Sonakhan revolt 1857 + Bastar princely state + Chhattisgarh statehood 2000 + Vishnu Deo Sai 2023 era + Bhupesh Baghel legacy political context, Chhattisgarhi Literature as one of 22 optionals, cross-linked to Mahtari Vandana Yojana Chhattisgarh (state scheme cluster inter-linkage).
+  - **(3) `/sarkari-naukri/ukpsc-pcs-2026` from 326 → 3,805 words (11.7x).** Uttarakhand (1.1 cr population, hill state + disaster management + hydropower + Char Dham). New title "UKPSC PCS 2026: Uttarakhand Civil Services Recruitment Guide" (60c). Highlights: 189 vacancies for Deputy Collector / DSP / BDO / Treasury Officer, 1 in 690 selection ratio, unique 30 percent women horizontal reservation for Uttarakhand-domicile women flagged, unique structure with dedicated Paper VII (250-mark) Uttarakhand-specific study replacing Optional Subject, merit-weighted (not qualifying) General Hindi Paper I of 300 marks (highest language weight of any State PSC), Katyuri + Chand + Panwar dynasties + Anglo-Nepalese War + Chipko Movement + 2013 Kedarnath disaster + Joshimath subsidence 2023 political-historical angle, PwBD 15-year relaxation.
+  - **(4) `/sarkari-naukri/hpsc-hcs-2026` from 359 → 3,840 words (10.7x).** Haryana (2.5 cr population, NCR industrial + Olympic sports cluster). New title "HPSC HCS 2026: Haryana Civil Services Recruitment and Prep" (58c). Highlights: 156 vacancies for SDM / DSP / ETO / BDPO / Employment Officer / District Food and Supplies Controller, 1 in 770 selection ratio, 33 percent women horizontal reservation for Haryana-domicile women, unique 30 percent HRA for Gurugram and Faridabad NCR postings (highest of any State PSC batch shipped so far), 8-paper Mains with dedicated Paper IV Haryana-specific study (200 marks), three Battles of Panipat + Rakhigarhi Indus Valley + Kurukshetra + Haryana sports culture (Neeraj Chopra, Sushil Kumar, Sakshi Malik, Bajrang Punia, Vijender Singh Olympic medal record) + Manesar automotive hub + Farm Laws 2020 + Kisan Andolan + SYL canal dispute political-economic angle, cross-linked to Mahila Kishori Samman Yojana Haryana (state scheme cluster inter-linkage).
+  - **(5) `/sarkari-naukri/hppsc-has-2026` from 367 → 4,044 words (11.0x).** Himachal Pradesh (0.7 cr population, but 1 in 570 selection ratio is the friendliest in the batch). New title "HPPSC HAS 2026: Himachal Pradesh Civil Services Recruit Guide" (61c). Highlights: 158 vacancies for HAS SDO / HPPS DSP / Tehsildar / BDO / Assistant Controller Finance, 1 in 570 selection ratio (best in this batch), unique Hindi OR Sanskrit compulsory language choice (native Sanskrit speakers get distinctive advantage), 25 percent women horizontal reservation for Himachali women, 10-paper Mains structure with dedicated Paper IX Himachal-specific study, Katoch dynasty of Kangra + Bushahr and Kullu and Chamba princely states + Praja Mandal movement + HP formation 1948 and full statehood 1971 historical angle, hydropower (Bhakra Nangal, Nathpa Jhakri, Karcham Wangtoo) + apple cultivation + Baddi pharma cluster economic focus, 2023 monsoon flood devastation + Old Pension Scheme rollout current affairs. Important eligibility note: upper age was reduced from 45 to 35 for the 2025 recruitment cycle onwards.
+- 📊 **Session output (batch 3)**: 5 State PSC expansions, ~19,085 words humanizer-clean shipped. Cumulative day-15 output: 10 State PSC pages expanded across batches 2 and 3, ~37,497 words shipped in a single day (largest single-day content push on the site by 2x over the prior record). **Site-wide thin-content movement (cumulative day-15)**: Thin (< 800w) bucket 78 → 68 (-10). Deep (>=2500w) 23 → 33 (+10). Site thin % 40.0% → 34.9%. **Phase A gate progress: thin % at 34.9% (target < 15%), deep pages at 33 (target >= 40).** 7 more deep pages needed to hit gate, ~40 more pages to expand out of the thin bucket. Realistically 3 to 4 more sessions to close both gates.
+- 📊 **Thin PSC bucket effectively cleared.** After batch 3, all remaining thin State PSC pages sit at 566w or higher (UPSC CMS 566, UPSC ESE 619, UPSC CAPF AC 659, TNPSC Group 2 733, MPPSC Assistant Professor 766) plus a small tail of Indian Army Agniveer, UPSC CDS II, UPSC Civil Services detail pages. Phase A next targets should shift from State PSCs to the remaining thin state schemes (38 pages) and thin entrance exams (7 pages).
+- 📊 **Cross-linking mesh status (batch 3)**: All 5 new pages meet the template rule (each links to >= 2 other State PSC pages). PPSC → BPSC + MPPSC + KPSC + APPSC (4 links); CGPSC → BPSC + MPPSC + JPSC + PPSC (4 links, 1 batch-3 sibling); UKPSC → BPSC + MPPSC + MPSC + PPSC (4 links, 1 batch-3 sibling); HPSC → BPSC + MPPSC + PPSC + UKPSC (4 links, 3 batch-3 siblings); HPPSC → BPSC + MPPSC + PPSC + UKPSC + HPSC (5 links, 3 batch-3 siblings). **Batch 3 sibling mesh is denser than batch 2.** Inter-cluster links: CGPSC → Mahtari Vandana Chhattisgarh scheme; HPSC → Mahila Kishori Samman Yojana Haryana scheme. State PSC to state scheme cross-linking is now an established pattern (established with OPSC → Subhadra Odisha in batch 2).
+
 **2026-07-15**
 - ✅ **Phase A: State PSC second-5 batch shipped.** Continuing the Phase A State PSC template roll-out from 2026-07-14. Applied the reusable expansion template to the next 5 thin State PSC pages, ranked by state population and search-volume proxy (Andhra + Telangana + Odisha + Jharkhand + Assam covers South, East, and Northeast, complementing the 2026-07-14 batch which covered Bihar / MP / Maharashtra / Gujarat / Karnataka in North / Central / West).
   - **(1) `/sarkari-naukri/appsc-group-2-2026` from 424 → 3,566 words (8.4x).** Andhra Pradesh (4.9 cr population, largest state remaining after first-5 batch). New title "APPSC Group 2 2026: Andhra Pradesh Recruitment and Prep Guide" (61c). Highlights: 783 vacancies for ASO / RDO / Mandal Revenue Inspector + 12 other posts, 1 in 700 selection ratio, AP nativity certificate requirement flagged, Telugu Paper IV as 150-mark merit paper differentiator, post-bifurcation 2014 political context, 6 to 12 month prep timeline, APPSC Group 2 vs APPSC Group 1 vs UPSC CSE 14-row comparison table with syllabus-overlap column.
@@ -327,10 +338,10 @@ While waiting on ad networks:
 
 **Rule:** Never declare "AdSense ready" or any strategic milestone based on a single metric. This scorecard is the gate. Update every Sunday.
 
-| Dimension | Baseline (2026-07-07) | 2026-07-14 | Current (2026-07-15) | AdSense-ready target | Status |
+| Dimension | Baseline (2026-07-07) | 2026-07-14 | Current (2026-07-15 batch 3) | AdSense-ready target | Status |
 |---|---|---|---|---|---|
-| Content depth: thin % | ~50% | 43.6% (83 of 195) | 37.4% (73 of 195) | < 15% | ❌ |
-| Content depth: deep (>=2500w) | ~6 pages | 18 pages | 28 pages | >= 40 pages | ❌ |
+| Content depth: thin % | ~50% | 43.6% (83 of 195) | 34.9% (68 of 195) | < 15% | ❌ |
+| Content depth: deep (>=2500w) | ~6 pages | 18 pages | 33 pages | >= 40 pages | ❌ |
 | GSC indexed pages | 34 / 169 (20%) | (needs GSC check) | (needs GSC check) | >= 60% | ❌ |
 | GSC "Crawled — not indexed" | 128 | (needs GSC check) | (needs GSC check) | < 30 | ❌ |
 | Bing indexed pages | 173 / 197 (88%) | (needs WMT check) | (needs WMT check) | >= 80% | ✅ |
@@ -357,7 +368,7 @@ Goal: cut thin bucket from 83 → <25 pages. Deep pages 18 → 40+. Thin % 43.6%
 - [x] Site-wide thin-content audit (2026-07-14)
 - [x] Clear very-thin (<300w) bucket to zero (2 pages: Bijli Mitra Rajasthan, Mahila Kishori Haryana)
 - [x] Build state PSC job page expansion template (structure + validation harness, 2026-07-14)
-- [ ] Expand 39 state PSC job pages using template (5 per session, ~8 sessions) — **10 of 39 done (first-5 batch 2026-07-14, second-5 batch 2026-07-15)**
+- [ ] Expand 39 state PSC job pages using template (5 per session, ~8 sessions) — **15 of 39 done (first-5 batch 2026-07-14, second-5 batch 2026-07-15, third-5 batch 2026-07-15). Thin PSC bucket (< 400w) effectively cleared. Remaining PSC targets sit at 566w+ (UPSC CMS, UPSC ESE, UPSC CAPF AC, TNPSC Group 2, MPPSC Assistant Professor). Next Phase A batches should shift focus to state schemes and entrance exams.**
 - [ ] Expand 38 remaining thin state schemes (5 per session, ~8 sessions)
 - [ ] Expand 7 thin entrance exams (NEET PG, JEE Main 2027, NEET UG MCC, AILET, XAT, plus 2 more)
 - [ ] Re-run thin-content audit at end of each week; track bucket movement
@@ -408,11 +419,11 @@ Goal: 9-of-11 readiness dimensions green, then submit.
 
 ## Rolling KPI dashboard (weekly Sunday review)
 
-| Metric | Baseline (2026-07-07) | Current (2026-07-15) | 30-day target (2026-08-07) | 90-day target (2026-10-07) |
+| Metric | Baseline (2026-07-07) | Current (2026-07-15 batch 3) | 30-day target (2026-08-07) | 90-day target (2026-10-07) |
 |---|---|---|---|---|
-| Deep pages (>=2500w) | ~6 | **28** | 30 | 60 |
-| Thin pages (<800w) | ~100 | 73 | 40 | < 25 |
-| Thin % of site | ~55% | 37.4% | 20% | < 15% |
+| Deep pages (>=2500w) | ~6 | **33** | 30 ✅ | 60 |
+| Thin pages (<800w) | ~100 | 68 | 40 | < 25 |
+| Thin % of site | ~55% | 34.9% | 20% | < 15% |
 | GA4 monthly sessions | 425 | (needs check) | 1,000 | 2,500 |
 | Google organic share | 8% | (needs check) | 12% | 20% |
 | Quora answers live | 6 | **11** | 25 | 60 |
