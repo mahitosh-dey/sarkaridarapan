@@ -11,6 +11,17 @@ Priority order (owner's preference):
 
 ## Progress log
 
+**2026-07-15**
+- ✅ **Phase A: State PSC second-5 batch shipped.** Continuing the Phase A State PSC template roll-out from 2026-07-14. Applied the reusable expansion template to the next 5 thin State PSC pages, ranked by state population and search-volume proxy (Andhra + Telangana + Odisha + Jharkhand + Assam covers South, East, and Northeast, complementing the 2026-07-14 batch which covered Bihar / MP / Maharashtra / Gujarat / Karnataka in North / Central / West).
+  - **(1) `/sarkari-naukri/appsc-group-2-2026` from 424 → 3,566 words (8.4x).** Andhra Pradesh (4.9 cr population, largest state remaining after first-5 batch). New title "APPSC Group 2 2026: Andhra Pradesh Recruitment and Prep Guide" (61c). Highlights: 783 vacancies for ASO / RDO / Mandal Revenue Inspector + 12 other posts, 1 in 700 selection ratio, AP nativity certificate requirement flagged, Telugu Paper IV as 150-mark merit paper differentiator, post-bifurcation 2014 political context, 6 to 12 month prep timeline, APPSC Group 2 vs APPSC Group 1 vs UPSC CSE 14-row comparison table with syllabus-overlap column.
+  - **(2) `/sarkari-naukri/opsc-ocs-2026` from 313 → 3,697 words (11.8x).** Odisha (4.5 cr population, Odia-medium schooling requirement is the hard eligibility gate). New title "OPSC OCS 2026: Odisha Civil Services Recruitment and Prep" (57c). Highlights: 330 vacancies for OAS Junior Branch / OPS / Finance Service + 5 other posts, 1 in 600 selection ratio, Odia language proficiency as Middle School minimum, 9-paper Mains structure with 1,700 merit marks (highest in this batch), 25 optional subjects including Odia Literature, Kalinga history + Prajamandala freedom movement angle, cross-linked to Subhadra Yojana Odisha (2026-07-14 shipped scheme page) for cluster reinforcement.
+  - **(3) `/sarkari-naukri/tspsc-group-2-2026` from 371 → 3,627 words (9.8x).** Telangana (3.5 cr population, dedicated Paper IV on Telangana Movement is the unique differentiator). New title "TSPSC Group 2 2026: Telangana Recruitment and Prep Guide" (56c). Highlights: 596 vacancies for Deputy Tahsildar / ASO / MDO + 5 other posts, 1 in 1,900 selection ratio (highest in this batch), Telangana local status under Presidential Order 1975 requirement, Paper IV Telangana Movement (150-mark merit) with K Jayashankar + Sri Krishna Committee Report primary sources, 4-paper Mains structure, Bharat Rashtra Samithi political history angle, Kaleshwaram Lift Irrigation Project economic context.
+  - **(4) `/sarkari-naukri/jpsc-combined-civil-services-2026` from 309 → 3,635 words (11.8x).** Jharkhand (3.3 cr population, Fifth Schedule tribal areas + Regional Language optionals are the unique features). New title "JPSC CCS 2026: Jharkhand Civil Services Recruitment Guide" (57c). Highlights: 342 vacancies for JAS / JPS / Finance Service / BDO + 2 other posts, 1 in 900 selection ratio, Jharkhand domicile requirement flagged for Scheduled Tribe reservation quota, 7 regional language optionals available (Santali, Ho, Mundari, Nagpuri, Kurmali, Khortha, Kharia) each worth 200 merit marks, 6-paper Mains with 1,000 merit marks, Ulgulan (Birsa Munda) + Kol Rebellion + Santal Hool freedom movement context, mining economy focus.
+  - **(5) `/sarkari-naukri/apsc-cce-2026` from 328 → 3,887 words (11.9x).** Assam (3.1 cr population, largest longform expansion in this batch). New title "APSC CCE 2026: Assam Civil Services Recruitment and Prep" (56c). Highlights: 277 vacancies for ACS / APS / Finance / Assistant Commissioner of Taxes + 2 other posts, 1 in 700 selection ratio, Assamese or Bodo or Assam-recognised language proficiency at Middle School as hard gate, Assam Permanent Residence Certificate (PRC) requirement for reservation quota, 8-paper Mains with 1,500 merit marks, 23 optional subjects including Assamese and Bodo Literature, 600-year Ahom kingdom + Battle of Saraighat + Assam Accord 1985 + NRC + CAA + Bodo Accord 2020 unique historical and political angle, Sixth Schedule Autonomous Councils flagged in polity syllabus.
+- 📊 **Session output**: 5 State PSC expansions, ~18,412 words humanizer-clean shipped. Cumulative day-15 total: 16 major page expansions across Phase A (11 in prior batches + 5 today). **Site-wide thin-content movement:** Thin (<800w) bucket 78 → 73 (-5). Deep (>=2500w) 23 → 28 (+5). Site thin % 40.0% → 37.4%. **Phase A gate progress: thin % at 37.4% (target < 15%), deep pages at 28 (target >= 40).** 45 more deep pages needed to hit gate, 40+ more pages to expand out of the thin bucket. On track for mid-September readiness at current cadence.
+- 📊 **Cross-linking mesh status.** All 5 new pages meet the template rule (each links to at least 2 other State PSC pages): APPSC → BPSC + KPSC + TNPSC Group 4 (3); OPSC → BPSC + KPSC (2); TSPSC → APPSC + KPSC + TNPSC + BPSC (4); JPSC → BPSC + MPPSC + OPSC (3, includes sibling); APSC → BPSC + OPSC + JPSC + MPSC (4, includes 2 siblings). **Forward mesh (new to old, new to sibling) is complete.** Reverse mesh (first-5 batch pages linking back to new-5) deferred to the next Phase A batch to avoid re-shipping already-live pages. This reduces risk with no meaningful crawl-discovery cost since the forward mesh already surfaces all new pages to Google and LLM crawlers within one hop.
+- 📊 **Cluster reinforcement**: OPSC OCS now cross-links to Subhadra Yojana Odisha (women cash-transfer scheme page from 2026-07-14), creating the first inter-cluster link between the State PSC cluster and the State Schemes cluster. This is a template pattern for future batches (state-level schemes and state-level PSC pages linking to each other for LLM discoverability of state coverage).
+
 **2026-07-14**
 - ✅ **Phase A: State PSC template built + first-5 batch shipped.** Multi-dimensional readiness scorecard framework introduced (replaces the "20 deep pages = AdSense ready" heuristic). Built reusable State PSC job page expansion template at `blog-drafts/template-state-psc-expansion.md` covering 12-section structure, humanizer validation rules, cross-linking guidance for cluster reinforcement, and session cadence discipline. Applied to first-5 State PSC targets ranked by state population, exam recency, and search-volume signals:
   - **(1) `/sarkari-naukri/bpsc-70th-cce-2026` from 657 → 3,306 words (5.0x).** Bihar (12.4 cr population, largest single-state aspirant base). New title "BPSC 70th CCE 2026: Bihar Civil Services Recruitment Guide" (58c). Highlights: 2,035 vacancies for Deputy Collector + DSP + BDO + 11 other posts, 1 in 220 selection ratio, no domicile bar for General category, Bihar-specific history angle (Champaran, Mauryan, Buddhism), 34 optional subjects, 900-mark Mains + 120 Interview.
@@ -312,24 +323,24 @@ While waiting on ad networks:
 
 ---
 
-## Multi-dimensional readiness scorecard (updated 2026-07-14)
+## Multi-dimensional readiness scorecard (updated 2026-07-15)
 
 **Rule:** Never declare "AdSense ready" or any strategic milestone based on a single metric. This scorecard is the gate. Update every Sunday.
 
-| Dimension | Baseline (2026-07-07) | Current (2026-07-14) | AdSense-ready target | Status |
-|---|---|---|---|---|
-| Content depth: thin % | ~50% | 43.6% (83/195 thin) | < 15% | ❌ |
-| Content depth: deep (>=2500w) | ~6 pages | 18 pages | >=40 pages | ❌ |
-| GSC indexed pages | 34 / 169 (20%) | (needs GSC check) | >= 60% | ❌ |
-| GSC "Crawled — not indexed" | 128 | (needs GSC check) | < 30 | ❌ |
-| Bing indexed pages | 173 / 197 (88%) | (needs WMT check) | >= 80% | ✅ |
-| Ahrefs DR | 0 | 0 | >= 5 | ❌ |
-| Real referring domains | ~5 | 5 (Medium) + Connectively passive | >= 15 | ❌ |
-| Google organic share (GA4) | 8% | (needs GA4 check) | >= 20% | ❌ |
-| Bing / LLM traffic | 722 Bing AI citations/7d | (needs WMT check) | >= 1,200/7d | ✅ (strong sleeper) |
-| Trust pages quality | Audited clean | Audited clean | Clean | ✅ |
-| Days since AdSense rejection | 0 | 7 | >= 45 | ❌ |
-| **Score** | **1/11 green** | **3/11 green** | **>= 9/11 green** | **NOT READY** |
+| Dimension | Baseline (2026-07-07) | 2026-07-14 | Current (2026-07-15) | AdSense-ready target | Status |
+|---|---|---|---|---|---|
+| Content depth: thin % | ~50% | 43.6% (83 of 195) | 37.4% (73 of 195) | < 15% | ❌ |
+| Content depth: deep (>=2500w) | ~6 pages | 18 pages | 28 pages | >= 40 pages | ❌ |
+| GSC indexed pages | 34 / 169 (20%) | (needs GSC check) | (needs GSC check) | >= 60% | ❌ |
+| GSC "Crawled — not indexed" | 128 | (needs GSC check) | (needs GSC check) | < 30 | ❌ |
+| Bing indexed pages | 173 / 197 (88%) | (needs WMT check) | (needs WMT check) | >= 80% | ✅ |
+| Ahrefs DR | 0 | 0 | 0 | >= 5 | ❌ |
+| Real referring domains | ~5 | 5 (Medium) + Connectively passive | 5 (Medium) + Connectively passive | >= 15 | ❌ |
+| Google organic share (GA4) | 8% | (needs GA4 check) | (needs GA4 check) | >= 20% | ❌ |
+| Bing / LLM traffic | 722 Bing AI citations/7d | (needs WMT check) | (needs WMT check) | >= 1,200/7d | ✅ (strong sleeper) |
+| Trust pages quality | Audited clean | Audited clean | Audited clean | Clean | ✅ |
+| Days since AdSense rejection | 0 | 7 | 8 | >= 45 | ❌ |
+| **Score** | **1/11 green** | **3/11 green** | **3/11 green** | **>= 9/11 green** | **NOT READY** |
 
 Any submission with fewer than 9-of-11 dimensions green will fail. Google's re-rejection cost is real (longer cooldown, worse odds on the next attempt).
 
@@ -345,8 +356,8 @@ Goal: cut thin bucket from 83 → <25 pages. Deep pages 18 → 40+. Thin % 43.6%
 
 - [x] Site-wide thin-content audit (2026-07-14)
 - [x] Clear very-thin (<300w) bucket to zero (2 pages: Bijli Mitra Rajasthan, Mahila Kishori Haryana)
-- [ ] Build state PSC job page expansion template (structure + validation harness)
-- [ ] Expand 39 state PSC job pages using template (5 per session, ~8 sessions)
+- [x] Build state PSC job page expansion template (structure + validation harness, 2026-07-14)
+- [ ] Expand 39 state PSC job pages using template (5 per session, ~8 sessions) — **10 of 39 done (first-5 batch 2026-07-14, second-5 batch 2026-07-15)**
 - [ ] Expand 38 remaining thin state schemes (5 per session, ~8 sessions)
 - [ ] Expand 7 thin entrance exams (NEET PG, JEE Main 2027, NEET UG MCC, AILET, XAT, plus 2 more)
 - [ ] Re-run thin-content audit at end of each week; track bucket movement
@@ -397,11 +408,11 @@ Goal: 9-of-11 readiness dimensions green, then submit.
 
 ## Rolling KPI dashboard (weekly Sunday review)
 
-| Metric | Baseline (2026-07-07) | Current (2026-07-14) | 30-day target (2026-08-07) | 90-day target (2026-10-07) |
+| Metric | Baseline (2026-07-07) | Current (2026-07-15) | 30-day target (2026-08-07) | 90-day target (2026-10-07) |
 |---|---|---|---|---|
-| Deep pages (>=2500w) | ~6 | **18** | 30 | 60 |
-| Thin pages (<800w) | ~100 | 83 | 40 | < 25 |
-| Thin % of site | ~55% | 43.6% | 20% | < 15% |
+| Deep pages (>=2500w) | ~6 | **28** | 30 | 60 |
+| Thin pages (<800w) | ~100 | 73 | 40 | < 25 |
+| Thin % of site | ~55% | 37.4% | 20% | < 15% |
 | GA4 monthly sessions | 425 | (needs check) | 1,000 | 2,500 |
 | Google organic share | 8% | (needs check) | 12% | 20% |
 | Quora answers live | 6 | **11** | 25 | 60 |
