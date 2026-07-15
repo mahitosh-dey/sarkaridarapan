@@ -345,7 +345,7 @@ While waiting on ad networks:
 | GSC indexed pages | 34 / 169 (20%) | (needs GSC check) | (needs GSC check) | >= 60% | ❌ |
 | GSC "Crawled — not indexed" | 128 | (needs GSC check) | (needs GSC check) | < 30 | ❌ |
 | Bing indexed pages | 173 / 197 (88%) | (needs WMT check) | (needs WMT check) | >= 80% | ✅ |
-| Ahrefs DR | 0 | 0 | 0 | >= 5 | ❌ |
+| Ahrefs DR | 0 | 0 | 0 | >= 30 (was >= 5, upgraded 2026-07-15) | ❌ |
 | Real referring domains | ~5 | 5 (Medium) + Connectively passive | 5 (Medium) + Connectively passive | >= 15 | ❌ |
 | Google organic share (GA4) | 8% | (needs GA4 check) | (needs GA4 check) | >= 20% | ❌ |
 | Bing / LLM traffic | 722 Bing AI citations/7d | (needs WMT check) | (needs WMT check) | >= 1,200/7d | ✅ (strong sleeper) |
@@ -376,7 +376,7 @@ Goal: cut thin bucket from 83 → <25 pages. Deep pages 18 → 40+. Thin % 43.6%
 
 ### Phase B — Backlinks + indexing signal (weeks 3-8, overlaps A)
 
-Goal: DR 0 → 5+. GSC indexed 20% → 60%. "Crawled — not indexed" 128 → <30.
+Goal: DR 0 → 5+ (weeks 3-8 milestone toward the DR 30+ target set 2026-07-15). GSC indexed 20% → 60%. "Crawled — not indexed" 128 → <30. Benchmark backlink sources against DR 80+ competitors (SarkariResult DR 74, FreeJobAlert DR 70, SarkariExam DR 65, JobRiya DR 58) per CLAUDE.md rule #6.
 
 - [ ] Quora #12-25 (14 more by end-July at ~1/day)
 - [ ] Quora #26-60 (35 more by 90d, ~2/week)
@@ -432,7 +432,7 @@ Goal: 9-of-11 readiness dimensions green, then submit.
 | GSC indexed pages | 34 | (needs check) | 80 | 150+ |
 | GSC "Crawled — not indexed" | 128 | (needs check) | 60 | < 30 |
 | Bing search clicks / 30d | ~15 | (needs check) | 50 | 200 |
-| Ahrefs DR | 0 | 0 | 3 | 8 |
+| Ahrefs DR | 0 | 0 | 5 (90d) / 15 (180d) / 30+ (12mo) | 15 |
 | Real referring domains | ~5 | 5 (Medium reposts) | 10 | 25 |
 | AdSense status | Rejected | Rejected + 7d cooldown | Not submitted | Submitted, verdict pending |
 

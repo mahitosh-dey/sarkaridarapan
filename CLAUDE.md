@@ -25,6 +25,17 @@ Research must cover: (a) top 10 Google organic results for the target query, (b)
 ### 5. Hard rules durability
 All hard rules must live in this `CLAUDE.md` file. Auto-memory in `~/.claude/projects/*/memory/` is a supplement, not the source of truth. If Claude memory is ever lost, the owner can restore full context by reading this file. Whenever a new hard rule is agreed with the owner, save it here first, then mirror to auto-memory for redundancy.
 
+### 6. Compete with DR 80+ sites, target minimum DR 30+
+SarkariDarapan competes in a vertical dominated by DR 60 to 80+ sites (SarkariResult DR 74, FreeJobAlert DR 70, SarkariExam DR 65, JobRiya DR 58, NaukriHub DR 55, RojgarResult DR 50). These are the real competitors, not other DR 0 blogs. Every content, backlink, technical, and distribution decision must be benchmarked against what these DR 80+ competitors do, and where the site can beat or differentiate against them.
+
+**Minimum DR target: 30+** (previously 5+, upgraded on 2026-07-15). DR 5+ was insufficient for meaningful competitive traction in this vertical. DR 30+ is the realistic floor for consistently ranking against the incumbents on medium-competition sarkari queries.
+
+**How to apply:**
+- For every content page, study the top 5 DR 80+ competitor pages ranking for the same query. Match their depth, then differentiate on angle (fresher stats, worked examples, comparison tables, primary-source citations, LLM-friendly structure).
+- For backlink strategy, prioritise the sources that already link to DR 80+ competitors (Quora threads they answer on, Medium tags they publish under, government portals they cite from, coaching-institute blogs they get mentioned by).
+- For technical SEO, benchmark page speed, mobile experience, JSON-LD coverage, and internal link mesh depth against the DR 80+ leaders. Any technical shortfall is a competitive gap.
+- Track DR progress weekly in the readiness scorecard. Milestones: DR 5 by 90 days, DR 15 by 180 days, DR 30+ by 12 months.
+
 ---
 
 ## What This Project Is
