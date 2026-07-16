@@ -143,7 +143,7 @@ export async function getJobBySlug(slug: string): Promise<JobPost | null> {
       return mapJobRow(data);
     },
     [`job-${slug}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `job-${slug}`] }
   )();
 }
 
@@ -187,7 +187,7 @@ export async function getSchemeBySlug(
       return mapSchemeRow(data);
     },
     [`scheme-${slug}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `scheme-${slug}`] }
   )();
 }
 
@@ -213,7 +213,7 @@ export async function getJobsByCategory(category: string): Promise<JobPost[]> {
       return (data || []).map(mapJobRow);
     },
     [`jobs-category-${category}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `jobs-category-${category}`] }
   )();
 }
 
@@ -235,7 +235,7 @@ export async function getJobsByState(state: string): Promise<JobPost[]> {
       return (data || []).map(mapJobRow);
     },
     [`jobs-state-${state}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `jobs-state-${state}`] }
   )();
 }
 
@@ -259,7 +259,7 @@ export async function getSchemesByCategory(
       return (data || []).map(mapSchemeRow);
     },
     [`schemes-category-${category}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `schemes-category-${category}`] }
   )();
 }
 
@@ -284,7 +284,7 @@ export async function getSchemesByState(
       return (data || []).map(mapSchemeRow);
     },
     [`schemes-state-${state}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `schemes-state-${state}`] }
   )();
 }
 
@@ -328,7 +328,7 @@ export async function getEntranceExamBySlug(
       return mapEntranceExamRow(data);
     },
     [`exam-${slug}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams", `exam-${slug}`] }
   )();
 }
 
@@ -352,7 +352,7 @@ export async function getEntranceExamsByCategory(
       return (data || []).map(mapEntranceExamRow);
     },
     [`exams-category-${category}`],
-    { revalidate: REVALIDATE_INTERVAL }
+    { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams", `exams-category-${category}`] }
   )();
 }
 
