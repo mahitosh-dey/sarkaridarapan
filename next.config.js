@@ -141,6 +141,19 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-07-23): 3 posts targeted the same query
+      // "government jobs after 12th". Canonical is
+      // top-10-government-jobs-after-12th-india-2026 (Day 6, 5152w).
+      {
+        source: '/blog/top-10-govt-jobs-after-12th-2026',
+        destination: '/blog/top-10-government-jobs-after-12th-india-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/government-jobs-after-12th-in-india-2026',
+        destination: '/blog/top-10-government-jobs-after-12th-india-2026',
+        permanent: true,
+      },
     ];
   },
 };
