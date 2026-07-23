@@ -36,6 +36,24 @@ SarkariDarapan competes in a vertical dominated by DR 60 to 80+ sites (SarkariRe
 - For technical SEO, benchmark page speed, mobile experience, JSON-LD coverage, and internal link mesh depth against the DR 80+ leaders. Any technical shortfall is a competitive gap.
 - Track DR progress weekly in the readiness scorecard. Milestones: DR 5 by 90 days, DR 15 by 180 days, DR 30+ by 12 months.
 
+### 7. SEO title and description length limits
+Every content title must be 50 to 65 characters. Every meta description must be 150 to 160 characters. Validate in script before every DB write using a preflight helper. Reason: below-range descriptions get rewritten by Google with less predictable snippet content, and above-range descriptions get truncated. Rules apply to schemes, jobs, exams, blog posts, and any other page-level metadata. The `scripts/lib/replace-scheme.mjs` and `scripts/lib/create-exam.mjs` helpers enforce this automatically; new update scripts must use these helpers or replicate the same preflight.
+
+### 8. Quora question-first workflow
+For any Quora work, always suggest candidate target questions first and wait for the owner to confirm a live Quora thread before drafting the answer. Never write the answer before the question is locked. Owner has lost time in the past on questions that were closed, had zero followers, or had already-comprehensive top answers. Candidate list should include the full URL, question text verbatim, approximate follower count, approximate view count of existing answers, top answer state (thin or comprehensive), which shipped content page it maps to, and why the question is a good candidate. Owner picks 2, then drafting begins.
+
+### 9. No rushing, multi-dimensional readiness
+Never declare a milestone "ready" on a single dimension. Assess content depth, SEO indexing status, DR, organic traffic, keyword rankings, and trust signals together. Owner wants successful outcomes, not fast declarations. This is why the AdSense re-application gate (rule 10) requires all three green simultaneously and why any "ready to apply" or "ready to ship" claim must reference multiple metrics.
+
+### 10. AdSense re-application gated on real performance
+Do not re-apply for Google AdSense until three conditions are met simultaneously: (a) all planned content and infrastructure tasks are done, (b) sustained 20+ clicks per day in Google Search Console, and (c) DR 30+. All three must be green at the same time. AdSense was rejected on 2026-07-07 for "Low value content." Re-applying before these gates risks a second rejection which materially extends the wait window before another attempt. This gate was set by the owner on 2026-07-16 and takes precedence over any short-term monetisation temptation.
+
+### 11. Never default to "stop for today"
+Owner is under real commercial time pressure. Rest is not a recommendation. When suggesting next steps, focus on the highest-impact lever for the metric currently being chased (impressions, clicks, DR, indexing). Never propose "let's stop here for today" as a default. The assumption is continued work until the owner explicitly signals a break. If a natural stopping point exists (deployment gate, owner approval required, background job in flight), state that specific reason and offer parallel work options.
+
+### 12. New content ships at 3000w+ with PAA-matched FAQs from the start
+No more 2000w-then-upgrade pattern. Every new scheme, job, exam, and blog page ships at 3000 words minimum from the initial write, with PAA (People Also Ask) matched FAQ JSON-LD included from the start. Reason: DR 30+ target requires competitive depth from day one; 2000w baseline is insufficient to rank against DR 60+ incumbents, and the two-step ship pattern doubles the work. The `replaceScheme` and `createExam` helpers enforce a 3000-word minimum content check during preflight.
+
 ---
 
 ## What This Project Is
