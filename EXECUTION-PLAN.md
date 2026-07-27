@@ -226,7 +226,7 @@ Once Phase 1 gates close, T1 drops to 1 new/day only. T2 doubles (4 Quora/day + 
 | Fri date | Items shipped | Quora live | Medium posts | Emails sent | Links landed | GSC clicks/day | DR |
 |---|---|---|---|---|---|---|---|
 | 2026-07-17 (Wk 1) | 17 unique (11 schemes + 1 exam + 5 jobs); + 6 v2 upgrades to 3000w+ | 0 (2 drafts) | 0 | 0 (1 personalised + 9 templated drafts) | 0 (too early) | TBD | TBD |
-| 2026-07-24 (Wk 2) |  |  |  |  |  |  |  |
+| 2026-07-24 (Wk 2) | 5 (4 scheme rewrites: Namo Shetkari, Aapki Beti, Mawan Dhiyan, Telangana Rs 500; +1 new exam: MPTET Varg 3) — 20,231w total | TBD (candidates sourcing) | 0 | TBD (targets sourcing) | 0 (too early to measure) | TBD | TBD |
 | 2026-07-31 (Wk 3) |  |  |  |  |  |  |  |
 | 2026-08-07 (Wk 4) |  |  |  |  |  |  |  |
 | 2026-08-14 (Wk 5) |  |  |  |  |  |  |  |
