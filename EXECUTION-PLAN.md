@@ -290,3 +290,39 @@ Once Phase 1 gates close, T1 drops to 1 new/day only. T2 doubles (4 Quora/day + 
 
 - GSC clicks/day for Wk 1: [owner to check GSC Performance report]
 - Ahrefs DR change vs 2026-07-10 baseline: [owner to check Ahrefs Overview]
+
+---
+
+## Wk 2 detail log — Day 8 (2026-07-27, Mon)
+
+### Content shipped (5 pieces at 3000w+, humanizer-clean, live-verified)
+
+- **ssc-mts-2026** (job, 490w to 3051w) — live 31 Jul 2026 apply-window hook, corrected 60% DA salary table, MTS vs GD vs CHSL, Havaldar PET/PST.
+- **rrb-ntpc-2026** (job, full rewrite from stale "CEN 05/2024" to 3010w) — both CENs (Graduate 5,810 + UG 3,058 = 8,868), verified UG CBT 2 = 17 Sep 2026, CBAT 70/30 + T-score 42 rule, per-post salary.
+- **ssc-je-2026** (job, 680w to 3002w) — honest "notification not out" framing on the 2024 baseline (1,731); fixed the wrong "Quantity Surveying" discipline; degree-vs-diploma-by-department table.
+- **sbi-clerk-2026** (job, 541w to 3009w) — slot-4 swap for the deferred WB bus; 2025 baseline (13,735), LPT explainer, SBI vs IBPS Clerk, SBI bipartite pay (not central DA).
+- **btet-bihar-tet-2026** (NEW exam, 3032w) — explainer-hub pivot: "BTET vs STET vs CTET vs BPSC TRE, which exam do you need?" since BTET 2026 is an SEO fiction. Distinction table + lifetime-validity + worked eligibility.
+
+### Deferred / safe-fixed (owner directive: no fabricated data; skip doubtful, safe-fix existing)
+
+- **DEFERRED (unverifiable 2026-election political premise):** free-bus-travel-scheme-for-women-west-bengal-2026, annapurna-bhandar-yojana-west-bengal-2026, and the TN LPG scheme's TVK/Vijay framing. Revisit only when an official state notification/gazette is locatable.
+- **SAFE-FIXED live page:** chief-ministers-free-lpg-connection-scheme-tamil-nadu-2026 — the prior content asserted an unverifiable CM/election outcome plus fabricated ops (free connection + stove + 2 cylinders, live tnpds application, a 6-vs-16 contradiction, "MK Stalin"). Rewrote content + faqs + all structured columns (launched_by, objective, benefits, how_to_apply, eligibility, documents) to an honest "announced, not yet notified" status anchored on the live central PMUY. DB fully clean; live edge cache propagating (Vercel cross-region tag lag, 1h ISR TTL).
+
+### Tooling
+
+- Built **scripts/lib/replace-job.mjs** (reads .env.local, no hardcoded key; same humanizer preflight as replace-scheme; updates jobs table + structured columns; revalidates /sarkari-naukri/ + tag=jobs). The 3 SSC/RRB items live in the jobs table, which had no clean update helper before today.
+- Locked **7th CPC DA = 60% effective 1 Jan 2026** (Finance Ministry) as the single salary-table figure across job pages. Note: SBI uses its own bipartite scale, not central DA.
+
+### Verification
+
+- Every page live-curled: title, description (150-160c), canonical, robots index,follow, JobPosting/FAQPage JSON-LD present, key facts rendered. Telangana Rs 500 LPG confirmed already-deep (3,371w, shipped Day 7) so dropped from Day 8.
+- IndexNow pinged for all. Sitemap refreshed and confirmed to include btet-bihar-tet-2026.
+
+### Known follow-ups
+
+- Jobs table still has legacy en-dashes in some salary fields (visible in "Similar Jobs" cards) — a future humanizer sweep, out of Day 8 scope.
+- Distribution (2 Quora + 10 backlinks) is owner-side; candidates prepared separately.
+
+### Task-list reconciliation
+
+Day 8's planned "Telangana + WB bus + ssc-mts + rrb-ntpc + ssc-je" was stale: Telangana shipped Day 7, WB bus deferred (political), and the 3 SSC/RRB items were jobs, not schemes. Net Day 8 = 4 deepenings + 1 new, matching the daily shape.
