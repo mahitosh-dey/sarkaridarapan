@@ -169,28 +169,28 @@ When the notification opens, apply on the SBI careers portal at sbi.co.in: regis
 
 ## Frequently asked questions
 
-### Is the SBI Clerk 2026 notification out?
+**Is the SBI Clerk 2026 notification out?**
 No. As of 27 July 2026 the SBI Clerk 2026 (Junior Associate) notification has not been released. SBI's careers page currently lists Probationary Officer, Specialist Cadre, and Apprentice openings, not clerk, so any 2026 clerk date circulating online is unconfirmed.
 
-### How many vacancies are expected in SBI Clerk 2026?
+**How many vacancies are expected in SBI Clerk 2026?**
 The 2026 vacancy count is not yet announced. The 2025 Junior Associate cycle notified 13,735 posts, and that is the reasonable planning baseline until SBI publishes the 2026 figure. Projections of 6,000 to 10,000 posts seen online are speculative.
 
-### What is the SBI Clerk in-hand salary?
+**What is the SBI Clerk in-hand salary?**
 A Junior Associate starts on a basic near Rs 26,730, including two graduate increments, on a pay scale of about Rs 24,050 to Rs 64,480. With allowances, the in-hand works out to roughly Rs 40,000 to Rs 43,000 a month, varying by posting city.
 
-### Is there an interview in SBI Clerk selection?
+**Is there an interview in SBI Clerk selection?**
 No. SBI Clerk selection is Preliminary exam, then Main exam, then a Local Language Proficiency Test. The LPT replaces the interview, and the final merit rests on the main exam score alone.
 
-### What is the age limit for SBI Clerk 2026?
+**What is the age limit for SBI Clerk 2026?**
 The age limit for the Junior Associate post is 20 to 28 years, with relaxation of 3 years for OBC, 5 years for SC and ST, and 10 years for PwBD candidates, plus further relaxation for ex-servicemen and specified groups per the notification.
 
-### Is there negative marking in SBI Clerk?
+**Is there negative marking in SBI Clerk?**
 Yes. Both the prelims and the mains deduct 0.25 marks for each wrong answer. There is no sectional cutoff in the mains, so you qualify on the overall score.
 
-### What is the LPT and who is exempt?
+**What is the LPT and who is exempt?**
 The Local Language Proficiency Test checks whether you can read, write, and speak the official language of the state you applied for. Candidates who studied that language in Class 10 or 12 are exempt on producing the marksheet. Failing the LPT leads to disqualification regardless of exam scores.
 
-### What is the difference between SBI Clerk and IBPS Clerk?
+**What is the difference between SBI Clerk and IBPS Clerk?**
 SBI Clerk recruits only for the State Bank of India, pays around Rs 40,000 to 43,000 in-hand, promotes to officer cadre in about three to four years, and runs an extra LPT stage. IBPS Clerk recruits for 11 public-sector banks with a slightly lower in-hand and gentler cutoffs.`;
 
 const fields = {

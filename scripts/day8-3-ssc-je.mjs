@@ -109,7 +109,7 @@ Paper 1 is a 200-mark objective test of two hours, with a penalty of 0.25 marks 
 | General Engineering (Civil or Electrical or Mechanical) | 100 | 100 |
 | Total | 200 | 200 |
 
-You attempt the General Engineering section only in the discipline you applied for, so a Civil applicant answers Civil questions and never sees the Electrical or Mechanical sets. Paper 1 is the screening stage that decides who moves on to the technical Paper 2.
+You attempt the General Engineering section only in the discipline you applied for, so a Civil applicant answers Civil questions and never sees the Electrical or Mechanical sets. Paper 1 is the screening stage that decides who moves on to the technical Paper 2, and it is common to both the degree and diploma holders who apply.
 
 ## Paper 2 exam pattern
 
@@ -203,28 +203,28 @@ When the notification opens, apply through the SSC OTR portal at ssc.gov.in, fil
 
 ## Frequently asked questions
 
-### Is the SSC JE 2026 notification out?
+**Is the SSC JE 2026 notification out?**
 No. As of 27 July 2026 the SSC JE 2026 notification has not been released. The SSC Exam Calendar 2026-27, released on 08 January 2026, places it later in 2026, and the exact dates and vacancy count will come with the official notification on ssc.gov.in.
 
-### Can a diploma holder apply for SSC JE?
+**Can a diploma holder apply for SSC JE?**
 Yes. A three-year diploma in the relevant engineering discipline is enough for several posts, notably in CPWD and CWC Civil. Some posts in BRO and MES need a degree, or a diploma plus two years of experience.
 
-### How many disciplines are in SSC JE?
+**How many disciplines are in SSC JE?**
 SSC JE has three disciplines in recent cycles: Civil, Electrical, and Mechanical. There is no Quantity Surveying and Contract discipline in the current SSC JE recruitment.
 
-### What is the SSC JE in-hand salary in 2026?
+**What is the SSC JE in-hand salary in 2026?**
 An SSC JE at Pay Level 6 with a basic of Rs 35,400 takes home about Rs 62,000 a month in a metro, at the 60 percent dearness allowance effective 1 January 2026, after HRA, transport allowance, and deductions.
 
-### How many vacancies will SSC JE 2026 have?
+**How many vacancies will SSC JE 2026 have?**
 The 2026 vacancy count is not yet announced. The SSC JE 2024 cycle notified 1,731 posts across Civil, Electrical, and Mechanical, and that figure is the working baseline until the 2026 notification is released.
 
-### Is there an interview in SSC JE?
+**Is there an interview in SSC JE?**
 No. SSC JE selection is Paper 1, then Paper 2, then document verification and a medical examination. The final merit rests on the combined Paper 1 and Paper 2 marks.
 
-### What is the age limit for SSC JE 2026?
+**What is the age limit for SSC JE 2026?**
 Most SSC JE posts set an upper age of 30 years, with some CPWD posts allowing up to 32, before relaxation of 3 years for OBC, 5 years for SC and ST, and 10 years for PwBD candidates.
 
-### Which is harder, Paper 1 or Paper 2 negative marking?
+**Which is harder, Paper 1 or Paper 2 negative marking?**
 Paper 2 is harsher on errors. Paper 1 deducts 0.25 marks per wrong answer, while Paper 2 deducts a full 1 mark, so guessing in the technical paper is far more costly than in Paper 1.`;
 
 const fields = {

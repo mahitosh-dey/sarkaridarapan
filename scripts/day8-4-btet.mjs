@@ -194,7 +194,8 @@ const ROW = {
   content: CONTENT,
 };
 
-const FAQ_BLOCK = FAQS.map((f) => `\n\n### ${f.question}\n\n${f.answer}`).join("");
+// Bold **question?** format so lib/faq-parser.ts extracts FAQPage JSON-LD (AI-3).
+const FAQ_BLOCK = FAQS.map((f) => `\n\n**${f.question}**\n\n${f.answer}`).join("");
 ROW.content = ROW.content + FAQ_BLOCK + "\n";
 
 await createExam(ROW, 3000);

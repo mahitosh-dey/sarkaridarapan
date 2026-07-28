@@ -211,28 +211,28 @@ Treat the last eight to ten weeks as a rehearsal, not a first read. Give the fir
 
 ## Frequently asked questions
 
-### What is the last date to apply for SSC MTS 2026?
+**What is the last date to apply for SSC MTS 2026?**
 The last date to apply for SSC MTS 2026 is 31 July 2026, with fee payment also closing on the same day at 11:00 PM. The notification was released on 30 June 2026.
 
-### How many vacancies are there in SSC MTS 2026?
+**How many vacancies are there in SSC MTS 2026?**
 SSC MTS 2026 has 7,948 vacancies, split into roughly 6,810 Multi-Tasking Staff posts and 1,138 Havaldar posts in CBIC and CBN, per the SSC MTS 2026 notification.
 
-### Is there negative marking in SSC MTS 2026?
+**Is there negative marking in SSC MTS 2026?**
 Yes, but only in Session II. General awareness and English carry a penalty of 1 mark per wrong answer, while Session I (maths and reasoning) has no negative marking, so you can attempt every question there.
 
-### What is the in-hand salary of SSC MTS in 2026?
+**What is the in-hand salary of SSC MTS in 2026?**
 A Level 1 MTS recruit takes home about Rs 33,000 a month in a metro (X city) at the 60 percent dearness allowance effective 1 January 2026, and about Rs 29,000 in a Z-class city, after standard deductions.
 
-### What is the qualification needed for SSC MTS?
+**What is the qualification needed for SSC MTS?**
 A Class 10 (Matriculation) pass from a recognised board is the only qualification needed for SSC MTS. There is no minimum percentage and no upper degree requirement.
 
-### Who has to appear for the PET and PST in SSC MTS?
+**Who has to appear for the PET and PST in SSC MTS?**
 Only Havaldar applicants appear for the Physical Efficiency Test and Physical Standard Test. Multi-Tasking Staff posts have no physical test, and the Havaldar PET and PST are qualifying rather than merit-deciding.
 
-### How is the SSC MTS age limit calculated?
+**How is the SSC MTS age limit calculated?**
 Age is reckoned as on 1 August 2026. Most MTS posts need 18 to 25 years, while Havaldar and some MTS posts allow 18 to 27 years, with category relaxations of 3 years for OBC, 5 years for SC and ST, and up to 15 years for PwBD.
 
-### What is the difference between MTS and Havaldar?
+**What is the difference between MTS and Havaldar?**
 MTS involves office and support duties across central government departments at Pay Level 1, while Havaldar is a field role in customs (CBIC) and narcotics control (CBN) at the same pay level, with an added physical test at selection.`;
 
 const fields = {

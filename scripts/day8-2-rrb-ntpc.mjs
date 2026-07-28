@@ -173,31 +173,31 @@ Applications for both 2026 cycles have closed, so the current task is tracking t
 
 ## Frequently asked questions
 
-### How many vacancies are there in RRB NTPC 2026?
+**How many vacancies are there in RRB NTPC 2026?**
 RRB NTPC 2026 has 8,868 vacancies in total, split into 5,810 posts at the Graduate level (CEN 06/2025) and 3,058 posts at the Undergraduate level (CEN 07/2025), across all Railway Recruitment Board regions.
 
-### What is the RRB NTPC 2026 CBT 2 exam date?
+**What is the RRB NTPC 2026 CBT 2 exam date?**
 The Graduate level CBT 2 was held on 10 July 2026, and its answer key was released on 15 July 2026. The Undergraduate level CBT 2 is scheduled for 17 September 2026, per the RRB exam notice.
 
-### Which RRB NTPC posts require the CBAT?
+**Which RRB NTPC posts require the CBAT?**
 Only Station Master and Traffic Assistant require the Computer Based Aptitude Test. For these two posts the final merit is 70 percent CBT 2 and 30 percent CBAT, and a candidate must score at least a 42 T-score in every test battery with no category relaxation.
 
-### What is the in-hand salary of a Station Master in RRB NTPC?
+**What is the in-hand salary of a Station Master in RRB NTPC?**
 A Station Master at Pay Level 6 with a basic of Rs 35,400 takes home about Rs 62,000 a month in a metro, at the 60 percent dearness allowance effective 1 January 2026, after HRA, transport allowance, and deductions.
 
-### What is the age limit for RRB NTPC 2026?
+**What is the age limit for RRB NTPC 2026?**
 The age limit, reckoned as on 1 January 2026, is 18 to 33 years for the Graduate level and 18 to 30 years for the Undergraduate level, before relaxation of 3 years for OBC, 5 years for SC and ST, and up to 15 years for PwBD.
 
-### Is there negative marking in RRB NTPC?
+**Is there negative marking in RRB NTPC?**
 Yes. Both CBT 1 and CBT 2 carry a penalty of one-third of a mark for every wrong answer. The CBAT for Station Master and Traffic Assistant has no negative marking.
 
-### What is the difference between the Graduate and Undergraduate levels?
+**What is the difference between the Graduate and Undergraduate levels?**
 The Graduate level (CEN 06/2025) needs a bachelor's degree and fills higher-paid posts like Station Master and Goods Train Manager at Levels 4 to 6. The Undergraduate level (CEN 07/2025) needs a Class 12 pass and fills clerk posts at Levels 2 to 3.
 
-### Are RRB NTPC 2026 applications still open?
+**Are RRB NTPC 2026 applications still open?**
 No. Applications for both the Graduate and Undergraduate cycles closed in November 2025. The recruitment is now in its exam, answer key, and result stages, which the Railway Recruitment Boards announce region by region.
 
-### Do CBT 1 marks count in the final merit?
+**Do CBT 1 marks count in the final merit?**
 No. CBT 1 is a screening test used only to shortlist candidates for CBT 2 at about 20 times the vacancies. The final merit rests on CBT 2, plus the CBAT for Station Master and Traffic Assistant posts.`;
 
 const fields = {
