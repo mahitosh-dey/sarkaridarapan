@@ -88,7 +88,7 @@ Contractual posts, by contrast, are paid a consolidated cost to company set in t
 
 ## SBI SO versus SBI PO
 
-Candidates sometimes weigh SBI SO against SBI PO. They are quite different routes.
+Candidates sometimes weigh SBI SO against [SBI PO](/sarkari-naukri/sbi-po-2026). They are quite different routes.
 
 | Factor | SBI SO | SBI PO |
 |---|---|---|

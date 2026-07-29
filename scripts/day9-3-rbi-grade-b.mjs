@@ -121,7 +121,7 @@ Here is a worked in-hand estimate at the revised scale. On a basic of Rs 78,450,
 
 ## RBI Grade B vs SBI PO vs NABARD Grade A
 
-Candidates often weigh these three prestigious officer exams. This comparison sets out the real differences.
+Candidates often weigh these three prestigious officer exams: RBI Grade B, [SBI PO](/sarkari-naukri/sbi-po-2026), and [NABARD Grade A](/sarkari-naukri/nabard-grade-a-2026). This comparison sets out the real differences.
 
 | Factor | RBI Grade B | SBI PO | NABARD Grade A |
 |---|---|---|---|

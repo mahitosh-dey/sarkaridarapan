@@ -124,7 +124,7 @@ Reserved-category cutoffs are lower and are released on individual scorecards. U
 
 ## SBI Clerk vs IBPS Clerk
 
-Candidates preparing for SBI Clerk usually also consider IBPS Clerk. This comparison sets out the real differences.
+Candidates preparing for SBI Clerk usually also consider [IBPS Clerk](/sarkari-naukri/ibps-clerk-2026). This comparison sets out the real differences.
 
 | Factor | SBI Clerk | IBPS Clerk |
 |---|---|---|

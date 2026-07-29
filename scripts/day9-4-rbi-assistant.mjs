@@ -129,7 +129,7 @@ The Language Proficiency Test is the stage most candidates underrate, and it dis
 
 ## RBI Assistant vs IBPS Clerk vs SBI Clerk
 
-Candidates preparing for RBI Assistant usually also consider IBPS Clerk and SBI Clerk. This comparison sets out the real differences.
+Candidates preparing for RBI Assistant usually also consider [IBPS Clerk](/sarkari-naukri/ibps-clerk-2026) and [SBI Clerk](/sarkari-naukri/sbi-clerk-2026). This comparison sets out the real differences.
 
 | Factor | RBI Assistant | SBI Clerk | IBPS Clerk |
 |---|---|---|---|

@@ -124,7 +124,7 @@ The general-category mains cut-off has swung from about 94.85 in 2021 to 70 in 2
 
 ## SBI PO vs IBPS PO
 
-Candidates preparing for SBI PO usually also weigh IBPS PO. This comparison sets out the real differences.
+Candidates preparing for SBI PO usually also weigh [IBPS PO](/sarkari-naukri/ibps-po-2026). This comparison sets out the real differences.
 
 | Factor | SBI PO | IBPS PO |
 |---|---|---|

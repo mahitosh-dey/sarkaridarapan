@@ -156,7 +156,7 @@ Treat these as a planning band, not a promise. Your state and age group shift th
 
 ## SSC MTS vs SSC GD vs SSC CHSL
 
-Candidates eligible for MTS often weigh it against SSC GD Constable and SSC CHSL. This comparison sets out the real differences.
+Candidates eligible for MTS often weigh it against [SSC GD Constable](/sarkari-naukri/ssc-gd-constable-2026) and [SSC CHSL](/sarkari-naukri/ssc-chsl-2026). This comparison sets out the real differences.
 
 | Factor | SSC MTS | SSC GD Constable | SSC CHSL |
 |---|---|---|---|
