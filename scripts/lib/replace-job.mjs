@@ -100,6 +100,8 @@ export async function replaceJob({ slug, title, description, content, fields = {
 
   const rev = await fetch(`${SITE_URL}/api/revalidate?path=${encodeURIComponent("/sarkari-naukri/" + slug)}`);
   console.log(`  Path revalidate: HTTP ${rev.status}`);
+  const slugTag = await fetch(`${SITE_URL}/api/revalidate?tag=job-${slug}`);
+  console.log(`  Slug tag revalidate: HTTP ${slugTag.status}`);
   const tag = await fetch(`${SITE_URL}/api/revalidate?tag=jobs`);
   console.log(`  Jobs tag revalidate: HTTP ${tag.status}`);
 

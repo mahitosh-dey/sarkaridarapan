@@ -92,6 +92,8 @@ export async function replaceScheme({ slug, title, description, content, faqs, m
 
   const rev = await fetch(`${SITE_URL}/api/revalidate?path=${encodeURIComponent("/sarkari-yojana/" + slug)}`);
   console.log(`  Path revalidate: HTTP ${rev.status}`);
+  const slugTag = await fetch(`${SITE_URL}/api/revalidate?tag=scheme-${slug}`);
+  console.log(`  Slug tag revalidate: HTTP ${slugTag.status}`);
   const tag = await fetch(`${SITE_URL}/api/revalidate?tag=schemes`);
   console.log(`  Schemes tag revalidate: HTTP ${tag.status}`);
 

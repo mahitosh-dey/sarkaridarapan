@@ -93,6 +93,12 @@ export async function createScheme(row, minWords = 3000) {
   console.log(`  Path revalidate: HTTP ${rev.status}`);
   const tag = await fetch(`${SITE_URL}/api/revalidate?tag=schemes`);
   console.log(`  Schemes tag revalidate: HTTP ${tag.status}`);
+  // Also bust the per-slug tag. getSchemeBySlug caches under `scheme-${slug}`, and on
+  // 2026-07-31 a brand-new scheme kept serving the noindex "Coming Soon" page after the
+  // path + `schemes` revalidation because the URL had been hit BEFORE the row existed,
+  // caching a null. Belt-and-braces: cheap, and it makes new-slug creation deterministic.
+  const slugTag = await fetch(`${SITE_URL}/api/revalidate?tag=scheme-${row.slug}`);
+  console.log(`  Slug tag revalidate: HTTP ${slugTag.status}`);
 
   await pingIndexNow(row.slug, "/sarkari-yojana");
   console.log(`  Verify: ${SITE_URL}/sarkari-yojana/${row.slug}`);

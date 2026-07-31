@@ -91,8 +91,13 @@ export async function createExam(row, minWords = 3000) {
 
   const rev = await fetch(`${SITE_URL}/api/revalidate?path=${encodeURIComponent("/entrance-exams/" + row.slug)}`);
   console.log(`  Path revalidate: HTTP ${rev.status}`);
-  const tag = await fetch(`${SITE_URL}/api/revalidate?tag=entrance_exams`);
+  // Tag is "entrance-exams" with a HYPHEN in lib/content.ts. This sent "entrance_exams"
+  // with an underscore until 2026-07-31, so every exam tag revalidation was a silent
+  // no-op (the API returns 200 for any tag name) and only the path revalidation worked.
+  const tag = await fetch(`${SITE_URL}/api/revalidate?tag=entrance-exams`);
   console.log(`  Exams tag revalidate: HTTP ${tag.status}`);
+  const slugTag = await fetch(`${SITE_URL}/api/revalidate?tag=exam-${row.slug}`);
+  console.log(`  Slug tag revalidate: HTTP ${slugTag.status}`);
 
   await pingIndexNow(row.slug, "/entrance-exams");
   console.log(`  Verify: ${SITE_URL}/entrance-exams/${row.slug}`);

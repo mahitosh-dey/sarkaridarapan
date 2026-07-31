@@ -115,8 +115,12 @@ export async function replaceBlog({ slug, title, description, category, tags, co
 
   const rev = await fetch(`${SITE_URL}/api/revalidate?path=${encodeURIComponent("/blog/" + slug)}`);
   console.log(`  Path revalidate: HTTP ${rev.status}`);
-  const tag = await fetch(`${SITE_URL}/api/revalidate?tag=blog_posts`);
+  // Tag is "blog-posts" with a HYPHEN in lib/blog-db.ts. This sent "blog_posts" with an
+  // underscore until 2026-07-31, making every blog tag revalidation a silent no-op.
+  const tag = await fetch(`${SITE_URL}/api/revalidate?tag=blog-posts`);
   console.log(`  Blog tag revalidate: HTTP ${tag.status}`);
+  const slugTag = await fetch(`${SITE_URL}/api/revalidate?tag=blog-post-${slug}`);
+  console.log(`  Slug tag revalidate: HTTP ${slugTag.status}`);
 
   await pingIndexNow(slug, "/blog");
   console.log(`  Verify: ${SITE_URL}/blog/${slug}`);
