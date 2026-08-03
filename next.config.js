@@ -126,6 +126,15 @@ const nextConfig = {
         destination: '/sarkari-yojana/:slug',
         permanent: true,
       },
+      // Cannibalisation fix 2026-08-03: two RRB ALP pages existed. The long-slug one held
+      // stale CEN 01/2024 content (18,799 vacancies) and was the one serving publicly,
+      // while the correct CEN 01/2026 page (11,127 posts) sat deactivated. Canonical is
+      // now /sarkari-naukri/rrb-alp-2026; the stale row is also set is_active=false.
+      {
+        source: '/sarkari-naukri/rrb-alp-railway-recruitment-board-assistant-loco-pilot-2026',
+        destination: '/sarkari-naukri/rrb-alp-2026',
+        permanent: true,
+      },
       {
         source: '/blog/rn-ntpc-2026-posts-eligibility-exam-pattern-preparation-guide',
         destination: '/blog',
