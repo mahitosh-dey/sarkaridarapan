@@ -126,6 +126,31 @@ const nextConfig = {
         destination: '/sarkari-yojana/:slug',
         permanent: true,
       },
+      // Cannibalisation fix 2026-08-04: four slugs were live at BOTH /entrance-exams/ and
+      // /sarkari-naukri/, both indexable and both in the sitemap, splitting ranking signals
+      // on banking keywords. Taxonomy rule: recruitment exams live under /sarkari-naukri/,
+      // /entrance-exams/ is for genuine entrance exams (NEET, JEE, CAT, CLAT, GATE, CUET).
+      // The job page was longer in every case, so it is canonical; exam rows deactivated.
+      {
+        source: '/entrance-exams/sbi-po-2026',
+        destination: '/sarkari-naukri/sbi-po-2026',
+        permanent: true,
+      },
+      {
+        source: '/entrance-exams/ibps-clerk-2026',
+        destination: '/sarkari-naukri/ibps-clerk-2026',
+        permanent: true,
+      },
+      {
+        source: '/entrance-exams/ibps-po-2026',
+        destination: '/sarkari-naukri/ibps-po-2026',
+        permanent: true,
+      },
+      {
+        source: '/entrance-exams/ibps-rrb-2026',
+        destination: '/sarkari-naukri/ibps-rrb-2026',
+        permanent: true,
+      },
       // Cannibalisation fix 2026-08-03: two RRB ALP pages existed. The long-slug one held
       // stale CEN 01/2024 content (18,799 vacancies) and was the one serving publicly,
       // while the correct CEN 01/2026 page (11,127 posts) sat deactivated. Canonical is
