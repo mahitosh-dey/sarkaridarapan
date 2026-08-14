@@ -181,15 +181,22 @@ const nextConfig = {
       // best pages rather than adding coverage. The source rows are also set
       // is_active=false so they leave the sitemap.
       //
-      // Two further overlaps were deliberately NOT redirected yet, because
-      // their only sensible destinations are still thin and redirecting into a
-      // thin page just moves the problem:
-      //   /blog/ssc-chsl-2026-admit-card-download-hall-ticket
-      //       -> ssc-chsl-2026 is 1102w
-      //   /blog/ibps-po-vs-sbi-po-2026-comparison
-      //       -> ibps-po-2026 is 1234w, and no existing page serves the
-      //          head-to-head comparison intent
-      // Revisit both once those destinations are deepened.
+      // The two overlaps held back in the first pass are now redirected: both
+      // destinations were deepened the same day and crossed 3000w, so they no
+      // longer move the problem into a thin page.
+      //   ssc-chsl-2026  1102w -> 3016w, now covers admit card and city slip
+      //   ibps-po-2026   1234w -> 3008w, now carries the PO/Clerk/SBI PO
+      //                  comparison table the blog existed to serve
+      {
+        source: '/blog/ssc-chsl-2026-admit-card-download-hall-ticket',
+        destination: '/sarkari-naukri/ssc-chsl-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/ibps-po-vs-sbi-po-2026-comparison',
+        destination: '/sarkari-naukri/ibps-po-2026',
+        permanent: true,
+      },
       {
         source: '/blog/how-to-prepare-for-ssc-cgl',
         destination: '/blog/ssc-cgl-2026-syllabus-preparation-guide',
