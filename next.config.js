@@ -175,6 +175,36 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-14): thin blogs competing with a much
+      // stronger page on the same query. Each source was ~1000w while its
+      // destination is 3000w+, so these were splitting signals against our own
+      // best pages rather than adding coverage. The source rows are also set
+      // is_active=false so they leave the sitemap.
+      //
+      // Two further overlaps were deliberately NOT redirected yet, because
+      // their only sensible destinations are still thin and redirecting into a
+      // thin page just moves the problem:
+      //   /blog/ssc-chsl-2026-admit-card-download-hall-ticket
+      //       -> ssc-chsl-2026 is 1102w
+      //   /blog/ibps-po-vs-sbi-po-2026-comparison
+      //       -> ibps-po-2026 is 1234w, and no existing page serves the
+      //          head-to-head comparison intent
+      // Revisit both once those destinations are deepened.
+      {
+        source: '/blog/how-to-prepare-for-ssc-cgl',
+        destination: '/blog/ssc-cgl-2026-syllabus-preparation-guide',
+        permanent: true,
+      },
+      {
+        source: '/blog/sbi-po-2026-preparation-guide',
+        destination: '/sarkari-naukri/sbi-po-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/wb-gram-panchayat-recruitment-2026-complete-guide',
+        destination: '/sarkari-naukri/wb-gram-panchayat-recruitment-2026',
+        permanent: true,
+      },
       // Cannibalization fix (2026-07-23): 3 posts targeted the same query
       // "government jobs after 12th". Canonical is
       // top-10-government-jobs-after-12th-india-2026 (Day 6, 5152w).
