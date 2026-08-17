@@ -175,6 +175,25 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-15, batch 3): three more thin blogs whose
+      // canonical target was already well past 3000w, so no deepening was
+      // needed first. Same rule as batch 1 and 2: only redirect when the
+      // destination is genuinely stronger, never thin-into-thin.
+      {
+        source: '/blog/ssc-cgl-syllabus-2026-complete-topic-wise-breakdown',
+        destination: '/blog/ssc-cgl-2026-syllabus-preparation-guide',
+        permanent: true,
+      },
+      {
+        source: '/blog/rrb-ntpc-2026-posts-eligibility-exam-pattern-preparation-guide',
+        destination: '/sarkari-naukri/rrb-ntpc-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/railway-group-d-2026-notification-dates-apply-online',
+        destination: '/entrance-exams/rrb-group-d-2026',
+        permanent: true,
+      },
       // Cannibalization fix (2026-08-14): thin blogs competing with a much
       // stronger page on the same query. Each source was ~1000w while its
       // destination is 3000w+, so these were splitting signals against our own
