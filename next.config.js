@@ -175,6 +175,13 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-15, batch 7): CTET guide blog. Held back
+      // until /entrance-exams/ctet-september-2026 was deepened 1502w -> 3005w.
+      {
+        source: '/blog/ctet-2026-eligibility-exam-pattern-syllabus-preparation-guide',
+        destination: '/entrance-exams/ctet-september-2026',
+        permanent: true,
+      },
       // Cannibalization fix (2026-08-15, batch 6): Ayushman card blog. Held
       // back until the scheme page was deepened 2549w -> 3076w. The scheme
       // covers enrolment, card download and usage in more depth.
