@@ -175,6 +175,34 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-15, batch 8): nine thin blogs whose intent
+      // is now fully served by a canonical page past 3000w. Chosen by hand:
+      // an automated slug-overlap pass produced false matches (it paired an
+      // IBPS PO guide with an SSC CGL page on the shared words "preparation
+      // guide"), so every pair below was checked for genuine intent match.
+      //
+      // Two are additionally stale rather than merely thin:
+      //   upsc-mains-...-9-week-plan  a 9 week plan for an exam starting in 6 days
+      //   ssc-cgl-tier-2-score-card   score-check steps for a Dec 2026 exam
+      //                               that has not happened yet
+      { source: '/blog/how-to-apply-for-ibps-po-2026',
+        destination: '/sarkari-naukri/ibps-po-2026', permanent: true },
+      { source: '/blog/ibps-po-2026-preparation-guide',
+        destination: '/sarkari-naukri/ibps-po-2026', permanent: true },
+      { source: '/blog/how-to-download-ibps-po-admit-card-2026',
+        destination: '/sarkari-naukri/ibps-po-2026', permanent: true },
+      { source: '/blog/how-to-clear-ibps-clerk-2026-first-attempt',
+        destination: '/sarkari-naukri/ibps-clerk-2026', permanent: true },
+      { source: '/blog/how-to-apply-for-ssc-cgl-2026',
+        destination: '/sarkari-naukri/ssc-cgl-2026', permanent: true },
+      { source: '/blog/ssc-cgl-tier-2-score-card-2026-how-to-check-marks',
+        destination: '/sarkari-naukri/ssc-cgl-2026', permanent: true },
+      { source: '/blog/how-to-apply-pm-mudra-loan-2026-step-by-step-guide',
+        destination: '/sarkari-yojana/pm-mudra-loan-yojana-pmmy-2026', permanent: true },
+      { source: '/blog/upsc-prelims-result-2026-cutoff-paper-analysis',
+        destination: '/entrance-exams/upsc-cse-2026', permanent: true },
+      { source: '/blog/upsc-mains-2026-preparation-strategy-9-week-plan',
+        destination: '/entrance-exams/upsc-cse-2026', permanent: true },
       // Cannibalization fix (2026-08-15, batch 7): CTET guide blog. Held back
       // until /entrance-exams/ctet-september-2026 was deepened 1502w -> 3005w.
       {
