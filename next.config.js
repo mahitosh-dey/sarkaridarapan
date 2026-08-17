@@ -175,6 +175,24 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-15, batch 5): PM-KISAN cluster. Three
+      // blogs all served intent the scheme page covers in more depth and keeps
+      // current. Held back until the scheme was deepened 2503w -> 3122w.
+      {
+        source: '/blog/complete-guide-to-pm-kisan-yojana',
+        destination: '/sarkari-yojana/pm-kisan-samman-nidhi-pm-kisan-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/pm-kisan-samman-nidhi-2026-status-check',
+        destination: '/sarkari-yojana/pm-kisan-samman-nidhi-pm-kisan-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/pm-kisan-samman-nidhi-apply-check-status-fix-errors',
+        destination: '/sarkari-yojana/pm-kisan-samman-nidhi-pm-kisan-2026',
+        permanent: true,
+      },
       // Cannibalization fix (2026-08-15, batch 4): UPSC cluster. Held back
       // until /entrance-exams/upsc-cse-2026 was deepened 1128w -> 3026w, since
       // redirecting into a thin destination just moves the problem.
