@@ -175,6 +175,19 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-15, batch 4): UPSC cluster. Held back
+      // until /entrance-exams/upsc-cse-2026 was deepened 1128w -> 3026w, since
+      // redirecting into a thin destination just moves the problem.
+      {
+        source: '/blog/upsc-cse-2026-notification-dates-eligibility-apply-online',
+        destination: '/entrance-exams/upsc-cse-2026',
+        permanent: true,
+      },
+      {
+        source: '/blog/upsc-eligibility-2026-age-limit-qualification-attempts',
+        destination: '/entrance-exams/upsc-cse-2026',
+        permanent: true,
+      },
       // Cannibalization fix (2026-08-15, batch 3): three more thin blogs whose
       // canonical target was already well past 3000w, so no deepening was
       // needed first. Same rule as batch 1 and 2: only redirect when the
