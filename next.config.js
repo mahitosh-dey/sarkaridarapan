@@ -175,6 +175,14 @@ const nextConfig = {
         destination: '/blog',
         permanent: true,
       },
+      // Cannibalization fix (2026-08-15, batch 6): Ayushman card blog. Held
+      // back until the scheme page was deepened 2549w -> 3076w. The scheme
+      // covers enrolment, card download and usage in more depth.
+      {
+        source: '/blog/ayushman-bharat-card-2026-apply-download-use',
+        destination: '/sarkari-yojana/ayushman-bharat-pm-jay-2026',
+        permanent: true,
+      },
       // Cannibalization fix (2026-08-15, batch 5): PM-KISAN cluster. Three
       // blogs all served intent the scheme page covers in more depth and keeps
       // current. Held back until the scheme was deepened 2503w -> 3122w.
