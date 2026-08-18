@@ -222,6 +222,10 @@ Coaching can provide structure, material and a peer group, and those help. It ca
 
 You choose, and the choice should be made on specifics rather than general reputation. Compare the actual institutions available to you under each result, their placement records, faculty and location. Neither examination is inherently superior: they admit to different institutions.
 
+**Where can I find official AILET past papers?**
+
+National Law University Delhi publishes past papers and related material on its own website. Use those in preference to coaching reconstructions, because past papers show what the examination actually asked while summaries show what someone believed it asked, and AILET's pattern has shifted enough between cycles that the difference is material rather than academic. Work them under timed conditions rather than reading through them, since pace and question selection are a large part of what the paper tests.
+
 ## Official sources
 
 - National Law University Delhi: https://nludelhi.ac.in
