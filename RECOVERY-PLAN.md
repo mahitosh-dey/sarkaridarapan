@@ -1,251 +1,327 @@
-# SarkariDarapan Indexing Recovery Plan
-**Written 2026-08-24. Covers 3 weeks: 25 Aug to 14 Sep 2026.**
+# SarkariDarapan Recovery Plan: 21 Days, Day by Day
+**25 August to 14 September 2026.** Written 2026-08-24.
+
+Three workstreams running in parallel:
+**A. Reduce footprint** (mostly Claude) · **B. Trust infrastructure** (shared) · **C. Backlinks** (mostly owner)
+
+Owner time needed: **1 to 2 hours a day.** Everything else is Claude's.
 
 ---
 
-## The diagnosis
+## Why these three, in one paragraph
 
-### What the GSC data actually says
-
-| Metric | Value |
-|---|---|
-| Indexed | **10** |
-| Not indexed | **279** |
-| Crawled, currently not indexed | **162** (trend RISING) |
-| Discovered, currently not indexed | **112** |
-| Clicks, last 28 days | **0** |
-| Clicks, last 3 months | 112 (nearly all before 12 June) |
-
-### The timeline rules out the obvious suspects
-
-| Date | Event |
-|---|---|
-| 21 May to 2 Jun 2026 | Google May 2026 core update |
-| ~1 Jun to 12 Jun | Site traffic RAMPED to peak (~45 clicks/day, ~1.2K impressions/day) |
-| **~12 to 13 Jun** | **Traffic collapsed to near zero** |
-| 24 to 26 Jun | Google June 2026 spam update (AFTER the collapse) |
-| 18 to 21 Aug | Google August 2026 spam update |
-
-The collapse was **not** the core update (finished 10 days earlier) and **not** a spam
-update (the June one came 12 days later).
-
-The ramp-then-cliff shape is the classic **initial visibility test**. Google surfaces
-new content to gather engagement and trust data, measures, then re-ranks. When the
-external trust signals are not there, the content drops back and stays back.
-
-### What is NOT the problem (verified, stop worrying about these)
-
-- **Speed.** TTFB 0.6s, full load 0.7s. Fast.
-- **Rendering.** Content is server-side rendered: 17,226 words present in raw HTML
-  before any JavaScript runs. Googlebot sees everything.
-- **Technical SEO.** Full crawl of all 224 sitemap URLs on 18 Aug: every one returned
-  200, zero noindex, canonical present and self-referencing on all, zero duplicate
-  titles, zero duplicate descriptions.
-- **Structured data.** FAQ schema on all content pages, JobPosting, Organization,
-  Person, BreadcrumbList all present.
-- **Content quality.** Pages are 3000w+, fact-verified, with sources.
-
-**Bing indexes ~246 pages of this same site.** That is the proof: the site is
-technically sound and crawlable. Google is making a *judgment*, not hitting a fault.
-
-### What IS the problem
-
-**1. Zero backlinks. This is the primary cause.**
-
-No external site links to sarkaridarapan.com. Google has no independent evidence that
-anyone values this site. Competitors in this vertical sit at DR 55 to 74
-(SarkariResult 74, FreeJobAlert 70, SarkariExam 65). A DR 0 site with no inbound links
-gives Google no reason to spend index space on 289 URLs.
-
-"Discovered, currently not indexed: 112" is the clearest expression of this. Google
-knows those URLs exist and has decided they are not worth crawling. That is a pure
-trust and priority judgment.
-
-**2. Scaled content signal.**
-
-Google's 2026 enforcement targets *scaled content abuse*: many pages published rapidly
-with uniform structure. Google is explicit that AI authorship is not itself penalised.
-What is penalised is volume without editorial differentiation.
-
-Reported pattern in 2026 case data: sites publishing 50 to 100 quality AI-assisted
-articles with human editing gained traffic; sites publishing at high volume with
-uniform templates lost 40 to 90 per cent.
-
-This site published ~196 pages in roughly three months, and every page follows a near
-identical structure: intro, status table, sections, FAQ, sources. The individual
-quality is high. The **pattern** is what the classifier reads.
-
-**3. No off-site footprint.**
-
-No Quora presence at scale, empty Medium, minimal Reddit, no mentions anywhere. A real
-publisher leaves traces across the web. This site exists only at its own domain.
+Google indexes 10 of your 289 known URLs. It is not a technical fault: all 224 sitemap
+URLs return 200, the site renders server-side, TTFB is 0.6s, and Bing indexes ~246
+pages of the same site. Google is making a trust judgment. **Footprint** work raises
+your crawled-to-indexed ratio by removing weak URLs. **Trust infrastructure** gives
+Google a named human to hold accountable. **Backlinks** give it external evidence that
+someone values the site. Only the third one moves the needle much, but the first two
+make the third work faster.
 
 ---
 
-## The uncomfortable conclusion
-
-**More content will not fix this, and may make it worse.**
-
-The last several weeks of work produced genuinely better pages: thin content fixed,
-fabricated deadlines removed, FAQ schema restored, cannibalisation cleaned up. That
-work was correct and it was necessary. But it was solving the wrong bottleneck.
-
-The bottleneck is **trust**, and trust does not come from publishing more pages on
-your own domain. It comes from other people linking to you.
-
-Publishing 20 more pages over the next three weeks would add 20 more URLs to the 279
-already not indexed, and would strengthen the velocity signal that is part of the
-problem.
-
-**Stop publishing new content for these three weeks.** That is the single hardest and
-most important instruction in this plan.
+# WEEK 1 (25 to 31 Aug): Footprint and Trust
 
 ---
 
-## Expectation setting
+## Day 1 - Monday 25 August
 
-Be realistic or this plan will feel like failure when it is working.
+### Owner (45 min)
+1. **GSC to Sitemaps.** Resubmit `https://www.sarkaridarapan.com/sitemap.xml`.
+   It was last read 10 Aug and reports 244 pages; the live file now has 224.
+2. **GSC to Links.** Record these three numbers in a note. This is your baseline:
+   - Total external links: ______
+   - Top linking sites (count of referring domains): ______
+   - Top linked pages: ______
+3. **GSC to URL Inspection.** For each of these 5, paste the URL, then click
+   "Request Indexing". These are the only pages that ever earned clicks:
+   - `/blog/punjab-pcs-sdm-recruitment-2026` (35 clicks historically)
+   - `/entrance-exams/mh-set-2026` (17)
+   - `/sarkari-yojana/annapurna-bhandar-yojana-west-bengal-2026` (12)
+   - `/sarkari-naukri/lic-aao-2026` (9)
+   - `/sarkari-naukri/ukpsc-pcs-2026` (5)
 
-- Indexing recovery takes **6 to 12 weeks**, not 3.
-- The 3 weeks below build the *inputs*. The output arrives later.
-- Success at the end of week 3 looks like: 15+ real backlinks live, indexed count
-  moving off 10, "Discovered, not indexed" starting to fall.
-- Success does NOT look like traffic returning by 14 September. It will not.
-- Do not re-apply for AdSense during this period. The gate stays where it is.
+### Claude
+- Noindex the listing pages: `/category/*`, `/state/*`, `/results`, `/admit-card`.
+  Keep them crawlable and internally linked, remove from index.
+- Remove those same URLs from `sitemap.xml`.
+- Verify live: robots meta on each route, sitemap count drops from 224 to ~196.
 
----
-
-## WEEK 1 (25 to 31 Aug): Reduce footprint, fix trust signals
-
-Goal: make the site look like a smaller, more trustworthy publisher rather than a
-large thin one.
-
-### Day 1 (Mon 25 Aug)
-- [ ] Resubmit sitemap in GSC. It was last read 10 Aug and reports 244 pages; the live
-      sitemap now has 224. Google is working from stale data.
-- [ ] In GSC, check **Links** report. Record the exact number of referring domains.
-      This is your baseline metric for the next 3 weeks.
-- [ ] URL Inspection on the 5 pages that historically earned clicks:
-      punjab-pcs-sdm-recruitment-2026, mh-set-2026, annapurna-bhandar-yojana-west-bengal-2026,
-      lic-aao-2026, ukpsc-pcs-2026. Request indexing on each.
-
-### Day 2 to 3 (Tue 26 to Wed 27 Aug)
-- [ ] **Noindex the listing pages.** /category/*, /state/*, /results, /admit-card are
-      thin aggregation pages with 90 to 104 character descriptions. They dilute the
-      site-wide quality score. Keep them crawlable and linkable, remove them from the
-      index. This directly improves the crawled-to-indexed ratio.
-- [ ] Remove them from the sitemap at the same time.
-- [ ] Expected effect: known URLs drop from 289 toward ~200. A smaller, higher quality
-      index footprint raises the average.
-
-### Day 4 to 5 (Thu 28 to Fri 29 Aug)
-- [ ] Create **/editorial-policy** (currently 404). State: how content is researched,
-      that every figure is checked against the official notification, that pages are
-      dated and corrected when sources change, and who is responsible.
-- [ ] Add a **visible byline and author bio** to every content page. Person schema
-      already exists but no author is displayed. Google's quality raters and its
-      systems both look for named accountability.
-- [ ] Create a real **/authors/mahitosh-dey** page with a photo, background, and why
-      this person is qualified to write about government recruitment.
-
-### Day 6 to 7 (Sat 30 to Sun 31 Aug)
-- [ ] Add "Last verified on [date] against [official source]" to the top of the 20
-      highest-value pages. This is a genuine differentiator against competitors who
-      never date their claims, and it is exactly the editorial signal Google rewards.
-- [ ] No new pages. None.
+**Done when:** sitemap resubmitted, baseline recorded, 5 pages requested, listing
+pages noindexed and out of the sitemap.
 
 ---
 
-## WEEK 2 (1 to 7 Sep): Backlinks, the actual fix
+## Day 2 - Tuesday 26 August
 
-Goal: 10 to 15 referring domains by end of week. This is the week that matters most.
+### Owner (45 min)
+**Write your author bio.** This is the single most valuable 45 minutes of week 1.
+Google needs a real person behind this site. Send Claude:
+- Your full name as you want it published
+- A real photo (not a stock image, not a logo)
+- 150 to 200 words covering: who you are, why you started this site, what
+  connects you to government job seekers, how long you have been doing this
+- Any relevant background: your own exam attempts, education, work history
+- Links to your real profiles: LinkedIn, X, Quora
 
-Target: **2 to 3 real links per day.** Quality over volume, but volume is not optional
-at zero.
+Honesty beats credentials here. "I sat SSC CGL twice and got tired of sites
+publishing wrong deadlines" is a stronger signal than a vague claim of expertise.
 
-### Quora (Days 1 to 7, 2 answers daily)
-- [ ] Account exists with 6 answers live. Target questions where a page already ranks
-      or is genuinely the best answer.
-- [ ] Rule: answer the question fully in the answer itself. Link once, contextually,
-      where it genuinely helps. An answer that is a link with no substance gets removed
-      and hurts.
-- [ ] Prioritise: SSC CGL sectional timing, IBPS Clerk state selection, normalisation,
-      typing test error limits. All four are things our pages explain better than the
-      field.
+### Claude
+- Build `/authors/mahitosh-dey` from what you send.
+- Add a **visible byline** to every content page. Person schema already exists but no
+  author name is displayed anywhere on the page.
+- Link byline to the author page.
 
-### Reddit (Days 2, 4, 6)
-- [ ] r/IndianAcademia, r/SSC, r/Btechtards, r/JEENEETards, state subreddits.
-- [ ] Same rule: answer in the comment. Reddit removes link-drops aggressively and a
-      ban costs you the channel permanently.
-
-### Medium (Days 3, 5, 7)
-- [ ] Account is empty. Publish 3 pieces, each a genuinely different angle from the
-      site version, linking back once to the fuller page.
-- [ ] Do not copy site content. Duplicate content across domains helps nobody.
-
-### Directories and profiles (Day 1, batch)
-- [ ] Google Business Profile if eligible.
-- [ ] Indian business directories: JustDial, Sulekha, IndiaMART business listing.
-- [ ] Education and exam directory listings.
-- [ ] These are low-value links individually. At zero referring domains, they establish
-      that the site exists as a real entity, which matters.
-
-### Outreach (Days 4 to 7)
-- [ ] The backlink kit exists at drafts/2026-07-29/backlink-submission-kit.md and about
-      60 emails are owed. Send 15 this week.
-- [ ] Target: coaching institute blogs, student community sites, education bloggers.
-- [ ] Offer: the freshness angle. Our pages carry verified dates and corrected data
-      that aggregators get wrong. That is a real reason to cite us.
+**Done when:** author page live, byline visible on all 196 content pages.
 
 ---
 
-## WEEK 3 (8 to 14 Sep): Consolidate, differentiate, measure
+## Day 3 - Wednesday 27 August
 
-### Days 1 to 3 (8 to 10 Sep)
-- [ ] Continue backlinks at 2 per day. Do not stop. This is now a permanent habit,
-      not a sprint.
-- [ ] **Differentiate the page template.** Every page currently opens the same way and
-      carries the same section order. Vary it. Some pages lead with a table, some with
-      a worked example, some with the correction we made. Uniformity is the scaled
-      content signal.
+### Owner (30 min)
+- Review the editorial policy draft Claude produces and correct anything untrue.
+- Confirm the contact details on `/contact` are real and monitored.
 
-### Days 4 to 5 (11 to 12 Sep)
-- [ ] **Consolidate the remaining 32 thin pages.** Do not deepen them. Merge related
-      ones, redirect the weakest into stronger pages. Target: get total indexable
-      content pages under 150.
-- [ ] Fewer, stronger pages beat more, adequate ones under a site-wide quality model.
+### Claude
+- Build `/editorial-policy` (currently 404) covering: how content is researched,
+  that every date and vacancy figure is checked against the official notification,
+  that pages carry verification dates, how corrections are handled, and who is
+  responsible.
+- Build `/terms` (currently 404).
+- Link both from the footer.
 
-### Days 6 to 7 (13 to 14 Sep)
-- [ ] Measure against the Day 1 baseline:
-      - referring domains: was ___, now ___
-      - indexed pages: was 10, now ___
-      - Discovered not indexed: was 112, now ___
-      - Crawled not indexed: was 162, now ___
-- [ ] Request indexing on 10 more pages.
-- [ ] Write the week 4 to 6 plan based on which numbers actually moved.
+**Why this matters:** we corrected fabricated deadlines on 7 pages this month.
+Saying so publicly is a genuine trust signal almost no competitor can make.
 
 ---
 
-## What NOT to do
+## Day 4 - Thursday 28 August
 
-- Do not publish new content for 3 weeks.
-- Do not buy backlinks. A link scheme penalty on top of this is unrecoverable at
-  this stage.
-- Do not re-apply for AdSense.
-- Do not delete the site and start over. The content is genuinely good and the
-  domain has history.
-- Do not add more pages "to show Google the site is active." Activity is not the
-  signal. Trust is.
-- Do not panic-check GSC daily. Indexing data lags by days and daily noise will
-  make you change course for no reason. Check weekly.
+### Owner (45 min) - Reddit groundwork
+Your account `u/Stunning_Act5657` is new with almost no karma. **A new account
+posting links gets shadowbanned, and that costs you the channel permanently.**
+
+Today: build karma only. **Post zero links.**
+- Join: r/SSC, r/IndianAcademia, r/Btechtards, r/JEENEETards, r/bankexams,
+  plus your state subreddit
+- Leave **5 genuinely helpful comments**. Answer questions you actually know.
+  No mention of the site at all.
+- Target: 50+ comment karma before you link to anything (roughly day 11).
+
+### Claude
+- Add "Last verified on [date] against [official source]" to the top of the 20
+  highest-value pages.
 
 ---
 
-## The honest summary
+## Day 5 - Friday 29 August
 
-The site has a good technical foundation, genuinely useful content, and zero
-reasons for Google to trust it. Bing indexes 246 pages because Bing indexes more
-readily. Google gates on trust and this site has none.
+### Owner (1 hr) - Directory listings, batch 1
+These are low-value links individually. At zero referring domains they establish
+that a real entity exists. Do 5 today:
+- Google Business Profile (if eligible as an online business)
+- JustDial
+- Sulekha
+- IndiaMART business listing
+- Your own LinkedIn: create a Company Page for SarkariDarapan and link the site
 
-Three weeks of disciplined link building will do more than three months of writing.
-That is the whole plan.
+Use identical name, address format and description everywhere. Consistency is
+what makes these count as entity signals.
+
+### Claude
+- Analyse the 32 remaining thin pages. Produce a merge or keep recommendation for
+  each, with the target URL for anything being merged.
+
+---
+
+## Day 6 - Saturday 30 August
+
+### Owner (1.5 hr) - Quora question shortlist
+Per our standing rule, **you pick the questions before I draft anything.**
+
+Find 14 questions (2 per day for week 2). For each, record:
+- Full URL
+- Question text
+- Follower count
+- Whether existing top answers are thin or comprehensive
+- Which of our pages answers it
+
+Search Quora for these, where we are genuinely stronger than the field:
+- SSC CGL sectional timing 2026
+- IBPS Clerk state selection
+- Normalisation in SSC and IBPS exams
+- SSC typing test error limits
+- UPSC vs SSC
+- 8th Pay Commission pensioners
+- CTET certificate validity
+
+**Pick questions with followers and thin existing answers.** A comprehensive top
+answer already in place means your answer will not be seen.
+
+### Claude
+- Execute the first consolidation batch from Day 5 analysis.
+
+---
+
+## Day 7 - Sunday 31 August
+
+### Owner (1.5 hr)
+- Set up your Medium profile properly: real photo, bio, link to the site.
+- Draft Medium piece 1: **"Government job sites keep publishing wrong deadlines.
+  Here is what I found checking 200 pages."** This is your genuinely unique story
+  and nobody else can tell it.
+- Do not publish yet.
+
+### Claude
+- Verify all week 1 changes are live.
+- Report footprint reduction: URLs before and after.
+
+**Week 1 review:** listing pages noindexed, author page live, editorial policy live,
+bylines visible, verification dates on 20 pages, 5 directories done, 14 Quora
+questions shortlisted, Reddit karma started.
+
+---
+
+# WEEK 2 (1 to 7 Sep): Backlinks
+
+**Target: 10 to 15 referring domains by Sunday.** This is the week that decides
+whether the next three months work.
+
+**Every day: 2 Quora answers.** Non-negotiable, it is the base habit.
+
+### The rule that keeps you from getting banned everywhere
+Answer the question fully **inside the answer**. Someone reading it should get
+complete value without clicking. Then link once, where it genuinely helps.
+An answer that is a teaser plus a link gets removed, and repeated removals kill
+the account.
+
+---
+
+## Day 8 - Monday 1 September
+- **Quora:** answers 1 and 2 from your shortlist (Claude drafts, you review and post)
+- **Reddit:** 5 more genuine comments, still no links
+- **Time:** 1.5 hr
+
+## Day 9 - Tuesday 2 September
+- **Quora:** answers 3 and 4
+- **Medium:** publish piece 1. Link once to the site, in context.
+- **Time:** 1.5 hr
+
+## Day 10 - Wednesday 3 September
+- **Quora:** answers 5 and 6
+- **Outreach:** 5 emails. Kit is at `drafts/2026-07-29/backlink-submission-kit.md`.
+  Target coaching institute blogs and student community sites.
+  **Your pitch:** "I checked 200 government job pages against official notifications
+  and found 7 with wrong deadlines. Here is my correction methodology, free to cite."
+  That is a real reason to link, not a favour request.
+- **Time:** 2 hr
+
+## Day 11 - Thursday 4 September
+- **Quora:** answers 7 and 8
+- **Reddit:** first contextual link, only if you have 50+ karma. One link, in a
+  thread where it is the actual answer.
+- **Time:** 1.5 hr
+
+## Day 12 - Friday 5 September
+- **Quora:** answers 9 and 10
+- **Outreach:** 5 emails
+- **Directories:** batch 2, 5 more education and exam directories
+- **Time:** 2 hr
+
+## Day 13 - Saturday 6 September
+- **Quora:** answers 11 and 12
+- **Medium:** publish piece 2, **"What normalisation actually does to your SSC score"**.
+  Different angle from the site version, not a copy.
+- **Time:** 2 hr
+
+## Day 14 - Sunday 7 September
+- **Quora:** answers 13 and 14
+- **Outreach:** 5 emails (15 sent this week, 45 still owed)
+- **Measure:** referring domains now ______ (was ______ on Day 1)
+- **Time:** 1.5 hr
+
+---
+
+# WEEK 3 (8 to 14 Sep): Consolidate, differentiate, measure
+
+Backlinks continue at **2 per day**. This is now permanent, not a sprint.
+
+---
+
+## Day 15 - Monday 8 September
+- **Owner:** Quora ×2, outreach ×5
+- **Claude:** Break template uniformity. Every page currently opens the same way with
+  the same section order, which is the scaled-content signal. Vary the top 30 pages:
+  some lead with a table, some with a worked example, some with the correction we made.
+
+## Day 16 - Tuesday 9 September
+- **Owner:** Quora ×2, Reddit ×2 contextual
+- **Claude:** Continue template differentiation.
+
+## Day 17 - Wednesday 10 September
+- **Owner:** Quora ×2, outreach ×5
+- **Claude:** Consolidation batch 2. Merge and redirect the weakest thin pages.
+  **Target: indexable content pages under 150.** Fewer strong pages beat more
+  adequate ones under a site-wide quality model.
+
+## Day 18 - Thursday 11 September
+- **Owner:** Quora ×2, Medium piece 3
+- **Claude:** Finish consolidation. Verify every redirect returns 308 and no
+  orphaned URLs remain in the sitemap.
+
+## Day 19 - Friday 12 September
+- **Owner:** Quora ×2, outreach ×5 (30 sent total, 30 owed)
+- **Claude:** Full technical re-audit: crawl every sitemap URL, confirm 200s,
+  canonicals, no noindex on content pages, no duplicates.
+
+## Day 20 - Saturday 13 September
+- **Owner:** Quora ×2. Resubmit sitemap in GSC (footprint has changed substantially).
+  URL-inspect and request indexing on 10 pages.
+- **Claude:** Verify sitemap reflects the new smaller footprint.
+
+## Day 21 - Sunday 14 September - Measure
+
+Fill this in against your Day 1 baseline:
+
+| Metric | Day 1 | Day 21 |
+|---|---|---|
+| Referring domains | ______ | ______ |
+| Indexed pages | 10 | ______ |
+| Discovered, not indexed | 112 | ______ |
+| Crawled, not indexed | 162 | ______ |
+| Total known URLs | 289 | ______ |
+| Clicks, 28 days | 0 | ______ |
+
+**What good looks like on Day 21:**
+- Referring domains: 15+
+- Indexed: moving off 10, anything above 25 is a real signal
+- Discovered not indexed: falling
+- Total known URLs: down, because footprint shrank
+- **Clicks: probably still near zero. That is expected and not failure.**
+
+Indexing recovery runs 6 to 12 weeks. Week 3 builds the inputs; the output comes later.
+
+---
+
+# What NOT to do for 21 days
+
+- **No new content pages.** No jobs, schemes, exams or blogs. New pages join the 279
+  already unindexed and earn nothing.
+- **No bought links.** A link scheme penalty on top of this is unrecoverable.
+- **No AdSense re-application.**
+- **No daily GSC checking.** The data lags by days. Check weekly or you will change
+  course on noise.
+- **No Reddit links before 50 karma.** A shadowban costs the channel permanently.
+- **No copying site content to Medium.** Different angle every time.
+
+---
+
+# The one carve-out
+
+SSC GD Constable 2027 opens in September and it is the largest recruitment on the
+SSC calendar. If you want a single exception, make it that one page, published in
+week 3 only. Not a habit, not a return to the old pattern.
+
+My honest recommendation is still to skip it and publish in late September, because
+a page that is not indexed captures nothing.
