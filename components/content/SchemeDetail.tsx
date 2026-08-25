@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { SchemePost } from "@/lib/types";
 import { safeFormatDate } from "@/lib/date-utils";
+import SourceAttribution from "@/components/ui/SourceAttribution";
 
 interface SchemeDetailProps {
   scheme: SchemePost;
@@ -57,18 +58,6 @@ export default function SchemeDetail({ scheme }: SchemeDetailProps) {
           </span>
         </div>
 
-        {scheme.verifiedAt && (
-          <div className="mt-4 inline-flex items-center gap-2 rounded-md bg-green-50 px-3 py-2 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0" aria-hidden="true">
-              <path fillRule="evenodd" d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
-            </svg>
-            Information verified on{" "}
-            <time dateTime={scheme.verifiedAt}>
-              {safeFormatDate(scheme.verifiedAt, "", "long")}
-            </time>{" "}
-            from official source
-          </div>
-        )}
 
         {/* Launched By */}
         <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
@@ -82,6 +71,14 @@ export default function SchemeDetail({ scheme }: SchemeDetailProps) {
       </header>
 
       <hr className="mb-8 border-gray-200" />
+
+      {/* Schemes have no Quick Information table, so the attribution opens the
+          content body. officialPortal is populated on all 58 live schemes. */}
+      <SourceAttribution
+        sourceUrl={scheme.officialPortal}
+        updatedAt={scheme.updatedAt}
+        publishedAt={scheme.publishedAt}
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Objective */}
