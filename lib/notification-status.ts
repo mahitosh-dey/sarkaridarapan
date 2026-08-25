@@ -33,6 +33,21 @@
  * with no code change and no manual step.
  */
 
+/**
+ * Slugs whose last date is legitimately absent and which must stay indexable.
+ *
+ * These are evergreen guides rather than pre-notification stubs. Kerala PSC
+ * publishes rolling notifications with no single deadline, so last_date is NULL
+ * by design; without this the derived rule noindexes a 3000w guide.
+ *
+ * This is a stopgap. Once scripts/add-notification-status.sql has been run,
+ * set notification_status = 'released' on these rows and delete this list:
+ * the DB override takes precedence and is the intended mechanism.
+ */
+const ALWAYS_INDEXABLE = new Set<string>([
+  "kerala-psc-recruitment-2026",
+]);
+
 export type NotificationStatus = "released" | "awaited";
 export type ContentKind = "job" | "exam" | "scheme";
 
@@ -43,6 +58,7 @@ export interface RobotsDirective {
 
 /** Minimal shape needed to decide status. Accepts full records. */
 export interface StatusInput {
+  slug?: string;
   notificationStatus?: NotificationStatus | null;
   lastDate?: string | null;
   applicationEnd?: string | null;
@@ -57,6 +73,9 @@ export function isNotificationReleased(
   const explicit = record.notificationStatus;
   if (explicit === "released") return true;
   if (explicit === "awaited") return false;
+
+  // Stopgap allowlist, superseded by the DB column once the migration is run.
+  if (record.slug && ALWAYS_INDEXABLE.has(record.slug)) return true;
 
   const has = (v?: string | null) => typeof v === "string" && v.trim().length > 0;
 
