@@ -62,6 +62,7 @@ export interface JobPost {
 // -----------------------------------------------------------------------------
 
 export interface SchemePost {
+  notificationStatus?: "released" | "awaited" | null;
   slug: string;
   title: string;
   ministry: string;

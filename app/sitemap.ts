@@ -48,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let schemePages: MetadataRoute.Sitemap = [];
   try {
     rawSchemes = await getSchemePosts();
-    schemePages = rawSchemes.map((scheme) => ({
+    schemePages = rawSchemes.filter((scheme) => isIndexable(scheme, "scheme")).map((scheme) => ({
       url: `${SITE_URL}/sarkari-yojana/${scheme.slug}`,
       lastModified: new Date(scheme.updatedAt || scheme.publishedAt),
       changeFrequency: "weekly" as const,

@@ -16,6 +16,7 @@ import { getPublishedDbPosts } from "@/lib/blog-db";
 import { schemeToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
+import { robotsForRecord } from "@/lib/notification-status";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -45,6 +46,9 @@ export async function generateMetadata({ params }: SchemePageProps): Promise<Met
       alternates: {
         canonical: `${SITE_URL}/sarkari-yojana/${params.slug}`,
       },
+      // Schemes default to released; only an explicit notification_status of
+      // 'awaited' noindexes one. See lib/notification-status.ts
+      robots: robotsForRecord(scheme, "scheme"),
       openGraph: {
         title: `${scheme.title} | ${SITE_NAME}`,
         description: scheme.description || `${scheme.title} - Eligibility, benefits, and how to apply.`,

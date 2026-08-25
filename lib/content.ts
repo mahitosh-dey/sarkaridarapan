@@ -51,6 +51,7 @@ function mapJobRow(row: any): JobPost {
 
 function mapSchemeRow(row: any): SchemePost {
   return {
+    notificationStatus: row.notification_status ?? null,
     slug: row.slug,
     title: row.title,
     ministry: row.ministry || "",
