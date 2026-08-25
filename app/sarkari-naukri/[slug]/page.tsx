@@ -18,6 +18,7 @@ import { safeFormatDate } from "@/lib/date-utils";
 import { isClosingSoon, getDaysRemaining } from "@/lib/utils";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
+import { robotsForRecord } from "@/lib/notification-status";
 
 // Converts any stored date string to YYYY-MM-DD for schema.org.
 // Handles ISO timestamps, YYYY-MM-DD, DD/MM/YYYY, DD.MM.YYYY.
@@ -158,6 +159,9 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       alternates: {
         canonical: `${SITE_URL}/sarkari-naukri/${params.slug}`,
       },
+      // Pre-notification pages are noindex,follow until a last date exists.
+      // Reverts automatically once the notification lands. See lib/notification-status.ts
+      robots: robotsForRecord(job, "job"),
       openGraph: {
         title,
         description,

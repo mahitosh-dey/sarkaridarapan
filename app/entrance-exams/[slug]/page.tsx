@@ -17,6 +17,7 @@ import { getPublishedDbPosts } from "@/lib/blog-db";
 import { examToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { parseFaqsFromMarkdown, buildFaqPageSchema } from "@/lib/faq-parser";
+import { robotsForRecord } from "@/lib/notification-status";
 
 // Normalises any stored date string to YYYY-MM-DD for schema.org.
 // Handles ISO timestamps, YYYY-MM-DD, DD/MM/YYYY, and DD.MM.YYYY.
@@ -63,6 +64,9 @@ export async function generateMetadata({ params }: ExamPageProps): Promise<Metad
       alternates: {
         canonical: `${SITE_URL}/entrance-exams/${params.slug}`,
       },
+      // Pre-notification exams are noindex,follow until an application end or
+      // exam date exists. Reverts automatically. See lib/notification-status.ts
+      robots: robotsForRecord(exam, "exam"),
       openGraph: {
         title: `${exam.title} | ${SITE_NAME}`,
         description: metaDesc,

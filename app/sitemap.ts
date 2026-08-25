@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { getAllGuides } from "@/lib/guides";
+import { isIndexable } from "@/lib/notification-status";
 import {
   SITE_URL,
   STATES,
@@ -32,7 +33,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let jobPages: MetadataRoute.Sitemap = [];
   try {
     rawJobs = await getJobPosts();
-    jobPages = rawJobs.map((job) => ({
+    // Never submit a noindex URL. Pre-notification jobs are excluded until the
+    // notification lands, then reappear automatically.
+    jobPages = rawJobs.filter((job) => isIndexable(job, "job")).map((job) => ({
       url: `${SITE_URL}/sarkari-naukri/${job.slug}`,
       lastModified: new Date(job.updatedAt || job.publishedAt),
       changeFrequency: "daily" as const,
@@ -57,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let examPages: MetadataRoute.Sitemap = [];
   try {
     const exams = await getEntranceExamPosts();
-    examPages = exams.map((exam) => ({
+    examPages = exams.filter((exam) => isIndexable(exam, "exam")).map((exam) => ({
       url: `${SITE_URL}/entrance-exams/${exam.slug}`,
       lastModified: new Date(exam.updatedAt || exam.publishedAt),
       changeFrequency: "weekly" as const,

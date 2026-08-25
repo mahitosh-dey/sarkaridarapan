@@ -48,6 +48,7 @@ export interface JobPost {
   readingTime?: string;
   image?: string;
   lastDate?: string;
+  notificationStatus?: "released" | "awaited" | null;
   qualification?: string;
   employmentType?: string;
   completenessScore?: number;
@@ -93,6 +94,7 @@ export interface SchemePost {
 // -----------------------------------------------------------------------------
 
 export interface EntranceExamPost {
+  notificationStatus?: "released" | "awaited" | null;
   slug: string;
   title: string;
   conductingBody: string;
