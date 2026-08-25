@@ -19,6 +19,18 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
   // parseable date exists we fall through to the flag. See lib/job-status.ts.
   const { closedByDate } = getJobStatus(job);
 
+  // Salary values are long prose: 73 of 78 live records exceed 120 characters
+  // and the longest runs to 1100. Rendering that raw in a table cell wrecks the
+  // Quick Information layout, so the cell shows a clamped preview that links to
+  // the full text in the Salary and Pay Scale section below.
+  const SALARY_PREVIEW_LIMIT = 120;
+  const salaryText = (job.salary ?? "").trim();
+  const salaryNeedsTruncation = salaryText.length > SALARY_PREVIEW_LIMIT;
+  const salaryPreview = salaryNeedsTruncation
+    // cut on a word boundary so the preview never ends mid-word
+    ? salaryText.slice(0, SALARY_PREVIEW_LIMIT).replace(/\s+\S*$/, "") + "\u2026"
+    : salaryText;
+
   const updatedDate = safeFormatDate(job.updatedAt, "N/A", "long");
   const formatDate = (dateStr: string | undefined) =>
     safeFormatDate(dateStr, "To be announced", "long");
@@ -145,10 +157,22 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
                   </td>
                 </tr>
               )}
-              {job.salary && (
+              {salaryText && (
                 <tr className="bg-gray-50">
                   <td className="px-4 py-3 font-semibold text-gray-700 w-1/3 sm:w-1/4">Salary</td>
-                  <td className="px-4 py-3 text-gray-900">{job.salary}</td>
+                  <td className="px-4 py-3 text-gray-900">
+                    {/* line-clamp-2 caps the visual height at 2 lines; the
+                        character cut keeps the DOM text short as well. */}
+                    <span className="line-clamp-2">{salaryPreview}</span>
+                    {salaryNeedsTruncation && (
+                      <a
+                        href="#salary"
+                        className="mt-1 inline-block text-xs font-semibold text-primary-600 underline underline-offset-2 hover:text-primary-700"
+                      >
+                        View full salary details
+                      </a>
+                    )}
+                  </td>
                 </tr>
               )}
               <tr className="bg-white">
@@ -159,6 +183,34 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
           </table>
         </div>
       </section>
+
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Salary and Pay Scale                                                */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Rendered whenever a salary exists so the "#salary" anchor in the     */}
+      {/* Quick Information table always resolves. 8 of 78 live jobs have no   */}
+      {/* salary heading in their markdown body, so relying on the article     */}
+      {/* body alone would drop their pay detail from the page entirely.       */}
+      {salaryText && (
+        <section id="salary" className="mb-8 scroll-mt-24">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-primary-600" aria-hidden="true">
+              <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.315.612-.648.612-.875 0-.227-.13-.56-.612-.875a3.13 3.13 0 0 0-1.138-.432ZM8.75 9.182V6.568A3.13 3.13 0 0 0 7.612 7c-.482.315-.612.648-.612.875 0 .227.13.56.612.875a3.13 3.13 0 0 0 1.138.432Z" />
+              <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM10.75 4.75a.75.75 0 0 0-1.5 0v.316a4.63 4.63 0 0 0-2.083.977C6.567 6.591 6 7.42 6 8.375c0 .956.567 1.784 1.167 2.332.6.548 1.35.884 2.083.977v2.591a3.13 3.13 0 0 1-1.138-.432c-.482-.315-.612-.648-.612-.875a.75.75 0 0 0-1.5 0c0 .956.567 1.784 1.167 2.332.6.548 1.35.884 2.083.977v.316a.75.75 0 0 0 1.5 0v-.316a4.63 4.63 0 0 0 2.083-.977c.6-.548 1.167-1.376 1.167-2.332 0-.956-.567-1.784-1.167-2.332a4.63 4.63 0 0 0-2.083-.977V6.034c.404.078.78.24 1.138.432.482.315.612.648.612.875a.75.75 0 0 0 1.5 0c0-.956-.567-1.784-1.167-2.332a4.63 4.63 0 0 0-2.083-.977V4.75Z" clipRule="evenodd" />
+            </svg>
+            Salary &amp; Pay Scale
+          </h2>
+          <div className="rounded-lg border border-gray-200 bg-white px-4 py-4">
+            {/* Preserve paragraph breaks stored in the field. */}
+            <div className="space-y-3 text-sm leading-relaxed text-gray-800">
+              {salaryText.split(/\n{2,}/).map((para, i) => (
+                <p key={i}>{para.trim()}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Application Fee */}
