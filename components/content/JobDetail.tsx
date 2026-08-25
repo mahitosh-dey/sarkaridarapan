@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { JobPost } from "@/lib/types";
 import { safeFormatDate } from "@/lib/date-utils";
+import { getJobStatus } from "@/lib/job-status";
 
 interface JobDetailProps {
   job: JobPost;
@@ -13,6 +14,10 @@ interface JobDetailProps {
 
 export default function JobDetail({ job, closingSoon = false, daysLeft = null }: JobDetailProps) {
   const [copied, setCopied] = useState(false);
+
+  // A passed last date closes the job regardless of the isActive flag. When no
+  // parseable date exists we fall through to the flag. See lib/job-status.ts.
+  const { closedByDate } = getJobStatus(job);
 
   const updatedDate = safeFormatDate(job.updatedAt, "N/A", "long");
   const formatDate = (dateStr: string | undefined) =>
@@ -70,7 +75,12 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
         </h1>
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          {job.isActive ? (
+          {closedByDate ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-700 ring-1 ring-inset ring-red-600/20">
+              <span className="h-2 w-2 rounded-full bg-red-600" />
+              Closed
+            </span>
+          ) : job.isActive ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700 ring-1 ring-inset ring-green-600/20">
               <span className="h-2 w-2 rounded-full bg-green-600" />
               Active

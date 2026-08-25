@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { JobPost } from "@/lib/types";
-import { safeFormatDate, isDatePast } from "@/lib/date-utils";
+import { safeFormatDate } from "@/lib/date-utils";
+import { getJobStatus } from "@/lib/job-status";
 
 interface JobCardProps {
   job: Pick<
@@ -14,6 +15,7 @@ interface JobCardProps {
     | "category"
     | "state"
     | "isActive"
+    | "lastDate"
     | "publishedAt"
     | "importantDates"
   >;
@@ -23,8 +25,9 @@ export default function JobCard({ job }: JobCardProps) {
   const formattedDate = safeFormatDate(job.publishedAt, "N/A");
   const lastDate = safeFormatDate(job.importantDates.lastDate, "N/A");
 
-  // A job is closed if the DB marks it inactive OR if the last date has passed
-  const isClosed = !job.isActive || isDatePast(job.importantDates.lastDate);
+  // Closed when the last date has passed, or when the record is flagged
+  // inactive. Reads BOTH date sources, see lib/job-status.ts.
+  const { isClosed, closedByDate } = getJobStatus(job);
 
   return (
     <article
@@ -40,8 +43,14 @@ export default function JobCard({ job }: JobCardProps) {
           </span>
           <div className="flex items-center gap-2">
             {isClosed ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-600 ring-1 ring-inset ring-gray-400/30">
-                <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+              <span
+                className={
+                  closedByDate
+                    ? "inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-600/20"
+                    : "inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-600 ring-1 ring-inset ring-gray-400/30"
+                }
+              >
+                <span className={closedByDate ? "h-1.5 w-1.5 rounded-full bg-red-600" : "h-1.5 w-1.5 rounded-full bg-gray-400"} />
                 Closed
               </span>
             ) : (

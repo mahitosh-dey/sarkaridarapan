@@ -13,7 +13,7 @@ const LONG_OPTS: Intl.DateTimeFormatOptions = {
 };
 
 // Parses ISO strings, DD/MM/YYYY, and DD.MM.YYYY. Returns null if unparseable.
-function parseDate(raw: string): Date | null {
+export function parseDate(raw: string): Date | null {
   const s = raw.trim();
 
   // DD/MM/YYYY  e.g. "01/06/2026" — check before direct parse so the engine
