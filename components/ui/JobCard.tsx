@@ -76,7 +76,9 @@ export default function JobCard({ job }: JobCardProps) {
         </h3>
 
         {job.postName && (
-          <p className="text-sm text-gray-500 mb-3">
+          // Clamped: 42 records still carry a post_name over 120 chars, which
+          // would otherwise push the card body out of shape.
+          <p className="text-sm text-gray-500 mb-3 line-clamp-2">
             Post: {job.postName}
           </p>
         )}
