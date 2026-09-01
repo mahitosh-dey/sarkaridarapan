@@ -109,23 +109,115 @@ function mapEntranceExamRow(row: any): EntranceExamPost {
 /* eslint-enable */
 
 // =============================================================================
+// Column projections for LIST queries
+//
+// List queries render cards: title, slug, dates, category. They never render
+// the article body. Selecting "*" pulled the full `content` column, roughly
+// 20KB on a 3000 word page, for every row of every list, across ~90 distinct
+// cached list variants revalidating hourly. That exhausted the Supabase egress
+// quota on 2026-09-01 and took the database offline for writes.
+//
+// The BySlug functions still select "*", because detail pages are where the
+// body, eligibility, how_to_apply and selection_process are actually read.
+//
+// Keep these lists in sync with the mappers above. A column named here that
+// does not exist in the table makes PostgREST fail the whole query, so
+// listQuery falls back to "*" on an undefined-column error rather than
+// returning an empty list and blanking the page.
+//
+// `notification_status` is deliberately NOT listed. It is an optional override
+// column added by scripts/add-notification-status.sql, which has not been run.
+// Naming a column that does not exist would make every list query fail its
+// projection and retry as select("*"), which is the exact cost this projection
+// removes. The mappers already coalesce it to null and lib/notification-status.ts
+// derives the status from structured fields when it is absent. If that migration
+// is ever run and the override is wanted on list-driven surfaces (the sitemap
+// filter is the only one), add the column to all three lists at that point.
+// =============================================================================
+
+const JOB_LIST_COLUMNS =
+  "slug, title, organization, post_name, vacancies, salary, application_fee, " +
+  "important_dates, official_link, notification_link, apply_link, category, " +
+  "state, is_active, published_at, updated_at, description, reading_time, " +
+  "image, last_date, qualification, employment_type, " +
+  "quality_flag, reviewed_at, verified_at";
+
+const SCHEME_LIST_COLUMNS =
+  "slug, title, ministry, launched_by, objective, category, state, " +
+  "published_at, updated_at, description, reading_time, image, " +
+  "official_portal, helpline_number, verified_at";
+
+const EXAM_LIST_COLUMNS =
+  "slug, title, conducting_body, exam_date, application_start, " +
+  "application_end, category, state, is_active, published_at, updated_at, " +
+  "description, reading_time, image, official_link, " +
+  "admit_card_link, result_link, quality_flag, reviewed_at, verified_at";
+
+/* eslint-disable */
+
+// Runs a projected list query, retrying with "*" if the projection names a
+// column the table does not have. Returns [] only on a real failure.
+// Set of projections known to be rejected by the current schema. Once a
+// projection fails we stop attempting it, so a schema gap costs one wasted
+// round trip per process rather than one on every query.
+const rejectedProjections = new Set<string>();
+
+async function listQuery(
+  build: (cols: string) => any,
+  columns: string,
+  label: string
+): Promise<any[]> {
+  if (rejectedProjections.has(columns)) {
+    const { data, error } = await build("*");
+    if (error) {
+      console.error(`Error fetching ${label}:`, error.message);
+      return [];
+    }
+    return data || [];
+  }
+
+  let { data, error } = await build(columns);
+
+  const missingColumn =
+    error &&
+    (error.code === "42703" ||
+      /column .* does not exist|does not exist on table/i.test(error.message || ""));
+
+  if (missingColumn) {
+    console.warn(
+      `${label}: column projection rejected (${error.message}), falling back to select("*")`
+    );
+    rejectedProjections.add(columns);
+    ({ data, error } = await build("*"));
+  }
+
+  if (error) {
+    console.error(`Error fetching ${label}:`, error.message);
+    return [];
+  }
+  return data || [];
+}
+
+/* eslint-enable */
+
+// =============================================================================
 // Job Posts — filtered by is_active=true (column exists on jobs table)
 // =============================================================================
 
 export const getJobPosts = unstable_cache(
   async (): Promise<JobPost[]> => {
-    const { data, error } = await supabase
-      .from("jobs")
-      .select("*")
-      .eq("is_active", true)
-      .order("published_at", { ascending: false });
+    const rows = await listQuery(
+      (cols) =>
+        supabase
+          .from("jobs")
+          .select(cols)
+          .eq("is_active", true)
+          .order("published_at", { ascending: false }),
+      JOB_LIST_COLUMNS,
+      "jobs"
+    );
 
-    if (error) {
-      console.error("Error fetching jobs:", error.message);
-      return [];
-    }
-
-    return (data || []).map(mapJobRow);
+    return rows.map(mapJobRow);
   },
   ["all-jobs"],
   { revalidate: REVALIDATE_INTERVAL, tags: ["jobs"] }
@@ -156,18 +248,18 @@ export async function getJobBySlug(slug: string): Promise<JobPost | null> {
 
 export const getSchemePosts = unstable_cache(
   async (): Promise<SchemePost[]> => {
-    const { data, error } = await supabase
-      .from("schemes")
-      .select("*")
-      .eq("is_active", true)
-      .order("published_at", { ascending: false });
+    const rows = await listQuery(
+      (cols) =>
+        supabase
+          .from("schemes")
+          .select(cols)
+          .eq("is_active", true)
+          .order("published_at", { ascending: false }),
+      SCHEME_LIST_COLUMNS,
+      "schemes"
+    );
 
-    if (error) {
-      console.error("Error fetching schemes:", error.message);
-      return [];
-    }
-
-    return (data || []).map(mapSchemeRow);
+    return rows.map(mapSchemeRow);
   },
   ["all-schemes"],
   { revalidate: REVALIDATE_INTERVAL, tags: ["schemes"] }
@@ -201,19 +293,19 @@ export async function getSchemeBySlug(
 export async function getJobsByCategory(category: string): Promise<JobPost[]> {
   return unstable_cache(
     async () => {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("is_active", true)
-        .ilike("category", category)
-        .order("published_at", { ascending: false });
+      const rows = await listQuery(
+        (cols) =>
+          supabase
+            .from("jobs")
+            .select(cols)
+            .eq("is_active", true)
+            .ilike("category", category)
+            .order("published_at", { ascending: false }),
+        JOB_LIST_COLUMNS,
+        "jobs by category"
+      );
 
-      if (error) {
-        console.error("Error fetching jobs by category:", error.message);
-        return [];
-      }
-
-      return (data || []).map(mapJobRow);
+      return rows.map(mapJobRow);
     },
     [`jobs-category-${category}`],
     { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `jobs-category-${category}`] }
@@ -223,19 +315,19 @@ export async function getJobsByCategory(category: string): Promise<JobPost[]> {
 export async function getJobsByState(state: string): Promise<JobPost[]> {
   return unstable_cache(
     async () => {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("is_active", true)
-        .ilike("state", state)
-        .order("published_at", { ascending: false });
+      const rows = await listQuery(
+        (cols) =>
+          supabase
+            .from("jobs")
+            .select(cols)
+            .eq("is_active", true)
+            .ilike("state", state)
+            .order("published_at", { ascending: false }),
+        JOB_LIST_COLUMNS,
+        "jobs by state"
+      );
 
-      if (error) {
-        console.error("Error fetching jobs by state:", error.message);
-        return [];
-      }
-
-      return (data || []).map(mapJobRow);
+      return rows.map(mapJobRow);
     },
     [`jobs-state-${state}`],
     { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `jobs-state-${state}`] }
@@ -247,19 +339,19 @@ export async function getSchemesByCategory(
 ): Promise<SchemePost[]> {
   return unstable_cache(
     async () => {
-      const { data, error } = await supabase
-        .from("schemes")
-        .select("*")
-        .eq("is_active", true)
-        .ilike("category", category)
-        .order("published_at", { ascending: false });
+      const rows = await listQuery(
+        (cols) =>
+          supabase
+            .from("schemes")
+            .select(cols)
+            .eq("is_active", true)
+            .ilike("category", category)
+            .order("published_at", { ascending: false }),
+        SCHEME_LIST_COLUMNS,
+        "schemes by category"
+      );
 
-      if (error) {
-        console.error("Error fetching schemes by category:", error.message);
-        return [];
-      }
-
-      return (data || []).map(mapSchemeRow);
+      return rows.map(mapSchemeRow);
     },
     [`schemes-category-${category}`],
     { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `schemes-category-${category}`] }
@@ -272,19 +364,19 @@ export async function getSchemesByState(
   return unstable_cache(
     async () => {
       // Include both state-specific schemes AND all-india central schemes
-      const { data, error } = await supabase
-        .from("schemes")
-        .select("*")
-        .eq("is_active", true)
-        .or(`state.ilike.${state},state.ilike.all-india`)
-        .order("published_at", { ascending: false });
+      const rows = await listQuery(
+        (cols) =>
+          supabase
+            .from("schemes")
+            .select(cols)
+            .eq("is_active", true)
+            .or(`state.ilike.${state},state.ilike.all-india`)
+            .order("published_at", { ascending: false }),
+        SCHEME_LIST_COLUMNS,
+        "schemes by state"
+      );
 
-      if (error) {
-        console.error("Error fetching schemes by state:", error.message);
-        return [];
-      }
-
-      return (data || []).map(mapSchemeRow);
+      return rows.map(mapSchemeRow);
     },
     [`schemes-state-${state}`],
     { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `schemes-state-${state}`] }
@@ -297,18 +389,18 @@ export async function getSchemesByState(
 
 export const getEntranceExamPosts = unstable_cache(
   async (): Promise<EntranceExamPost[]> => {
-    const { data, error } = await supabase
-      .from("entrance_exams")
-      .select("*")
-      .eq("is_active", true)
-      .order("published_at", { ascending: false });
+    const rows = await listQuery(
+      (cols) =>
+        supabase
+          .from("entrance_exams")
+          .select(cols)
+          .eq("is_active", true)
+          .order("published_at", { ascending: false }),
+      EXAM_LIST_COLUMNS,
+      "entrance exams"
+    );
 
-    if (error) {
-      console.error("Error fetching entrance exams:", error.message);
-      return [];
-    }
-
-    return (data || []).map(mapEntranceExamRow);
+    return rows.map(mapEntranceExamRow);
   },
   ["all-entrance-exams"],
   { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams"] }
@@ -340,19 +432,19 @@ export async function getEntranceExamsByCategory(
 ): Promise<EntranceExamPost[]> {
   return unstable_cache(
     async () => {
-      const { data, error } = await supabase
-        .from("entrance_exams")
-        .select("*")
-        .eq("is_active", true)
-        .ilike("category", category)
-        .order("published_at", { ascending: false });
+      const rows = await listQuery(
+        (cols) =>
+          supabase
+            .from("entrance_exams")
+            .select(cols)
+            .eq("is_active", true)
+            .ilike("category", category)
+            .order("published_at", { ascending: false }),
+        EXAM_LIST_COLUMNS,
+        "exams by category"
+      );
 
-      if (error) {
-        console.error("Error fetching exams by category:", error.message);
-        return [];
-      }
-
-      return (data || []).map(mapEntranceExamRow);
+      return rows.map(mapEntranceExamRow);
     },
     [`exams-category-${category}`],
     { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams", `exams-category-${category}`] }
