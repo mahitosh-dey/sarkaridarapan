@@ -1,0 +1,27 @@
+# Disavow file for sarkaridarapan.com
+# Prepared 2026-09-04. Upload at:
+#   https://search.google.com/search-console/disavow-links
+# Select the sarkaridarapan.com property, then upload this file.
+#
+# Context: Ahrefs shows only 4 referring domains for this site. Two of them are
+# link networks that we did not build, did not request, and gained nothing from.
+# On a profile this small a 50 percent spam ratio is not noise, and Google ran
+# spam updates in June and August 2026.
+#
+# Google says it usually ignores links like these and that most sites never
+# need a disavow file. That is true for a site with a large organic profile.
+# Here the entire profile is four domains, so the cheap insurance is worth it.
+#
+# NOT disavowed, deliberately:
+#   connectively.us   DR 80, the HARO successor. Legitimate, nofollow.
+#   paisaprakash.in   DR 0 but a real Indian site, 1 dofollow link.
+
+# Link farm. Ahrefs reports this domain linking out to 35,076,307 domains,
+# which is not a publishing pattern, it is a network. Gave us 2 dofollow
+# links on 26 Aug 2026.
+domain:plavo.shop
+
+# SEO link network. DR 30 with 688 referring domains but zero organic traffic
+# and zero ranking keywords, which is the signature of a domain that exists to
+# sell links rather than to be read. First seen 14 Jun 2026.
+domain:seogeko.shop
