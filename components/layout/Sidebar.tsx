@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getJobPosts, getSchemePosts } from "@/lib/content";
 import { JOB_CATEGORIES } from "@/lib/constants";
 import SidebarStates from "./SidebarStates";
+import { indexableStates } from "@/lib/facet-index";
 import { safeFormatDate } from "@/lib/date-utils";
 
 function formatDate(dateStr: string): string {
@@ -18,6 +19,13 @@ export default async function Sidebar() {
   } catch {
     // Graceful fallback — sidebar renders with empty sections
   }
+
+  // Only offer states that clear the index threshold. Linking the rest puts
+  // dead ends on every page that renders the sidebar, which is all of them.
+  const sidebarStates = indexableStates(jobs, schemes).map((st) => ({
+    slug: st.slug,
+    name: st.name,
+  }));
 
   const latestJobs = jobs.slice(0, 5);
   const latestSchemes = schemes.slice(0, 5);
@@ -157,7 +165,7 @@ export default async function Sidebar() {
       )}
 
       {/* States */}
-      <SidebarStates />
+      <SidebarStates states={sidebarStates} />
     </aside>
   );
 }

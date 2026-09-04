@@ -1,7 +1,5 @@
-import { unstable_cache } from "next/cache";
-import { supabaseContent } from "@/lib/supabase-content";
 import type { Guide, FAQItem } from "@/lib/guides";
-import { raiseUnavailable } from "@/lib/content";
+import { activeBlogPosts, blogPostBySlug, eqi } from "@/lib/static-data";
 
 function parseFaqsFromMarkdown(content: string): FAQItem[] | undefined {
   const sectionMatch = content.match(
@@ -42,8 +40,7 @@ export interface DbBlogPost {
 }
 
 export function dbPostToGuide(post: DbBlogPost): Guide {
-  // List queries project `content` away (see BLOG_LIST_COLUMNS), so this runs
-  // with content undefined on the list path. Guard both reads.
+  // Guarded because a row can carry an empty or missing body.
   const faqs = post.content ? parseFaqsFromMarkdown(post.content) : undefined;
   return {
     slug: post.slug,
@@ -60,81 +57,19 @@ export function dbPostToGuide(post: DbBlogPost): Guide {
   };
 }
 
-// Blog list queries render cards: title, slug, description, category, date.
-// They never render the article body. Selecting "*" pulled all ~32 full posts
-// on a 300 second TTL, which was the single largest contributor to the
-// Supabase egress quota exhaustion on 2026-09-01. getDbPostBySlug still
-// selects "*", which is where the body is actually read.
-//
-// TTL raised from 300s to 1 hour to match the rest of the site. Publishing
-// scripts invalidate the "blog-posts" tag directly, so the TTL is only a
-// backstop and a longer one does not delay published changes.
-const BLOG_LIST_COLUMNS =
-  "slug, title, description, category, author, tags, image, published_at, " +
-  "updated_at, created_at";
-
-const BLOG_LIST_TTL = 3600;
-
-export const getPublishedDbPosts = unstable_cache(
-  async (): Promise<Guide[]> => {
-    // No try/catch: a failed fetch must throw so ISR keeps the last good
-    // render instead of caching an empty blog list. See lib/content.ts.
-    const { data, error } = await supabaseContent
-      .from("blog_posts")
-      .select(BLOG_LIST_COLUMNS)
-      .eq("is_active", true)
-      .order("published_at", { ascending: false });
-
-    if (error) {
-      raiseUnavailable("blog posts", error.message);
-      return [];
-    }
-    return ((data || []) as unknown as DbBlogPost[]).map(dbPostToGuide);
-  },
-  ["all-blog-posts"],
-  { revalidate: BLOG_LIST_TTL, tags: ["blog-posts"] }
-);
+// Content now ships in data/blog_posts.json, bundled at build time rather than
+// fetched per render. See lib/static-data.ts for why.
+export async function getPublishedDbPosts(): Promise<Guide[]> {
+  return activeBlogPosts().map((r) => dbPostToGuide(r as unknown as DbBlogPost));
+}
 
 export async function getPostsByAuthor(author: string): Promise<Guide[]> {
-  return unstable_cache(
-    async () => {
-      const { data, error } = await supabaseContent
-        .from("blog_posts")
-        .select(BLOG_LIST_COLUMNS)
-        .eq("is_active", true)
-        .eq("author", author)
-        .order("published_at", { ascending: false });
-
-      if (error) {
-        raiseUnavailable(`blog posts by ${author}`, error.message);
-        return [];
-      }
-      return ((data || []) as unknown as DbBlogPost[]).map(dbPostToGuide);
-    },
-    [`blog-posts-author-${author}`],
-    { revalidate: BLOG_LIST_TTL, tags: ["blog-posts"] }
-  )();
+  return activeBlogPosts()
+    .filter((r) => eqi(r.author, author))
+    .map((r) => dbPostToGuide(r as unknown as DbBlogPost));
 }
 
 export async function getDbPostBySlug(slug: string): Promise<Guide | null> {
-  return unstable_cache(
-    async () => {
-      const { data, error } = await supabaseContent
-        .from("blog_posts")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
-
-      // PGRST116 is "no rows": a real 404. Anything else is an outage.
-      if (error && error.code !== "PGRST116") {
-        raiseUnavailable(`blog post ${slug}`, error.message);
-        return null;
-      }
-      if (!data) return null;
-      return dbPostToGuide(data as DbBlogPost);
-    },
-    [`blog-post-${slug}`],
-    { revalidate: 300, tags: ["blog-posts", `blog-post-${slug}`] }
-  )();
+  const row = blogPostBySlug(slug);
+  return row ? dbPostToGuide(row as unknown as DbBlogPost) : null;
 }

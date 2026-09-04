@@ -3,49 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const indianStates = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-];
+// The list of states to show is passed in by <Sidebar>, which filters it to
+// states that actually hold content. It used to be a hardcoded list of all 29
+// states here, and the first 8 were server-rendered on EVERY page of the site.
+// Seven of those eight pointed at facet pages the site marks noindex, so every
+// page shipped seven links into dead ends. See lib/facet-index.ts.
+export type SidebarState = { slug: string; name: string };
 
 const INITIAL_STATES_SHOWN = 8;
 
-function toSlug(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, "-");
-}
-
-export default function SidebarStates() {
+export default function SidebarStates({ states }: { states: SidebarState[] }) {
   const [showAllStates, setShowAllStates] = useState(false);
 
+  if (states.length === 0) return null;
+
   const visibleStates = showAllStates
-    ? indianStates
-    : indianStates.slice(0, INITIAL_STATES_SHOWN);
+    ? states
+    : states.slice(0, INITIAL_STATES_SHOWN);
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -56,17 +30,17 @@ export default function SidebarStates() {
       </div>
       <ul className="divide-y divide-gray-100">
         {visibleStates.map((state) => (
-          <li key={state}>
+          <li key={state.slug}>
             <Link
-              href={`/state/${toSlug(state)}`}
+              href={`/state/${state.slug}`}
               className="block px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-orange-50 hover:text-orange-700"
             >
-              {state}
+              {state.name}
             </Link>
           </li>
         ))}
       </ul>
-      {indianStates.length > INITIAL_STATES_SHOWN && (
+      {states.length > INITIAL_STATES_SHOWN && (
         <div className="border-t border-gray-200 px-4 py-2">
           <button
             onClick={() => setShowAllStates(!showAllStates)}
@@ -91,7 +65,7 @@ export default function SidebarStates() {
               </>
             ) : (
               <>
-                Show All {indianStates.length} States
+                Show All {states.length} States
                 <svg
                   className="h-3 w-3"
                   fill="none"

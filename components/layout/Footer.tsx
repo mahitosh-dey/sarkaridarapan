@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { indexableCategories, indexableStates } from "@/lib/facet-index";
+import { activeJobs, activeSchemes } from "@/lib/static-data";
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -11,23 +13,11 @@ const quickLinks = [
   { label: "Terms of Service", href: "/terms-of-service" },
 ];
 
-const categoryLinks = [
-  { label: "SSC Jobs", href: "/category/ssc" },
-  { label: "UPSC Jobs", href: "/category/upsc" },
-  { label: "Railway Jobs", href: "/category/railway" },
-  { label: "Banking Jobs", href: "/category/banking" },
-  { label: "Defence Jobs", href: "/category/defence" },
-  { label: "State PSC Jobs", href: "/category/state-psc" },
-];
-
-const popularStates = [
-  { label: "Uttar Pradesh", href: "/state/uttar-pradesh" },
-  { label: "Madhya Pradesh", href: "/state/madhya-pradesh" },
-  { label: "Rajasthan", href: "/state/rajasthan" },
-  { label: "Bihar", href: "/state/bihar" },
-  { label: "Maharashtra", href: "/state/maharashtra" },
-  { label: "Gujarat", href: "/state/gujarat" },
-];
+// Category and state links were hardcoded here and rendered on EVERY page.
+// /state/gujarat held a single item, below the index threshold, so the site
+// linked to a page it marks noindex from all ~216 pages. Deriving the lists
+// means they follow the content instead of drifting away from it.
+const FOOTER_FACET_LIMIT = 6;
 
 function SocialLinks() {
   return (
@@ -63,6 +53,15 @@ function SocialLinks() {
 }
 
 export default function Footer() {
+  const jobs = activeJobs();
+  const schemes = activeSchemes();
+  const categoryLinks = indexableCategories(jobs)
+    .slice(0, FOOTER_FACET_LIMIT)
+    .map((c) => ({ label: `${c.name} Jobs`, href: `/category/${c.slug}` }));
+  const popularStates = indexableStates(jobs, schemes)
+    .slice(0, FOOTER_FACET_LIMIT)
+    .map((st) => ({ label: st.name, href: `/state/${st.slug}` }));
+
   const currentYear = new Date().getFullYear();
 
   return (

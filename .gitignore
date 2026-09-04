@@ -33,3 +33,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# One-time CSV staging area for the static migration; data/*.json is the source of truth
+export/

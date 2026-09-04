@@ -1,11 +1,24 @@
 // =============================================================================
 // Content Utilities - SarkariDarapan
-// Reads content from Supabase PostgreSQL
+//
+// Reads content from data/*.json, bundled at build time. See lib/static-data.ts
+// for why this no longer queries Supabase directly.
+//
+// Every function below keeps its previous async signature so callers did not
+// have to change, even though nothing here awaits I/O any more.
 // =============================================================================
 
-import { unstable_cache } from "next/cache";
-import { supabaseContent as supabase } from "./supabase-content";
-import { REVALIDATE_INTERVAL } from "./constants";
+import {
+  activeJobs,
+  activeSchemes,
+  activeExams,
+  jobBySlug,
+  schemeBySlug,
+  examBySlug,
+  eqi,
+  rowCounts,
+  type Row,
+} from "./static-data";
 import type { JobPost, SchemePost, EntranceExamPost } from "./types";
 
 // =============================================================================
@@ -109,72 +122,19 @@ function mapEntranceExamRow(row: any): EntranceExamPost {
 /* eslint-enable */
 
 // =============================================================================
-// Column projections for LIST queries
+// Missing data is still an error
 //
-// List queries render cards: title, slug, dates, category. They never render
-// the article body. Selecting "*" pulled the full `content` column, roughly
-// 20KB on a 3000 word page, for every row of every list, across ~90 distinct
-// cached list variants revalidating hourly. That exhausted the Supabase egress
-// quota on 2026-09-01 and took the database offline for writes.
+// These helpers date from the 2026-09-01 outage, when a failed fetch returned
+// [] and the empty result was rendered and cached as though the site were
+// genuinely empty. Reading from bundled JSON removes that failure mode: the
+// data either ships with the build or the build does not exist.
 //
-// The BySlug functions still select "*", because detail pages are where the
-// body, eligibility, how_to_apply and selection_process are actually read.
-//
-// Keep these lists in sync with the mappers above. A column named here that
-// does not exist in the table makes PostgREST fail the whole query, so
-// listQuery falls back to "*" on an undefined-column error rather than
-// returning an empty list and blanking the page.
-//
-// `notification_status` is deliberately NOT listed. It is an optional override
-// column added by scripts/add-notification-status.sql, which has not been run.
-// Naming a column that does not exist would make every list query fail its
-// projection and retry as select("*"), which is the exact cost this projection
-// removes. The mappers already coalesce it to null and lib/notification-status.ts
-// derives the status from structured fields when it is absent. If that migration
-// is ever run and the override is wanted on list-driven surfaces (the sitemap
-// filter is the only one), add the column to all three lists at that point.
-// =============================================================================
-
-const JOB_LIST_COLUMNS =
-  "slug, title, organization, post_name, vacancies, salary, application_fee, " +
-  "important_dates, official_link, notification_link, apply_link, category, " +
-  "state, is_active, published_at, updated_at, description, reading_time, " +
-  "image, last_date, qualification, employment_type, " +
-  "quality_flag, reviewed_at, verified_at";
-
-const SCHEME_LIST_COLUMNS =
-  "slug, title, ministry, launched_by, objective, category, state, " +
-  "published_at, updated_at, description, reading_time, image, " +
-  "official_portal, helpline_number, verified_at";
-
-const EXAM_LIST_COLUMNS =
-  "slug, title, conducting_body, exam_date, application_start, " +
-  "application_end, category, state, is_active, published_at, updated_at, " +
-  "description, reading_time, image, official_link, " +
-  "admit_card_link, result_link, quality_flag, reviewed_at, verified_at";
-
-// =============================================================================
-// Fetch failure vs no data
-//
-// On 2026-09-01 Supabase cut the project off for exceeding its egress quota.
-// Every content fetch failed, every fetch returned [] or null, and the pages
-// rendered as though the site were genuinely empty. Those empty renders were
-// then cached by ISR, so a database outage became a CONTENT outage: detail
-// pages served 200 with "Coming Soon" and noindex, which tells Google to drop
-// pages it had already indexed, and listing pages served 200 with zero content
-// and index,follow. The sitemap shrank from 216 URLs to 12.
-//
-// The bug was treating a failed query as an empty result. They are different
-// things and must be handled differently:
-//
-//   query succeeded, 0 rows  -> genuinely empty, render it
-//   query failed             -> throw ContentUnavailableError
-//
-// Throwing is what protects the site. When a render throws during ISR
-// revalidation Next keeps serving the last good cached page, so an outage
-// leaves existing pages untouched instead of overwriting them with an empty
-// shell. With no cache to fall back on the route 500s, which Google treats as
-// temporary and retries, unlike a 200 on an empty page.
+// They are kept, and still exported, because one failure mode remains. If
+// data/*.json is emptied, deleted, or regenerated from a bad export, every
+// query here goes quiet and returns nothing. The guard in app/sitemap.ts calls
+// raiseUnavailable in that case so the build FAILS instead of publishing a
+// site with no content. app/page.tsx and the listing pages use
+// rethrowIfUnavailable for the same reason.
 // =============================================================================
 
 export class ContentUnavailableError extends Error {
@@ -188,29 +148,19 @@ export function isContentUnavailable(e: unknown): e is ContentUnavailableError {
   return e instanceof ContentUnavailableError;
 }
 
-// Use in a catch around a PRIMARY content fetch: the thing the page is about,
-// or anything feeding the sitemap. Re-throws an outage so the page fails and
-// ISR keeps the last good render, while still letting genuine per-page errors
-// fall through to whatever local fallback the caller wants.
-//
-// Do NOT use around SECONDARY content (related jobs, sidebars, fallback
-// listings). Those should degrade quietly rather than take the page down.
+// Use in a catch around a PRIMARY content fetch: the thing a page is about, or
+// anything feeding the sitemap. Do NOT use around SECONDARY content such as
+// related jobs, sidebars or fallback listings, which should degrade quietly
+// rather than take a page down.
 export function rethrowIfUnavailable(e: unknown): void {
   if (isContentUnavailable(e)) throw e;
 }
 
-// Escape hatch. With ALLOW_DEGRADED_BUILD=1 a content-source failure is logged
-// loudly and treated as empty instead of throwing, which lets a build complete
-// while the database is unreachable.
-//
-// This ships an EMPTY SITE and is the exact failure of 2026-09-01: empty pages
-// cached by ISR, detail pages serving noindex, the sitemap cut to its static
-// entries. Use it only to get an unrelated emergency fix out, never as a way
-// around a database outage, and redeploy as soon as the source is back.
+// Escape hatch, retained from the outage. ALLOW_DEGRADED_BUILD=1 downgrades a
+// missing-content failure to a logged error so an unrelated emergency fix can
+// still ship. It publishes an empty site by design.
 const ALLOW_DEGRADED_BUILD = process.env.ALLOW_DEGRADED_BUILD === "1";
 
-// Throws unless the override is set. Callers return their empty value after
-// calling this, which is only reached in degraded mode.
 export function raiseUnavailable(label: string, cause?: string): void {
   if (ALLOW_DEGRADED_BUILD) {
     console.error(
@@ -222,484 +172,171 @@ export function raiseUnavailable(label: string, cause?: string): void {
   throw new ContentUnavailableError(label, cause);
 }
 
-// PostgREST reports "no rows returned" from .single() as PGRST116. That is a
-// genuine miss (bad slug) and must stay a 404, not an outage.
-function isNoRowsError(error: { code?: string } | null): boolean {
-  return error?.code === "PGRST116";
+// Fails the build if the data files are present but hold nothing. Called by
+// the sitemap guard.
+export function assertContentPresent(): void {
+  const c = rowCounts();
+  if (c.jobs + c.schemes + c.exams + c.blogPosts === 0) {
+    raiseUnavailable(
+      "static content",
+      "data/*.json contain no rows; regenerate with scripts/csv-to-static-json.py"
+    );
+  }
 }
 
-/* eslint-disable */
+// =============================================================================
+// Jobs
+// =============================================================================
 
-// Set of projections known to be rejected by the current schema. Once a
-// projection fails we stop attempting it, so a schema gap costs one wasted
-// round trip per process rather than one on every query.
-const rejectedProjections = new Set<string>();
-
-// Runs a projected list query, retrying with "*" if the projection names a
-// column the table does not have. Throws ContentUnavailableError on a real
-// failure; never returns [] to paper over one.
-async function listQuery(
-  build: (cols: string) => any,
-  columns: string,
-  label: string
-): Promise<any[]> {
-  if (rejectedProjections.has(columns)) {
-    const { data, error } = await build("*");
-    if (error) {
-      raiseUnavailable(label, error.message);
-      return [];
-    }
-    return data || [];
-  }
-
-  let { data, error } = await build(columns);
-
-  const missingColumn =
-    error &&
-    (error.code === "42703" ||
-      /column .* does not exist|does not exist on table/i.test(error.message || ""));
-
-  if (missingColumn) {
-    console.warn(
-      `${label}: column projection rejected (${error.message}), falling back to select("*")`
-    );
-    rejectedProjections.add(columns);
-    ({ data, error } = await build("*"));
-  }
-
-  if (error) {
-    raiseUnavailable(label, error.message);
-    return [];
-  }
-  return data || [];
+export async function getJobPosts(): Promise<JobPost[]> {
+  return activeJobs().map(mapJobRow);
 }
-
-/* eslint-enable */
-
-// =============================================================================
-// Job Posts — filtered by is_active=true (column exists on jobs table)
-// =============================================================================
-
-export const getJobPosts = unstable_cache(
-  async (): Promise<JobPost[]> => {
-    const rows = await listQuery(
-      (cols) =>
-        supabase
-          .from("jobs")
-          .select(cols)
-          .eq("is_active", true)
-          .order("published_at", { ascending: false }),
-      JOB_LIST_COLUMNS,
-      "jobs"
-    );
-
-    return rows.map(mapJobRow);
-  },
-  ["all-jobs"],
-  { revalidate: REVALIDATE_INTERVAL, tags: ["jobs"] }
-);
 
 export async function getJobBySlug(slug: string): Promise<JobPost | null> {
-  return unstable_cache(
-    async () => {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
-
-      // A missing row is a real 404. Any other error is an outage and must
-      // not be rendered as "this page does not exist".
-      if (error && !isNoRowsError(error)) {
-        raiseUnavailable(`job ${slug}`, error.message);
-        return null;
-      }
-      if (!data) return null;
-
-      return mapJobRow(data);
-    },
-    [`job-${slug}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `job-${slug}`] }
-  )();
+  const row = jobBySlug(slug);
+  return row ? mapJobRow(row) : null;
 }
 
 // =============================================================================
-// Scheme Posts — filtered by is_active=true
+// Schemes
 // =============================================================================
 
-export const getSchemePosts = unstable_cache(
-  async (): Promise<SchemePost[]> => {
-    const rows = await listQuery(
-      (cols) =>
-        supabase
-          .from("schemes")
-          .select(cols)
-          .eq("is_active", true)
-          .order("published_at", { ascending: false }),
-      SCHEME_LIST_COLUMNS,
-      "schemes"
-    );
+export async function getSchemePosts(): Promise<SchemePost[]> {
+  return activeSchemes().map(mapSchemeRow);
+}
 
-    return rows.map(mapSchemeRow);
-  },
-  ["all-schemes"],
-  { revalidate: REVALIDATE_INTERVAL, tags: ["schemes"] }
-);
-
-export async function getSchemeBySlug(
-  slug: string
-): Promise<SchemePost | null> {
-  return unstable_cache(
-    async () => {
-      const { data, error } = await supabase
-        .from("schemes")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
-
-      // A missing row is a real 404. Any other error is an outage and must
-      // not be rendered as "this page does not exist".
-      if (error && !isNoRowsError(error)) {
-        raiseUnavailable(`scheme ${slug}`, error.message);
-        return null;
-      }
-      if (!data) return null;
-
-      return mapSchemeRow(data);
-    },
-    [`scheme-${slug}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `scheme-${slug}`] }
-  )();
+export async function getSchemeBySlug(slug: string): Promise<SchemePost | null> {
+  const row = schemeBySlug(slug);
+  return row ? mapSchemeRow(row) : null;
 }
 
 // =============================================================================
-// Filtering
+// Entrance exams
 // =============================================================================
 
-export async function getJobsByCategory(category: string): Promise<JobPost[]> {
-  return unstable_cache(
-    async () => {
-      const rows = await listQuery(
-        (cols) =>
-          supabase
-            .from("jobs")
-            .select(cols)
-            .eq("is_active", true)
-            .ilike("category", category)
-            .order("published_at", { ascending: false }),
-        JOB_LIST_COLUMNS,
-        "jobs by category"
-      );
-
-      return rows.map(mapJobRow);
-    },
-    [`jobs-category-${category}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `jobs-category-${category}`] }
-  )();
+export async function getEntranceExamPosts(): Promise<EntranceExamPost[]> {
+  return activeExams().map(mapEntranceExamRow);
 }
-
-export async function getJobsByState(state: string): Promise<JobPost[]> {
-  return unstable_cache(
-    async () => {
-      const rows = await listQuery(
-        (cols) =>
-          supabase
-            .from("jobs")
-            .select(cols)
-            .eq("is_active", true)
-            .ilike("state", state)
-            .order("published_at", { ascending: false }),
-        JOB_LIST_COLUMNS,
-        "jobs by state"
-      );
-
-      return rows.map(mapJobRow);
-    },
-    [`jobs-state-${state}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["jobs", `jobs-state-${state}`] }
-  )();
-}
-
-export async function getSchemesByCategory(
-  category: string
-): Promise<SchemePost[]> {
-  return unstable_cache(
-    async () => {
-      const rows = await listQuery(
-        (cols) =>
-          supabase
-            .from("schemes")
-            .select(cols)
-            .eq("is_active", true)
-            .ilike("category", category)
-            .order("published_at", { ascending: false }),
-        SCHEME_LIST_COLUMNS,
-        "schemes by category"
-      );
-
-      return rows.map(mapSchemeRow);
-    },
-    [`schemes-category-${category}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `schemes-category-${category}`] }
-  )();
-}
-
-export async function getSchemesByState(
-  state: string
-): Promise<SchemePost[]> {
-  return unstable_cache(
-    async () => {
-      // Include both state-specific schemes AND all-india central schemes
-      const rows = await listQuery(
-        (cols) =>
-          supabase
-            .from("schemes")
-            .select(cols)
-            .eq("is_active", true)
-            .or(`state.ilike.${state},state.ilike.all-india`)
-            .order("published_at", { ascending: false }),
-        SCHEME_LIST_COLUMNS,
-        "schemes by state"
-      );
-
-      return rows.map(mapSchemeRow);
-    },
-    [`schemes-state-${state}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["schemes", `schemes-state-${state}`] }
-  )();
-}
-
-// =============================================================================
-// Entrance Exam Posts — filtered by is_active=true
-// =============================================================================
-
-export const getEntranceExamPosts = unstable_cache(
-  async (): Promise<EntranceExamPost[]> => {
-    const rows = await listQuery(
-      (cols) =>
-        supabase
-          .from("entrance_exams")
-          .select(cols)
-          .eq("is_active", true)
-          .order("published_at", { ascending: false }),
-      EXAM_LIST_COLUMNS,
-      "entrance exams"
-    );
-
-    return rows.map(mapEntranceExamRow);
-  },
-  ["all-entrance-exams"],
-  { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams"] }
-);
 
 export async function getEntranceExamBySlug(
   slug: string
 ): Promise<EntranceExamPost | null> {
-  return unstable_cache(
-    async () => {
-      const { data, error } = await supabase
-        .from("entrance_exams")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
+  const row = examBySlug(slug);
+  return row ? mapEntranceExamRow(row) : null;
+}
 
-      // A missing row is a real 404. Any other error is an outage and must
-      // not be rendered as "this page does not exist".
-      if (error && !isNoRowsError(error)) {
-        raiseUnavailable(`entrance exam ${slug}`, error.message);
-        return null;
-      }
-      if (!data) return null;
+// =============================================================================
+// Filtering
+//
+// eqi is case-insensitive equality, matching the previous .ilike() calls which
+// carried no wildcards.
+// =============================================================================
 
-      return mapEntranceExamRow(data);
-    },
-    [`exam-${slug}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams", `exam-${slug}`] }
-  )();
+export async function getJobsByCategory(category: string): Promise<JobPost[]> {
+  return activeJobs()
+    .filter((r) => eqi(r.category, category))
+    .map(mapJobRow);
+}
+
+export async function getJobsByState(state: string): Promise<JobPost[]> {
+  return activeJobs()
+    .filter((r) => eqi(r.state, state))
+    .map(mapJobRow);
+}
+
+export async function getSchemesByCategory(category: string): Promise<SchemePost[]> {
+  return activeSchemes()
+    .filter((r) => eqi(r.category, category))
+    .map(mapSchemeRow);
+}
+
+// State pages show the state's own schemes plus all-India central ones, which
+// is what the previous .or(state.ilike.X, state.ilike.all-india) did.
+export async function getSchemesByState(state: string): Promise<SchemePost[]> {
+  return activeSchemes()
+    .filter((r) => eqi(r.state, state) || eqi(r.state, "all-india"))
+    .map(mapSchemeRow);
 }
 
 export async function getEntranceExamsByCategory(
   category: string
 ): Promise<EntranceExamPost[]> {
-  return unstable_cache(
-    async () => {
-      const rows = await listQuery(
-        (cols) =>
-          supabase
-            .from("entrance_exams")
-            .select(cols)
-            .eq("is_active", true)
-            .ilike("category", category)
-            .order("published_at", { ascending: false }),
-        EXAM_LIST_COLUMNS,
-        "exams by category"
-      );
-
-      return rows.map(mapEntranceExamRow);
-    },
-    [`exams-category-${category}`],
-    { revalidate: REVALIDATE_INTERVAL, tags: ["entrance-exams", `exams-category-${category}`] }
-  )();
+  return activeExams()
+    .filter((r) => eqi(r.category, category))
+    .map(mapEntranceExamRow);
 }
 
 // =============================================================================
-// Aggregation
+// Facets
 // =============================================================================
 
 export async function getAllCategories(): Promise<{
   jobs: string[];
   schemes: string[];
 }> {
-  const [jobsRes, schemesRes] = await Promise.all([
-    supabase.from("jobs").select("category").eq("is_active", true).order("category"),
-    supabase.from("schemes").select("category").eq("is_active", true).order("category"),
-  ]);
-
-  const jobCategories = [
-    ...new Set(
-      (jobsRes.data || []).map((r: { category: string }) => r.category)
-    ),
-  ].sort();
-
-  const schemeCategories = [
-    ...new Set(
-      (schemesRes.data || []).map((r: { category: string }) => r.category)
-    ),
-  ].sort();
-
-  return { jobs: jobCategories, schemes: schemeCategories };
+  const uniq = (rows: Row[]) =>
+    [...new Set(rows.map((r) => r.category).filter(Boolean))].sort() as string[];
+  return { jobs: uniq(activeJobs()), schemes: uniq(activeSchemes()) };
 }
 
 export async function getActiveStates(): Promise<string[]> {
-  const [jobsRes, schemesRes] = await Promise.all([
-    supabase.from("jobs").select("state").eq("is_active", true),
-    supabase.from("schemes").select("state").eq("is_active", true),
-  ]);
-
   const states = new Set<string>();
-  (jobsRes.data || []).forEach((r: { state: string }) => states.add(r.state));
-  (schemesRes.data || []).forEach((r: { state: string }) =>
-    states.add(r.state)
-  );
-
+  for (const r of [...activeJobs(), ...activeSchemes()]) {
+    if (r.state) states.add(r.state);
+  }
   return [...states].sort();
 }
 
 // =============================================================================
 // Search
+//
+// Replaces the search_content Postgres RPC and its ILIKE fallback. Both did a
+// case-insensitive substring match over the same fields, which is what this
+// does directly over the bundled rows.
 // =============================================================================
 
-export async function searchContent(query: string): Promise<
-  Array<{
-    type: "job" | "scheme";
-    slug: string;
-    title: string;
-    description: string;
-    category: string;
-    state: string;
-    publishedAt: string;
-  }>
-> {
-  const trimmed = query.trim();
-  if (!trimmed) return [];
+export type SearchResult = {
+  type: "job" | "scheme";
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  state: string;
+  publishedAt: string;
+};
 
-  // Try full-text search via RPC first.
-  // The RPC may not filter by is_active internally, so we filter client-side
-  // as a safety net to prevent draft content from leaking into results.
-  const { data: rpcData, error: rpcError } = await supabase.rpc(
-    "search_content",
-    { search_query: trimmed }
-  );
+export async function searchContent(query: string): Promise<SearchResult[]> {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
 
-  if (!rpcError && rpcData && rpcData.length > 0) {
-    return rpcData
-      .filter((r: { is_active?: boolean }) => r.is_active !== false)
-      .map(
-        (r: {
-          type: string;
-          slug: string;
-          title: string;
-          description: string;
-          category: string;
-          state: string;
-          published_at: string;
-        }) => ({
-          type: r.type as "job" | "scheme",
-          slug: r.slug,
-          title: r.title,
-          description: r.description,
-          category: r.category,
-          state: r.state,
-          publishedAt: r.published_at,
-        })
-      );
-  }
+  const hit = (...fields: unknown[]) =>
+    fields.some((f) => typeof f === "string" && f.toLowerCase().includes(q));
 
-  // Fallback: ILIKE search for partial word matches
-  const pattern = `%${trimmed}%`;
-
-  const [jobsRes, schemesRes] = await Promise.all([
-    supabase
-      .from("jobs")
-      .select("slug, title, description, category, state, published_at")
-      .eq("is_active", true)
-      .or(
-        `title.ilike.${pattern},description.ilike.${pattern},organization.ilike.${pattern},post_name.ilike.${pattern}`
-      )
-      .order("published_at", { ascending: false }),
-    supabase
-      .from("schemes")
-      .select("slug, title, description, category, state, published_at")
-      .eq("is_active", true)
-      .or(
-        `title.ilike.${pattern},description.ilike.${pattern},ministry.ilike.${pattern}`
-      )
-      .order("published_at", { ascending: false }),
-  ]);
-
-  const jobResults = (jobsRes.data || []).map(
-    (r: {
-      slug: string;
-      title: string;
-      description: string;
-      category: string;
-      state: string;
-      published_at: string;
-    }) => ({
+  const jobHits: SearchResult[] = activeJobs()
+    .filter((r) => hit(r.title, r.description, r.organization, r.post_name))
+    .map((r) => ({
       type: "job" as const,
       slug: r.slug,
       title: r.title,
-      description: r.description,
-      category: r.category,
-      state: r.state,
-      publishedAt: r.published_at,
-    })
-  );
+      description: r.description || "",
+      category: r.category || "",
+      state: r.state || "",
+      publishedAt: r.published_at || "",
+    }));
 
-  const schemeResults = (schemesRes.data || []).map(
-    (r: {
-      slug: string;
-      title: string;
-      description: string;
-      category: string;
-      state: string;
-      published_at: string;
-    }) => ({
+  const schemeHits: SearchResult[] = activeSchemes()
+    .filter((r) => hit(r.title, r.description, r.ministry))
+    .map((r) => ({
       type: "scheme" as const,
       slug: r.slug,
       title: r.title,
-      description: r.description,
-      category: r.category,
-      state: r.state,
-      publishedAt: r.published_at,
-    })
-  );
+      description: r.description || "",
+      category: r.category || "",
+      state: r.state || "",
+      publishedAt: r.published_at || "",
+    }));
 
-  return [...jobResults, ...schemeResults].sort(
-    (a, b) =>
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  return [...jobHits, ...schemeHits].sort((a, b) =>
+    a.publishedAt === b.publishedAt ? 0 : a.publishedAt > b.publishedAt ? -1 : 1
   );
 }
