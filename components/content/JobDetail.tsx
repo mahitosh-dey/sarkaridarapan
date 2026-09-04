@@ -6,6 +6,7 @@ import type { JobPost } from "@/lib/types";
 import { safeFormatDate } from "@/lib/date-utils";
 import { getJobStatus } from "@/lib/job-status";
 import SourceAttribution from "@/components/ui/SourceAttribution";
+import { SITE_URL } from "@/lib/constants";
 
 interface JobDetailProps {
   job: JobPost;
@@ -14,6 +15,18 @@ interface JobDetailProps {
 }
 
 export default function JobDetail({ job, closingSoon = false, daysLeft = null }: JobDetailProps) {
+  // Canonical share URL, NOT window.location.href.
+  //
+  // This is a client component, so `typeof window !== "undefined"` was false
+  // during the server render and true after hydration. React saw different
+  // hrefs on the two passes and reported "Text content does not match
+  // server-rendered HTML" on every detail page. It also meant the server HTML
+  // shipped share links with an empty url, so anyone sharing before hydration
+  // sent a broken link.
+  //
+  // The canonical URL is known from the slug, is identical on both passes, and
+  // is what should be shared anyway: no query strings or tracking parameters.
+  const shareUrl = `${SITE_URL}/sarkari-naukri/${job.slug}`;
   const [copied, setCopied] = useState(false);
 
   // A passed last date closes the job regardless of the isActive flag. When no
@@ -504,7 +517,7 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
 
             {/* WhatsApp Share */}
             <a
-              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(job.title + " - " + (typeof window !== "undefined" ? window.location.href : ""))}`}
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(job.title + " - " + shareUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors duration-150"
@@ -518,7 +531,7 @@ export default function JobDetail({ job, closingSoon = false, daysLeft = null }:
 
             {/* Telegram Share */}
             <a
-              href={`https://t.me/share/url?url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}&text=${encodeURIComponent(job.title)}`}
+              href={`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(job.title)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors duration-150"

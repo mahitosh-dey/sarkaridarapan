@@ -4,12 +4,25 @@ import { useState } from "react";
 import type { SchemePost } from "@/lib/types";
 import { safeFormatDate } from "@/lib/date-utils";
 import SourceAttribution from "@/components/ui/SourceAttribution";
+import { SITE_URL } from "@/lib/constants";
 
 interface SchemeDetailProps {
   scheme: SchemePost;
 }
 
 export default function SchemeDetail({ scheme }: SchemeDetailProps) {
+  // Canonical share URL, NOT window.location.href.
+  //
+  // This is a client component, so `typeof window !== "undefined"` was false
+  // during the server render and true after hydration. React saw different
+  // hrefs on the two passes and reported "Text content does not match
+  // server-rendered HTML" on every detail page. It also meant the server HTML
+  // shipped share links with an empty url, so anyone sharing before hydration
+  // sent a broken link.
+  //
+  // The canonical URL is known from the slug, is identical on both passes, and
+  // is what should be shared anyway: no query strings or tracking parameters.
+  const shareUrl = `${SITE_URL}/sarkari-yojana/${scheme.slug}`;
   const [copied, setCopied] = useState(false);
 
   const updatedDate = safeFormatDate(scheme.updatedAt, "N/A", "long");
@@ -364,7 +377,7 @@ export default function SchemeDetail({ scheme }: SchemeDetailProps) {
 
             {/* WhatsApp Share */}
             <a
-              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(scheme.title + " - " + (typeof window !== "undefined" ? window.location.href : ""))}`}
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(scheme.title + " - " + shareUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors duration-150"
@@ -378,7 +391,7 @@ export default function SchemeDetail({ scheme }: SchemeDetailProps) {
 
             {/* Telegram Share */}
             <a
-              href={`https://t.me/share/url?url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}&text=${encodeURIComponent(scheme.title)}`}
+              href={`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(scheme.title)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors duration-150"
