@@ -57,16 +57,59 @@ export function countContentByState(
   return counts;
 }
 
-export function indexableCategories(jobs: HasCategory[]) {
-  const counts = countJobsByCategory(jobs);
-  return JOB_CATEGORIES.filter(
-    (cat) => (counts.get(cat.slug) ?? 0) >= INDEX_THRESHOLD
-  );
+export type FacetLink = {
+  slug: string;
+  name: string;
+  /** Present for categories, which render an emoji on the homepage grid. */
+  icon?: string;
+  /** Jobs in this facet. What the ordering and the badge use. */
+  jobCount: number;
+  /** Jobs plus schemes, for states. What the index threshold uses, because a
+   *  state page renders both. Equals jobCount for categories. */
+  totalCount: number;
+};
+
+// Ordered by job count, highest first, so the facets with the most to offer
+// lead. Ties fall back to alphabetical for a stable order between builds.
+function byJobsDesc(a: FacetLink, b: FacetLink): number {
+  return b.jobCount - a.jobCount || a.name.localeCompare(b.name);
 }
 
-export function indexableStates(jobs: HasState[], schemes: HasState[]) {
-  const counts = countContentByState(jobs, schemes);
-  return STATES.filter(
-    (state) => (counts.get(state.slug) ?? 0) >= INDEX_THRESHOLD
-  );
+export function indexableCategories(jobs: HasCategory[]): FacetLink[] {
+  const counts = countJobsByCategory(jobs);
+  return JOB_CATEGORIES.map((cat) => {
+    const n = counts.get(cat.slug) ?? 0;
+    return {
+      slug: cat.slug,
+      name: cat.name,
+      icon: (cat as { icon?: string }).icon,
+      jobCount: n,
+      totalCount: n,
+    };
+  })
+    .filter((c) => c.totalCount >= INDEX_THRESHOLD)
+    .sort(byJobsDesc);
+}
+
+export function indexableStates(
+  jobs: (HasState & HasCategory)[],
+  schemes: HasState[]
+): FacetLink[] {
+  // Threshold counts jobs AND schemes, unchanged: a state page renders both,
+  // so a state carried by schemes alone is still a worthwhile page.
+  const total = countContentByState(jobs, schemes);
+
+  const jobsOnly = new Map<string, number>();
+  for (const job of jobs) {
+    if (job.state) jobsOnly.set(job.state, (jobsOnly.get(job.state) ?? 0) + 1);
+  }
+
+  return STATES.map((st) => ({
+    slug: st.slug,
+    name: st.name,
+    jobCount: jobsOnly.get(st.slug) ?? 0,
+    totalCount: total.get(st.slug) ?? 0,
+  }))
+    .filter((st) => st.totalCount >= INDEX_THRESHOLD)
+    .sort(byJobsDesc);
 }

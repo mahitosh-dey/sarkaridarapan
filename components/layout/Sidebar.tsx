@@ -25,6 +25,7 @@ export default async function Sidebar() {
   const sidebarStates = indexableStates(jobs, schemes).map((st) => ({
     slug: st.slug,
     name: st.name,
+    jobCount: st.jobCount,
   }));
 
   const latestJobs = jobs.slice(0, 5);
