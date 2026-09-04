@@ -6,7 +6,7 @@ import Pagination from "@/components/ui/Pagination";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
-import { getSchemePosts } from "@/lib/content";
+import { getSchemePosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, SCHEME_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -50,7 +50,8 @@ export default async function SarkariYojanaPage({ searchParams }: SarkariYojanaL
   let allSchemes: import("@/lib/types").SchemePost[] = [];
   try {
     allSchemes = await getSchemePosts();
-  } catch {
+  } catch (e) {
+    rethrowIfUnavailable(e);
     allSchemes = [];
   }
 

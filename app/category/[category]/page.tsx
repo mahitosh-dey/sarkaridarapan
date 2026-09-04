@@ -7,7 +7,7 @@ import Pagination from "@/components/ui/Pagination";
 import Sidebar from "@/components/layout/Sidebar";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
-import { getJobsByCategory, getJobPosts } from "@/lib/content";
+import { getJobsByCategory, getJobPosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -79,7 +79,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   let categoryJobs: import("@/lib/types").JobPost[] = [];
   try {
     categoryJobs = await getJobsByCategory(params.category);
-  } catch {
+  } catch (e) {
+    rethrowIfUnavailable(e);
     categoryJobs = [];
   }
 

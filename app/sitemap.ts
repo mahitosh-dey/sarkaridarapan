@@ -1,5 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content";
+import {
+  getJobPosts,
+  getSchemePosts,
+  getEntranceExamPosts,
+  rethrowIfUnavailable,
+  raiseUnavailable,
+} from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { getAllGuides } from "@/lib/guides";
 import { isIndexable } from "@/lib/notification-status";
@@ -41,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily" as const,
       priority: 0.8,
     }));
-  } catch { /* skip on error */ }
+  } catch (e) { rethrowIfUnavailable(e); }
 
   // Scheme post pages
   let rawSchemes: import("@/lib/types").SchemePost[] = [];
@@ -54,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
-  } catch { /* skip on error */ }
+  } catch (e) { rethrowIfUnavailable(e); }
 
   // Entrance exam pages
   let examPages: MetadataRoute.Sitemap = [];
@@ -66,7 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
-  } catch { /* skip on error */ }
+  } catch (e) { rethrowIfUnavailable(e); }
 
   // Blog/Guide pages — hardcoded guides from guides.ts
   const hardcodedGuidePages: MetadataRoute.Sitemap = getAllGuides().map((guide) => ({
@@ -86,7 +92,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.6,
     }));
-  } catch { /* skip on error */ }
+  } catch (e) { rethrowIfUnavailable(e); }
 
   // Threshold must match the noindex threshold in
   // app/state/[state]/page.tsx and app/category/[category]/page.tsx —
@@ -94,6 +100,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // "Noindex page in sitemap" audit warnings and wastes crawl budget.
   // Category pages count jobs only. State pages count jobs + schemes since
   // the state view renders both.
+  // Guard against publishing a gutted sitemap.
+  //
+  // On 2026-09-01 a build ran while Supabase was cut off, every content fetch
+  // came back empty, and the sitemap deployed with 12 static URLs instead of
+  // 216. Google was handed a sitemap that had silently dropped every job,
+  // scheme, exam and blog URL. Failing here instead means the build fails and
+  // the previous deployment, with its intact sitemap, stays live.
+  const contentUrlCount =
+    jobPages.length + schemePages.length + examPages.length + blogPostPages.length;
+  if (contentUrlCount === 0) {
+    raiseUnavailable(
+      "sitemap",
+      "no job, scheme, exam or blog URLs resolved; refusing to publish a static-only sitemap"
+    );
+  }
+
   const INDEX_THRESHOLD = 3;
 
   const jobCountByCategory = new Map<string, number>();

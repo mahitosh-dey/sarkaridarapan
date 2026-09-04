@@ -11,6 +11,7 @@ import {
   getJobsByState,
   getSchemesByState,
   getJobPosts,
+  rethrowIfUnavailable,
 } from "@/lib/content";
 import { SITE_NAME, SITE_URL, STATES, REVALIDATE_INTERVAL } from "@/lib/constants";
 
@@ -90,13 +91,15 @@ export default async function StatePage({ params, searchParams }: StatePageProps
 
   try {
     stateJobs = await getJobsByState(params.state);
-  } catch {
+  } catch (e) {
+    rethrowIfUnavailable(e);
     stateJobs = [];
   }
 
   try {
     stateSchemes = await getSchemesByState(params.state);
-  } catch {
+  } catch (e) {
+    rethrowIfUnavailable(e);
     stateSchemes = [];
   }
 

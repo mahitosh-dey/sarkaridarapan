@@ -153,15 +153,91 @@ const EXAM_LIST_COLUMNS =
   "description, reading_time, image, official_link, " +
   "admit_card_link, result_link, quality_flag, reviewed_at, verified_at";
 
+// =============================================================================
+// Fetch failure vs no data
+//
+// On 2026-09-01 Supabase cut the project off for exceeding its egress quota.
+// Every content fetch failed, every fetch returned [] or null, and the pages
+// rendered as though the site were genuinely empty. Those empty renders were
+// then cached by ISR, so a database outage became a CONTENT outage: detail
+// pages served 200 with "Coming Soon" and noindex, which tells Google to drop
+// pages it had already indexed, and listing pages served 200 with zero content
+// and index,follow. The sitemap shrank from 216 URLs to 12.
+//
+// The bug was treating a failed query as an empty result. They are different
+// things and must be handled differently:
+//
+//   query succeeded, 0 rows  -> genuinely empty, render it
+//   query failed             -> throw ContentUnavailableError
+//
+// Throwing is what protects the site. When a render throws during ISR
+// revalidation Next keeps serving the last good cached page, so an outage
+// leaves existing pages untouched instead of overwriting them with an empty
+// shell. With no cache to fall back on the route 500s, which Google treats as
+// temporary and retries, unlike a 200 on an empty page.
+// =============================================================================
+
+export class ContentUnavailableError extends Error {
+  constructor(label: string, cause?: string) {
+    super(`Content source unavailable while fetching ${label}${cause ? `: ${cause}` : ""}`);
+    this.name = "ContentUnavailableError";
+  }
+}
+
+export function isContentUnavailable(e: unknown): e is ContentUnavailableError {
+  return e instanceof ContentUnavailableError;
+}
+
+// Use in a catch around a PRIMARY content fetch: the thing the page is about,
+// or anything feeding the sitemap. Re-throws an outage so the page fails and
+// ISR keeps the last good render, while still letting genuine per-page errors
+// fall through to whatever local fallback the caller wants.
+//
+// Do NOT use around SECONDARY content (related jobs, sidebars, fallback
+// listings). Those should degrade quietly rather than take the page down.
+export function rethrowIfUnavailable(e: unknown): void {
+  if (isContentUnavailable(e)) throw e;
+}
+
+// Escape hatch. With ALLOW_DEGRADED_BUILD=1 a content-source failure is logged
+// loudly and treated as empty instead of throwing, which lets a build complete
+// while the database is unreachable.
+//
+// This ships an EMPTY SITE and is the exact failure of 2026-09-01: empty pages
+// cached by ISR, detail pages serving noindex, the sitemap cut to its static
+// entries. Use it only to get an unrelated emergency fix out, never as a way
+// around a database outage, and redeploy as soon as the source is back.
+const ALLOW_DEGRADED_BUILD = process.env.ALLOW_DEGRADED_BUILD === "1";
+
+// Throws unless the override is set. Callers return their empty value after
+// calling this, which is only reached in degraded mode.
+export function raiseUnavailable(label: string, cause?: string): void {
+  if (ALLOW_DEGRADED_BUILD) {
+    console.error(
+      `ALLOW_DEGRADED_BUILD: content source failed for ${label} (${cause}). ` +
+        `Continuing with EMPTY data. This will publish an empty page or sitemap.`
+    );
+    return;
+  }
+  throw new ContentUnavailableError(label, cause);
+}
+
+// PostgREST reports "no rows returned" from .single() as PGRST116. That is a
+// genuine miss (bad slug) and must stay a 404, not an outage.
+function isNoRowsError(error: { code?: string } | null): boolean {
+  return error?.code === "PGRST116";
+}
+
 /* eslint-disable */
 
-// Runs a projected list query, retrying with "*" if the projection names a
-// column the table does not have. Returns [] only on a real failure.
 // Set of projections known to be rejected by the current schema. Once a
 // projection fails we stop attempting it, so a schema gap costs one wasted
 // round trip per process rather than one on every query.
 const rejectedProjections = new Set<string>();
 
+// Runs a projected list query, retrying with "*" if the projection names a
+// column the table does not have. Throws ContentUnavailableError on a real
+// failure; never returns [] to paper over one.
 async function listQuery(
   build: (cols: string) => any,
   columns: string,
@@ -170,7 +246,7 @@ async function listQuery(
   if (rejectedProjections.has(columns)) {
     const { data, error } = await build("*");
     if (error) {
-      console.error(`Error fetching ${label}:`, error.message);
+      raiseUnavailable(label, error.message);
       return [];
     }
     return data || [];
@@ -192,7 +268,7 @@ async function listQuery(
   }
 
   if (error) {
-    console.error(`Error fetching ${label}:`, error.message);
+    raiseUnavailable(label, error.message);
     return [];
   }
   return data || [];
@@ -233,7 +309,13 @@ export async function getJobBySlug(slug: string): Promise<JobPost | null> {
         .eq("is_active", true)
         .single();
 
-      if (error || !data) return null;
+      // A missing row is a real 404. Any other error is an outage and must
+      // not be rendered as "this page does not exist".
+      if (error && !isNoRowsError(error)) {
+        raiseUnavailable(`job ${slug}`, error.message);
+        return null;
+      }
+      if (!data) return null;
 
       return mapJobRow(data);
     },
@@ -277,7 +359,13 @@ export async function getSchemeBySlug(
         .eq("is_active", true)
         .single();
 
-      if (error || !data) return null;
+      // A missing row is a real 404. Any other error is an outage and must
+      // not be rendered as "this page does not exist".
+      if (error && !isNoRowsError(error)) {
+        raiseUnavailable(`scheme ${slug}`, error.message);
+        return null;
+      }
+      if (!data) return null;
 
       return mapSchemeRow(data);
     },
@@ -418,7 +506,13 @@ export async function getEntranceExamBySlug(
         .eq("is_active", true)
         .single();
 
-      if (error || !data) return null;
+      // A missing row is a real 404. Any other error is an outage and must
+      // not be rendered as "this page does not exist".
+      if (error && !isNoRowsError(error)) {
+        raiseUnavailable(`entrance exam ${slug}`, error.message);
+        return null;
+      }
+      if (!data) return null;
 
       return mapEntranceExamRow(data);
     },

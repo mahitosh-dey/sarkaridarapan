@@ -6,7 +6,7 @@ import Pagination from "@/components/ui/Pagination";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
-import { getJobPosts } from "@/lib/content";
+import { getJobPosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { isDatePast } from "@/lib/date-utils";
 
@@ -51,7 +51,8 @@ export default async function SarkariNaukriPage({ searchParams }: SarkariNaukriP
   let allJobs: import("@/lib/types").JobPost[] = [];
   try {
     allJobs = await getJobPosts();
-  } catch {
+  } catch (e) {
+    rethrowIfUnavailable(e);
     allJobs = [];
   }
 

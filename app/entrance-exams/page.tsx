@@ -6,7 +6,7 @@ import Pagination from "@/components/ui/Pagination";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
-import { getEntranceExamPosts } from "@/lib/content";
+import { getEntranceExamPosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, ENTRANCE_EXAM_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { isDatePast } from "@/lib/date-utils";
 
@@ -51,7 +51,8 @@ export default async function EntranceExamsPage({ searchParams }: EntranceExamsL
   let allExams: import("@/lib/types").EntranceExamPost[] = [];
   try {
     allExams = await getEntranceExamPosts();
-  } catch {
+  } catch (e) {
+    rethrowIfUnavailable(e);
     allExams = [];
   }
 

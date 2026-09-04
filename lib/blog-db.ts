@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { supabaseContent } from "@/lib/supabase-content";
 import type { Guide, FAQItem } from "@/lib/guides";
+import { raiseUnavailable } from "@/lib/content";
 
 function parseFaqsFromMarkdown(content: string): FAQItem[] | undefined {
   const sectionMatch = content.match(
@@ -76,18 +77,19 @@ const BLOG_LIST_TTL = 3600;
 
 export const getPublishedDbPosts = unstable_cache(
   async (): Promise<Guide[]> => {
-    try {
-      const { data, error } = await supabaseContent
-        .from("blog_posts")
-        .select(BLOG_LIST_COLUMNS)
-        .eq("is_active", true)
-        .order("published_at", { ascending: false });
+    // No try/catch: a failed fetch must throw so ISR keeps the last good
+    // render instead of caching an empty blog list. See lib/content.ts.
+    const { data, error } = await supabaseContent
+      .from("blog_posts")
+      .select(BLOG_LIST_COLUMNS)
+      .eq("is_active", true)
+      .order("published_at", { ascending: false });
 
-      if (error || !data) return [];
-      return (data as unknown as DbBlogPost[]).map(dbPostToGuide);
-    } catch {
+    if (error) {
+      raiseUnavailable("blog posts", error.message);
       return [];
     }
+    return ((data || []) as unknown as DbBlogPost[]).map(dbPostToGuide);
   },
   ["all-blog-posts"],
   { revalidate: BLOG_LIST_TTL, tags: ["blog-posts"] }
@@ -96,19 +98,18 @@ export const getPublishedDbPosts = unstable_cache(
 export async function getPostsByAuthor(author: string): Promise<Guide[]> {
   return unstable_cache(
     async () => {
-      try {
-        const { data, error } = await supabaseContent
-          .from("blog_posts")
-          .select(BLOG_LIST_COLUMNS)
-          .eq("is_active", true)
-          .eq("author", author)
-          .order("published_at", { ascending: false });
+      const { data, error } = await supabaseContent
+        .from("blog_posts")
+        .select(BLOG_LIST_COLUMNS)
+        .eq("is_active", true)
+        .eq("author", author)
+        .order("published_at", { ascending: false });
 
-        if (error || !data) return [];
-        return (data as unknown as DbBlogPost[]).map(dbPostToGuide);
-      } catch {
+      if (error) {
+        raiseUnavailable(`blog posts by ${author}`, error.message);
         return [];
       }
+      return ((data || []) as unknown as DbBlogPost[]).map(dbPostToGuide);
     },
     [`blog-posts-author-${author}`],
     { revalidate: BLOG_LIST_TTL, tags: ["blog-posts"] }
@@ -118,19 +119,20 @@ export async function getPostsByAuthor(author: string): Promise<Guide[]> {
 export async function getDbPostBySlug(slug: string): Promise<Guide | null> {
   return unstable_cache(
     async () => {
-      try {
-        const { data, error } = await supabaseContent
-          .from("blog_posts")
-          .select("*")
-          .eq("slug", slug)
-          .eq("is_active", true)
-          .single();
+      const { data, error } = await supabaseContent
+        .from("blog_posts")
+        .select("*")
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .single();
 
-        if (error || !data) return null;
-        return dbPostToGuide(data as DbBlogPost);
-      } catch {
+      // PGRST116 is "no rows": a real 404. Anything else is an outage.
+      if (error && error.code !== "PGRST116") {
+        raiseUnavailable(`blog post ${slug}`, error.message);
         return null;
       }
+      if (!data) return null;
+      return dbPostToGuide(data as DbBlogPost);
     },
     [`blog-post-${slug}`],
     { revalidate: 300, tags: ["blog-posts", `blog-post-${slug}`] }
