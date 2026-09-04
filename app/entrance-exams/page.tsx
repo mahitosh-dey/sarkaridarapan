@@ -19,7 +19,6 @@ interface EntranceExamsListPageProps {
 export async function generateMetadata({
   searchParams,
 }: EntranceExamsListPageProps): Promise<Metadata> {
-  const hasCategory = Boolean(searchParams.category);
   const canonicalUrl = `${SITE_URL}/entrance-exams`;
 
   return {
@@ -29,9 +28,22 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalUrl,
     },
-    robots: hasCategory
-      ? { index: false, follow: true }
-      : { index: true, follow: true },
+    // The canonical above points every ?category= filtered view at /entrance-exams.
+    // Do NOT add a noindex here as well.
+    //
+    // rel=canonical and noindex together is a conflicting pair: the canonical
+    // says "consolidate this into the target", the noindex says "drop this
+    // URL". Google's own guidance is to avoid the combination, because the
+    // noindex can end up attributed to the CANONICAL TARGET. Here that target
+    // is /entrance-exams itself, one of the site's most important pages.
+    //
+    // Bing flagged six of these filtered URLs under "important pages using
+    // meta robots tag that need review" on 2026-09-04, while GSC showed 10
+    // pages indexed against 279 not indexed.
+    //
+    // A canonical alone handles the duplicate correctly: Google indexes the
+    // base listing and folds the filtered variants into it.
+    robots: { index: true, follow: true },
     openGraph: {
       title: `Entrance Exams 2026 - Upcoming Entrance Exams in India | ${SITE_NAME}`,
       description:
