@@ -9,11 +9,8 @@ import {
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { getAllGuides } from "@/lib/guides";
 import { isIndexable } from "@/lib/notification-status";
-import {
-  SITE_URL,
-  STATES,
-  JOB_CATEGORIES,
-} from "@/lib/constants";
+import { indexableCategories, indexableStates } from "@/lib/facet-index";
+import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 3600;
 
@@ -116,41 +113,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
-  const INDEX_THRESHOLD = 3;
+  // Threshold lives in lib/facet-index.ts so the sitemap, the pages' own
+  // robots policies and the homepage's internal links cannot drift apart.
+  const categoryPages: MetadataRoute.Sitemap = indexableCategories(rawJobs).map((cat) => ({
+    url: `${SITE_URL}/category/${cat.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
 
-  const jobCountByCategory = new Map<string, number>();
-  const contentCountByState = new Map<string, number>();
-  for (const job of rawJobs) {
-    if (job.category) {
-      jobCountByCategory.set(job.category, (jobCountByCategory.get(job.category) ?? 0) + 1);
-    }
-    if (job.state) {
-      contentCountByState.set(job.state, (contentCountByState.get(job.state) ?? 0) + 1);
-    }
-  }
-  for (const scheme of rawSchemes) {
-    if (scheme.state) {
-      contentCountByState.set(scheme.state, (contentCountByState.get(scheme.state) ?? 0) + 1);
-    }
-  }
-
-  const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES
-    .filter((cat) => (jobCountByCategory.get(cat.slug) ?? 0) >= INDEX_THRESHOLD)
-    .map((cat) => ({
-      url: `${SITE_URL}/category/${cat.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    }));
-
-  const statePages: MetadataRoute.Sitemap = STATES
-    .filter((state) => (contentCountByState.get(state.slug) ?? 0) >= INDEX_THRESHOLD)
-    .map((state) => ({
-      url: `${SITE_URL}/state/${state.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    }));
+  const statePages: MetadataRoute.Sitemap = indexableStates(rawJobs, rawSchemes).map((state) => ({
+    url: `${SITE_URL}/state/${state.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
 
   return [
     ...staticPages,

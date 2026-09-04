@@ -14,8 +14,9 @@ import { getJobPosts, getSchemePosts, getEntranceExamPosts } from "@/lib/content
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { isDatePast, safeFormatDate } from "@/lib/date-utils";
 import { isClosingSoon } from "@/lib/utils";
-import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, STATES, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { HOME_FAQS } from "@/lib/faq-data";
+import { indexableCategories, indexableStates } from "@/lib/facet-index";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -38,6 +39,13 @@ export default async function HomePage() {
     getEntranceExamPosts(),
     getPublishedDbPosts(),
   ]);
+
+  // Only link facet pages that clear the index threshold. Linking the ones
+  // below it points the homepage at pages it has itself marked noindex, and
+  // those links are how Google discovers URLs it then declines to crawl.
+  // See lib/facet-index.ts.
+  const linkableCategories = indexableCategories(jobs);
+  const linkableStates = indexableStates(jobs, schemes);
 
   // Sort active items first within each section before slicing
   const sortedJobs = [...jobs].sort((a, b) => {
@@ -346,7 +354,7 @@ export default async function HomePage() {
                 Browse by Category
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {JOB_CATEGORIES.map((category) => (
+                {linkableCategories.map((category) => (
                   <Link
                     key={category.slug}
                     href={`/category/${category.slug}`}
@@ -367,7 +375,7 @@ export default async function HomePage() {
                 Browse by State
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {STATES.map((state) => (
+                {linkableStates.map((state) => (
                   <Link
                     key={state.slug}
                     href={`/state/${state.slug}`}
