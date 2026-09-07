@@ -37,6 +37,10 @@ def apply(table, slug, changes, reason):
         print(f"    after : {str(new)[:150]!r}")
         row[k] = new
 
+    stamp = datetime.now(timezone.utc).isoformat(sep=" ", timespec="seconds")
+    row["updated_at"] = stamp
+    print(f"  updated_at -> {stamp}")
+
     with open(path, "w", encoding="utf-8") as f:
         json.dump(rows, f, ensure_ascii=False, indent=0, separators=(",", ":"))
 
