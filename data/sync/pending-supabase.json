@@ -1,0 +1,19 @@
+[
+  {
+    "recorded_at": "2026-09-07T03:30:05.457855+00:00",
+    "table": "entrance_exams",
+    "slug": "nvs-pgt-tgt-2026",
+    "changes": {
+      "exam_date": "Regular CBSE track: TGT Tier 1 CBT held 10 and 11 January 2026. Contractual track for the 2026-27 session: region-wise walk-in interviews, with dates set separately by each NVS regional office.",
+      "application_start": null,
+      "application_end": null
+    },
+    "previous": {
+      "exam_date": "PGT admit card 8 Jan 2026, TGT Tier-1 CBT 10-11 Jan 2026, TGT Tier-2 CBT 29 Mar 2026",
+      "application_start": "2026-04-03",
+      "application_end": "2026-04-17"
+    },
+    "reason": "Structured fields blended two NVS recruitments: exam dates from the regular CBSE track with an application window that matched neither. The contractual track has no national window, only regional ones. Cleared rather than replaced; the 3,232-word body already separates the two tracks correctly.",
+    "applied_to_supabase": false
+  }
+]
