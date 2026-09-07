@@ -225,5 +225,65 @@
     },
     "reason": "Page written 26 Aug 2026 said the CRP RRB XV notification was not yet published; IBPS published it on 31 Aug. Page told readers applications were not open while the window ran 1-21 Sep. vacancies 4,128 (a speculative figure its own prose warned against) -> 13,706 published; last_date 15 Sep -> 21 Sep.",
     "applied_to_supabase": false
+  },
+  {
+    "recorded_at": "2026-09-07T07:47:28.060862+00:00",
+    "table": "jobs",
+    "slug": "upsssc-forest-guard-2026",
+    "changes": {
+      "title": "UPSSSC Forest Guard 2026: 708 Posts, Exam Pattern and PET",
+      "description": "UPSSSC Forest Guard 2026 applications closed on 20 July. 708 posts for PET 2025 qualified candidates. Main exam awaited, then the physical test. Full guide."
+    },
+    "previous": {
+      "title": "UPSSSC Forest Guard 2026: 708 Posts, Apply by 20 July",
+      "description": "UPSSSC Forest Guard 2026 recruitment: 708 vacancies (647 Forest Guard + 61 Wildlife Guard). PET 2025 qualified only. Apply by 20 July 2026 at upsssc.gov.in."
+    },
+    "reason": "Applications closed 49 days ago; title still read 'Apply by 20 July'. Repositioned to the main exam and PST/PET stage.",
+    "applied_to_supabase": false
+  },
+  {
+    "recorded_at": "2026-09-07T07:47:28.070460+00:00",
+    "table": "jobs",
+    "slug": "nbems-recruitment-2026",
+    "changes": {
+      "title": "NBEMS Recruitment 2026: 53 Central Government Posts Guide",
+      "description": "NBEMS Recruitment 2026 applications closed on 20 July for 53 permanent posts at the New Delhi HQ. CBT was set for 5 and 6 September. Pattern and salary."
+    },
+    "previous": {
+      "title": "NBEMS Recruitment 2026: 53 Vacancies | Apply by 20 Jul",
+      "description": "NBEMS Recruitment 2026: 53 permanent central government posts at New Delhi HQ. Apply online 29 Jun to 20 Jul at natboard.edu.in. CBT on 5 to 6 Sep. Fee ₹1,770."
+    },
+    "reason": "Applications closed 49 days ago; title still read 'Apply by 20 Jul'. Repositioned to the CBT and result stage.",
+    "applied_to_supabase": false
+  },
+  {
+    "recorded_at": "2026-09-07T07:47:28.079179+00:00",
+    "table": "jobs",
+    "slug": "indian-navy-ssc-officer-2026",
+    "changes": {
+      "title": "Indian Navy SSC Officer 2026: 275 Posts, SSB and Training",
+      "description": "Indian Navy SSC Officer 2026 applications closed on 27 July. 275 posts across 12 branches. SSB call-ups go out by email, training from June 2027 at INA."
+    },
+    "previous": {
+      "title": "Indian Navy SSC Officer 2026: 275 Vacancies | Apply by 27 Jul",
+      "description": "Indian Navy SSC Officer 2026 (AT 27 Course): 275 vacancies across 12 branches. Apply 25 Jun to 27 Jul at joinindiannavy.gov.in. Sub Lt salary ₹1.2L/month."
+    },
+    "reason": "Applications closed 42 days ago; title still read 'Apply by 27 Jul'. Repositioned to the SSB interview stage.",
+    "applied_to_supabase": false
+  },
+  {
+    "recorded_at": "2026-09-07T07:47:28.087906+00:00",
+    "table": "jobs",
+    "slug": "ibps-clerk-2026",
+    "changes": {
+      "title": "IBPS Clerk 2026: 11,403 CSA Posts, Prelims and Mains Guide",
+      "description": "IBPS Clerk 2026 applications closed on 21 August for 11,403 Customer Service Associate posts. Prelims 10 and 11 October, mains 27 December. Pattern guide."
+    },
+    "previous": {
+      "title": "IBPS Clerk 2026: 11,403 CSA Vacancies, Apply by 21 August",
+      "description": "IBPS Clerk 2026 is out for 11,403 Customer Service Associate posts across 11 banks. Apply online at ibps.in by 21 August 2026. Prelims 10 and 11 October."
+    },
+    "reason": "Applications closed 17 days ago; title still read 'Apply by 21 August'. Repositioned to the prelims and mains stage.",
+    "applied_to_supabase": false
   }
 ]
