@@ -1,4 +1,5 @@
 import type { TocItem } from "@/components/ui/TableOfContents";
+import { isRedirectedBlogSlug } from "./redirected-slugs";
 
 // =============================================================================
 // Guide Types
@@ -2535,6 +2536,7 @@ export function getGuideBySlug(slug: string): Guide | undefined {
 export function getRelatedGuidesForJob(category: string): Guide[] {
   const cat = category.toLowerCase();
   return guides
+    .filter((guide) => !isRedirectedBlogSlug(guide.slug))
     .filter((guide) =>
       guide.tags.some((tag) => tag.toLowerCase().includes(cat))
     )
