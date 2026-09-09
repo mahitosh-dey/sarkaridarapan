@@ -16,7 +16,8 @@ blog_posts.tags) are parsed from their string form back into real structures.
 The string "null" that Postgres CSV export writes for NULL becomes None.
 search_vector is dropped: it is large, and nothing renders it.
 """
-import csv, json, sys, os
+import csv, json, sys, os, shutil
+from datetime import datetime, timezone
 
 csv.field_size_limit(sys.maxsize)
 
@@ -80,6 +81,58 @@ def convert(table):
     return out
 
 
+# ---------------------------------------------------------------------------
+# Guard: never overwrite data/*.json while edits are waiting to go back.
+#
+# The site has been rendering from these files since the 2026-09-01 outage, and
+# fixes made during it were written here rather than to Supabase. Re-exporting
+# before those are replayed would silently revert them: ten corrected dates and
+# twenty-one repositioned pages, gone without an error message.
+#
+# Replay first:  node scripts/replay-to-supabase.mjs
+# ---------------------------------------------------------------------------
+PENDING = "data/sync/pending-supabase.json"
+if os.path.exists(PENDING):
+    with open(PENDING, encoding="utf-8") as f:
+        queued = json.load(f)
+    unreplayed = [e for e in queued if not e.get("applied_to_supabase")]
+    if unreplayed:
+        print(f"ABORT: {len(unreplayed)} edit(s) in {PENDING} have not been replayed "
+              f"into Supabase.")
+        print("Re-exporting now would overwrite data/*.json and silently revert them.\n")
+        for e in unreplayed[:10]:
+            print(f"  {e['table']}/{e['slug']}: {', '.join(e['changes'])}")
+        if len(unreplayed) > 10:
+            print(f"  ... and {len(unreplayed) - 10} more")
+        print("\nRun this first:  node scripts/replay-to-supabase.mjs")
+        print("Override only if you know the edits are already in Supabase: "
+              "ALLOW_UNREPLAYED=1")
+        if os.environ.get("ALLOW_UNREPLAYED") != "1":
+            sys.exit(1)
+        print("\nALLOW_UNREPLAYED=1 set, continuing anyway.\n")
+
+# Back up whatever is currently in data/ before writing over it.
+#
+# Added after ALLOW_UNREPLAYED=1 was tested on 2026-09-09 and immediately
+# overwrote data/*.json from CSVs dated the 4th, reverting every edit made
+# since. It was recoverable only because the files were committed. An escape
+# hatch that destroys data with no way back is not an escape hatch.
+def backup_existing():
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    dest = os.path.join("data", ".backup", stamp)
+    saved = []
+    for t in ["jobs", "schemes", "entrance_exams", "blog_posts"]:
+        src = os.path.join("data", f"{t}.json")
+        if os.path.exists(src):
+            os.makedirs(dest, exist_ok=True)
+            shutil.copy2(src, os.path.join(dest, f"{t}.json"))
+            saved.append(t)
+    if saved:
+        print(f"Backed up {len(saved)} existing file(s) to {dest}\n")
+    return dest
+
+
+backup_existing()
 print("Converting Supabase CSV exports to static JSON:")
 tables = {t: convert(t) for t in ["jobs", "schemes", "entrance_exams", "blog_posts"]}
 

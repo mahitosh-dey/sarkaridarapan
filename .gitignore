@@ -36,3 +36,6 @@ next-env.d.ts
 
 # One-time CSV staging area for the static migration; data/*.json is the source of truth
 export/
+
+# Timestamped snapshots taken before any data/*.json overwrite
+data/.backup/
