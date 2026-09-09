@@ -9,6 +9,7 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { getJobsByCategory, getJobPosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { fitTitle, fitDescription, STATE_TITLE_ENDINGS, CATEGORY_DESC_ENDINGS } from "@/lib/meta-fit";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -30,15 +31,18 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const jobs = await getJobsByCategory(params.category).catch(() => []);
   const count = jobs.length;
 
-  const title =
-    count > 0
-      ? `${categoryData.name} Government Jobs 2026: ${count} Latest Opening${count === 1 ? "" : "s"} | ${SITE_NAME}`
-      : `${categoryData.name} Government Jobs 2026: Latest Sarkari Naukri | ${SITE_NAME}`;
+  // Length-fitted; see the note on app/state/[state]/page.tsx. The live audit
+  // found every category description at 90 to 97c against the 150 to 160 rule,
+  // and /category/state-psc at 67c on title because the vacancy count was
+  // interpolated into it. The count now lives only in the description.
+  const title = fitTitle(`${categoryData.name} Government Jobs 2026`, STATE_TITLE_ENDINGS).text;
 
-  const description =
+  const description = fitDescription(
     count > 0
-      ? `${categoryData.name} government jobs 2026: ${count} latest opening${count === 1 ? "" : "s"}, eligibility, salary, and application details.`
-      : `Latest ${categoryData.name} government job vacancies 2026. Find eligibility, salary, application dates, and apply online for ${categoryData.name} sarkari naukri.`;
+      ? `${categoryData.name} government jobs 2026: ${count} current opening${count === 1 ? "" : "s"} with eligibility, salary, exam pattern, last date and how to apply`
+      : `${categoryData.name} government jobs 2026. Current vacancies with eligibility, salary, exam pattern, last date and how to apply`,
+    CATEGORY_DESC_ENDINGS
+  ).text;
 
   // 3-tier robots policy so Google stops wasting crawl budget on thin pages.
   // Empty pages get nofollow too — nothing worth passing signal through.

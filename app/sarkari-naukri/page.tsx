@@ -22,9 +22,9 @@ export async function generateMetadata({
   const canonicalUrl = `${SITE_URL}/sarkari-naukri`;
 
   return {
-    title: "Latest Sarkari Naukri 2026 - Government Jobs",
+    title: "Latest Sarkari Naukri 2026: Government Jobs and Vacancies",
     description:
-      "Browse all latest Sarkari Naukri 2026 government job notifications. Find central & state government jobs, PSU jobs, defence jobs, banking jobs, railway jobs, and more.",
+      "Browse every Sarkari Naukri 2026 notification on one page: central and state government jobs, PSU, defence, banking and railway, with last dates for each.",
     alternates: {
       canonical: canonicalUrl,
     },

@@ -8,7 +8,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Admit Card 2026 - Download Government Exam Hall Tickets",
   description:
-    "Download latest admit cards and hall tickets for government exams 2026. Get direct links to download admit cards for SSC, UPSC, Railway, Banking, Defence, and state-level exams.",
+    "Admit cards and hall tickets for government exams 2026, with direct download links for SSC, UPSC, Railway, Banking, Defence and other state-level exams.",
   alternates: {
     canonical: `${SITE_URL}/admit-card`,
   },

@@ -9,7 +9,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Sarkari Result 2026 - Latest Government Exam Results",
   description:
-    "Check latest Sarkari Result 2026. Get government exam results for SSC, UPSC, Railway, Banking, State PSC, and other competitive exams. Direct links to official result pages.",
+    "Latest Sarkari Result 2026 for SSC, UPSC, Railway, Banking and State PSC exams, with direct links to the official result page for every announcement made.",
   alternates: {
     canonical: `${SITE_URL}/results`,
   },

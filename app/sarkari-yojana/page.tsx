@@ -21,9 +21,9 @@ export async function generateMetadata({
   const canonicalUrl = `${SITE_URL}/sarkari-yojana`;
 
   return {
-    title: "Sarkari Yojana 2026 - Government Schemes List",
+    title: "Sarkari Yojana 2026: Government Schemes List and Guide",
     description:
-      "Complete list of Sarkari Yojana 2026 - Central and State Government Schemes. Find eligibility, benefits, application process for PM Yojana, state schemes, and more.",
+      "Every Sarkari Yojana 2026 in one list, central and state. Check who is eligible, what each scheme pays and how to apply, with the official portal links.",
     alternates: {
       canonical: canonicalUrl,
     },

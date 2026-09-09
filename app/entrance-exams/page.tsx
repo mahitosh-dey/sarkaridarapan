@@ -24,7 +24,7 @@ export async function generateMetadata({
   return {
     title: "Entrance Exams 2026 - Upcoming Entrance Exams in India",
     description:
-      "Complete list of upcoming entrance exams 2026 in India. Find exam dates, eligibility, syllabus, admit card, and results for engineering, medical, management, law, and more.",
+      "Upcoming entrance exams 2026 in India with exam dates, eligibility and syllabus for engineering, medical, management and law, plus admit cards and results.",
     alternates: {
       canonical: canonicalUrl,
     },

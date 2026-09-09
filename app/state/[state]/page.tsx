@@ -14,6 +14,7 @@ import {
   rethrowIfUnavailable,
 } from "@/lib/content";
 import { SITE_NAME, SITE_URL, STATES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { fitTitle, fitDescription, STATE_TITLE_ENDINGS, STATE_DESC_ENDINGS } from "@/lib/meta-fit";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -45,11 +46,22 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const schemeCount = stateSpecificSchemes.length;
   const count = jobCount + schemeCount;
 
-  const title = `${stateData.name} Government Jobs 2026: Latest Sarkari Naukri | ${SITE_NAME}`;
-  const description =
+  // Length-fitted rather than fixed. State names run from "Goa" to "Dadra and
+  // Nagar Haveli and Daman and Diu", and the live audit on 2026-09-09 found 8
+  // state titles at 66 to 75c against the 50 to 65 rule and 8 descriptions at
+  // 94 to 104c against 150 to 160. A description under 150 gets rewritten by
+  // Google, so those snippets were not ours. See lib/meta-fit.ts.
+  //
+  // The count is deliberately out of the TITLE and kept in the description: it
+  // changes whenever a job lands, and a title that churns is a signal that
+  // churns. It was also what pushed /category/state-psc to 67c.
+  const title = fitTitle(`${stateData.name} Government Jobs 2026`, STATE_TITLE_ENDINGS).text;
+  const description = fitDescription(
     count > 0
-      ? `${jobCount} government job${jobCount === 1 ? "" : "s"} and ${schemeCount} state scheme${schemeCount === 1 ? "" : "s"} in ${stateData.name} 2026. Check eligibility, salary & last date.`
-      : `Browse latest government jobs in ${stateData.name} 2026 on SarkariDarapan. Updated daily.`;
+      ? `${jobCount} government job${jobCount === 1 ? "" : "s"} and ${schemeCount} state scheme${schemeCount === 1 ? "" : "s"} in ${stateData.name} for 2026, with eligibility, salary, last date and how to apply`
+      : `Latest government jobs in ${stateData.name} 2026. Browse current openings with eligibility, salary, last date and how to apply`,
+    STATE_DESC_ENDINGS
+  ).text;
 
   // 3-tier robots policy so Google stops wasting crawl budget on thin pages.
   // Empty pages get nofollow too — nothing worth passing signal through.
