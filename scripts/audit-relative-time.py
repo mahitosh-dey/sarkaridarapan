@@ -83,6 +83,11 @@ for table, route in [("jobs", "/sarkari-naukri"), ("schemes", "/sarkari-yojana")
             if v is None:
                 continue
             text = v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
+            # Strip URLs before matching. agnipathvayu.cdac.in serves a path
+            # containing "/img/upcoming/", which the shouted-upcoming pattern
+            # matched on indian-air-force-agniveer-vayu-2026. A word inside a
+            # link is not a claim about the reader's present moment.
+            text = re.sub(r"https?://\S+", " ", text)
             for pat, label in PATTERNS:
                 for m in re.finditer(pat, text, re.I):
                     a, b = max(0, m.start() - 55), min(len(text), m.end() + 55)
