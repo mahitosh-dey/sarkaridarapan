@@ -13,6 +13,20 @@ click and reads as neglect to both the reader and to Google.
 Title and description matter most: they are what appears in search results, and
 they are the part a reader acts on before ever reaching the page.
 
+VERIFY BEFORE REPOSITIONING ANYTHING THIS REPORTS AS RECENTLY CLOSED.
+
+This reads OUR stored date. It cannot know that the authority moved the
+deadline. On 2026-09-16 it flagged cat-2026 as "closed 1d ago" and the queued
+action was to reposition the page to closed. IIM Indore had extended
+registration to 22 September. Repositioning would have told candidates with six
+days in hand that the window had shut, using a tool built to prevent exactly
+that.
+
+Extensions are routine here and are announced close to the original date. Two
+caught in ten days: NSP Pre-Matric moved 31 August to 30 September, and CAT
+moved 15 to 22 September. A window this reports as newly shut is a prompt to
+check the source, not a finding.
+
 Read-only. Ranked by how long the window has been shut.
 """
 import json, re, sys
@@ -67,6 +81,12 @@ for table, route, field in [("jobs", "/sarkari-naukri", "last_date"),
 
 print(f"Today is {TODAY}.\n")
 print(f"CLOSED WINDOWS STILL FRAMED AS 'APPLY NOW': {len(findings)}\n")
+
+recent = [f for f in findings if f[0] <= 14]
+if recent:
+    print(f"   {len(recent)} of these closed within the last 14 days. VERIFY EACH AGAINST THE")
+    print("   SOURCE before repositioning: a deadline that just passed is the one most")
+    print("   likely to have been extended, and this audit reads our stored date only.\n")
 for days, table, route, slug, hits, title, desc in sorted(findings, reverse=True):
     print(f"  closed {days:>3}d ago  [{table[:6]}] {slug}   ({', '.join(hits)})")
     print(f"      title: {title}")
