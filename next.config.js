@@ -146,6 +146,15 @@ const nextConfig = {
         destination: '/sarkari-naukri/ibps-po-2026',
         permanent: true,
       },
+      // Cannibalisation fix 2026-09-22: rrb-group-d-2026 was live at both paths, both
+      // indexable, both in the sitemap, and the two copies had drifted to different
+      // stages of the same cycle. Same taxonomy rule as the 2026-08-04 batch: the
+      // exam row is deactivated and the /entrance-exams/ path 301s to the job page.
+      {
+        source: '/entrance-exams/rrb-group-d-2026',
+        destination: '/sarkari-naukri/rrb-group-d-2026',
+        permanent: true,
+      },
       {
         source: '/entrance-exams/ibps-rrb-2026',
         destination: '/sarkari-naukri/ibps-rrb-2026',
@@ -265,7 +274,7 @@ const nextConfig = {
       },
       {
         source: '/blog/railway-group-d-2026-notification-dates-apply-online',
-        destination: '/entrance-exams/rrb-group-d-2026',
+        destination: '/sarkari-naukri/rrb-group-d-2026',
         permanent: true,
       },
       // Cannibalization fix (2026-08-14): thin blogs competing with a much
