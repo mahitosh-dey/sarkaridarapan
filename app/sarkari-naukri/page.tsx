@@ -8,6 +8,7 @@ import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getJobPosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, JOB_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { listingCanonical } from "@/lib/seo";
 import { isDatePast } from "@/lib/date-utils";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -19,7 +20,7 @@ interface SarkariNaukriPageProps {
 export async function generateMetadata({
   searchParams,
 }: SarkariNaukriPageProps): Promise<Metadata> {
-  const canonicalUrl = `${SITE_URL}/sarkari-naukri`;
+  const canonicalUrl = listingCanonical("/sarkari-naukri", searchParams);
 
   return {
     title: "Latest Sarkari Naukri 2026: Government Jobs and Vacancies",

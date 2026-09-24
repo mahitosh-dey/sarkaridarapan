@@ -8,6 +8,7 @@ import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getEntranceExamPosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, ENTRANCE_EXAM_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { listingCanonical } from "@/lib/seo";
 import { isDatePast } from "@/lib/date-utils";
 
 export const revalidate = REVALIDATE_INTERVAL;
@@ -19,7 +20,7 @@ interface EntranceExamsListPageProps {
 export async function generateMetadata({
   searchParams,
 }: EntranceExamsListPageProps): Promise<Metadata> {
-  const canonicalUrl = `${SITE_URL}/entrance-exams`;
+  const canonicalUrl = listingCanonical("/entrance-exams", searchParams);
 
   return {
     title: "Entrance Exams 2026 - Upcoming Entrance Exams in India",

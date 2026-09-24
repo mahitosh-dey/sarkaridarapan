@@ -6,6 +6,7 @@ const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Admit Card", href: "/admit-card" },
   { label: "Sarkari Result", href: "/results" },
+  { label: "All Pages", href: "/all-pages" },
   { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy Policy", href: "/privacy-policy" },

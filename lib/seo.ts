@@ -288,3 +288,36 @@ export function generateWebsiteSchema(): JsonLdWebSite {
 export function jsonLdString(data: Record<string, unknown>): string {
   return JSON.stringify(data, null, 0);
 }
+
+/**
+ * Canonical URL for a paginated listing page.
+ *
+ * Two different query params, two different answers:
+ *
+ *   ?category=ssc  is a filtered VIEW of the same set, so it folds into the
+ *                  base listing. That was already the behaviour.
+ *   ?page=3        is a DISTINCT page holding items that appear nowhere else,
+ *                  so it must be self-canonical.
+ *
+ * Why this matters more than it looks. Detail pages beyond the first twelve
+ * are reachable only through ?page=2 and higher. When every one of those
+ * declared rel=canonical to page 1, Google read them as duplicates of page 1,
+ * dropped them, and crawled them less, which left the items on them with no
+ * discoverable internal link. A crawl on 2026-09-24 found 88 of 217 sitemap
+ * URLs with no inbound link outside the canonicalised pagination, and another
+ * 48 with one or two. Google's own pagination guidance is that each page in a
+ * sequence is its own page.
+ */
+export function listingCanonical(
+  basePath: string,
+  searchParams?: { page?: string; category?: string },
+): string {
+  const base = `${SITE_URL}${basePath}`;
+  const category = searchParams?.category;
+  if (category && category !== "all") return base;
+
+  const page = Number(searchParams?.page);
+  if (!Number.isFinite(page) || page <= 1) return base;
+
+  return `${base}?page=${Math.floor(page)}`;
+}

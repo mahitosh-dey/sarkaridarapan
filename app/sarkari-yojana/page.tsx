@@ -8,6 +8,7 @@ import AdBanner from "@/components/ads/AdBanner";
 import Sidebar from "@/components/layout/Sidebar";
 import { getSchemePosts, rethrowIfUnavailable } from "@/lib/content";
 import { SITE_NAME, SITE_URL, SCHEME_CATEGORIES, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { listingCanonical } from "@/lib/seo";
 
 export const revalidate = REVALIDATE_INTERVAL;
 
@@ -18,7 +19,7 @@ interface SarkariYojanaListPageProps {
 export async function generateMetadata({
   searchParams,
 }: SarkariYojanaListPageProps): Promise<Metadata> {
-  const canonicalUrl = `${SITE_URL}/sarkari-yojana`;
+  const canonicalUrl = listingCanonical("/sarkari-yojana", searchParams);
 
   return {
     title: "Sarkari Yojana 2026: Government Schemes List and Guide",

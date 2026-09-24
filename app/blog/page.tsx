@@ -9,30 +9,37 @@ import Sidebar from "@/components/layout/Sidebar";
 import { getAllGuides, GUIDE_CATEGORIES } from "@/lib/guides";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { listingCanonical } from "@/lib/seo";
 
 export const revalidate = 300;
 
 const POSTS_PER_PAGE = 12;
 
-export const metadata: Metadata = {
-  title: `Blog - Preparation Tips, Scheme Guides | ${SITE_NAME}`,
-  description:
-    "Read comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and step-by-step application help for Sarkari Naukri aspirants.",
-  alternates: {
-    canonical: `${SITE_URL}/blog`,
-  },
-  openGraph: {
-    title: `Blog | ${SITE_NAME}`,
-    description:
-      "Comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and application help.",
-    url: `${SITE_URL}/blog`,
-    type: "website",
-    images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
-  },
-};
-
 interface BlogPageProps {
   searchParams: { page?: string; category?: string };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: BlogPageProps): Promise<Metadata> {
+  const canonicalUrl = listingCanonical("/blog", searchParams);
+
+  return {
+    title: `Blog - Preparation Tips, Scheme Guides | ${SITE_NAME}`,
+    description:
+      "Read comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and step-by-step application help for Sarkari Naukri aspirants.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `Blog | ${SITE_NAME}`,
+      description:
+        "Comprehensive guides on government exam preparation, scheme walkthroughs, career advice, and application help.",
+      url: canonicalUrl,
+      type: "website",
+      images: [{ url: `${SITE_URL}/images/og-default.jpg`, width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {

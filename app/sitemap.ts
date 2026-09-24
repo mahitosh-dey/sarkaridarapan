@@ -123,6 +123,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/blog`,             lastModified: blogFresh,           changeFrequency: "weekly",  priority: 0.8 },
     { url: `${SITE_URL}/admit-card`,       lastModified: jobsFresh,           changeFrequency: "weekly",  priority: 0.7 },
     { url: `${SITE_URL}/results`,          lastModified: jobsFresh,           changeFrequency: "weekly",  priority: 0.7 },
+    // The flat index. Every detail page is one hop from here, which is the
+    // only path that does not run through canonicalised pagination.
+    { url: `${SITE_URL}/all-pages`,        lastModified: siteFresh,           changeFrequency: "daily",   priority: 0.7 },
     { url: `${SITE_URL}/about`,            lastModified: STATIC_PAGE_REVISED, changeFrequency: "monthly", priority: 0.3 },
     { url: `${SITE_URL}/contact`,          lastModified: STATIC_PAGE_REVISED, changeFrequency: "monthly", priority: 0.3 },
     { url: `${SITE_URL}/privacy-policy`,   lastModified: STATIC_PAGE_REVISED, changeFrequency: "yearly",  priority: 0.2 },
