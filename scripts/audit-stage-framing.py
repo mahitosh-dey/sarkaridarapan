@@ -27,6 +27,18 @@ expected false positive, which is why the output shows the newest date found so
 a reader can judge in one glance. Findings are ranked by how long the page has
 sat untouched, because risk here is age.
 
+
+FALSE POSITIVE REMOVED. The first version matched "if you're reading this",
+which flagged /entrance-exams/ailet-2026 on 24 September 2026. That page was
+written correctly: it said the 2026 cycle was complete and the reader was
+planning for the next one. The phrase is a narrative opener, not a claim about
+stage, so it is not evidence either way and it is gone.
+
+Checking it was still worth it. The page had no future date because it never
+mentioned AILET 2027, whose registration had been open since 7 August. So the
+"no future date" half of the test found a real gap even where the framing half
+was wrong, which is the half to trust.
+
 Read-only.
 """
 import json, re, sys
@@ -44,7 +56,6 @@ LIVE = re.compile(
     r"happening now|is ongoing|are ongoing|"
     r"right now|as we speak|"
     r"everything you need to know before|"
-    r"if you'?re reading this|if you are reading this|"
     r"is expected by \w+ \d{1,2}|"
     r"slip is out|window is open now|currently open"
     r")\b", re.I)
