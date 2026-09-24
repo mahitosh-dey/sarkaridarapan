@@ -16,6 +16,7 @@ import { getEntranceExamPosts, getEntranceExamBySlug, getJobsByCategory } from "
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { examToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { relatedWindow, relatedWithFallback } from "@/lib/related-window";
 import { parseFaqsFromMarkdown, buildFaqPageSchema } from "@/lib/faq-parser";
 import { robotsForRecord } from "@/lib/notification-status";
 
@@ -103,9 +104,12 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
   let relatedExams: import("@/lib/types").EntranceExamPost[] = [];
   try {
     const allExams = await getEntranceExamPosts();
-    relatedExams = allExams
-      .filter((e) => e.category === exam.category && e.slug !== exam.slug)
-      .slice(0, 4);
+    relatedExams = relatedWithFallback(
+      allExams.filter((e) => e.category === exam.category),
+      allExams,
+      exam.slug,
+      4,
+    );
   } catch {
     relatedExams = [];
   }
@@ -128,7 +132,7 @@ export default async function EntranceExamPage({ params }: ExamPageProps) {
   try {
     if (exam.category) {
       const categoryJobs = await getJobsByCategory(exam.category);
-      relatedJobs = categoryJobs.slice(0, 4);
+      relatedJobs = relatedWindow(categoryJobs, exam.slug, 4);
     }
   } catch {
     relatedJobs = [];

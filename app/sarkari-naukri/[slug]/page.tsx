@@ -17,6 +17,7 @@ import { getPublishedDbPosts } from "@/lib/blog-db";
 import { safeFormatDate } from "@/lib/date-utils";
 import { isClosingSoon, getDaysRemaining } from "@/lib/utils";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { relatedWindow } from "@/lib/related-window";
 import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
 import { robotsForRecord } from "@/lib/notification-status";
 
@@ -209,7 +210,7 @@ export default async function JobPage({ params }: JobPageProps) {
       jobHasSpecificState ? getJobsByState(job.state!) : Promise.resolve([]),
       jobHasSpecificState ? getSchemesByState(job.state!) : Promise.resolve([]),
     ]);
-    similarJobs = categoryJobs.filter((j) => j.slug !== job.slug).slice(0, 3);
+    similarJobs = relatedWindow(categoryJobs, job.slug, 3);
     const dbGuides = allDbPosts.filter((b) => b.category === job.category).slice(0, 3);
     if (dbGuides.length > 0) {
       const seen = new Set(dbGuides.map((g) => g.slug));

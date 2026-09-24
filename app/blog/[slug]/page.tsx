@@ -18,6 +18,7 @@ import { getAllGuides, getGuideBySlug, extractTocItems } from "@/lib/guides";
 import { getDbPostBySlug, getPublishedDbPosts } from "@/lib/blog-db";
 import { getEntranceExamPosts, getJobsByCategory, getSchemePosts } from "@/lib/content";
 import { blogToExams, blogToSchemes } from "@/lib/related-links";
+import { relatedWindow, relatedWithFallback } from "@/lib/related-window";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
 import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
 
@@ -93,11 +94,14 @@ export default async function GuidePage({ params }: GuidePageProps) {
 
   const dbSlugs = new Set(dbPosts.map((p) => p.slug));
   const allGuides = [...dbPosts, ...hardcoded.filter((g) => !dbSlugs.has(g.slug))];
-  const relatedGuides = allGuides
-    .filter((g) => g.category === guide.category && g.slug !== guide.slug)
-    .slice(0, 3);
+  const relatedGuides = relatedWithFallback(
+    allGuides.filter((g) => g.category === guide.category),
+    allGuides,
+    guide.slug,
+    3,
+  );
 
-  const relatedJobs = categoryJobs.slice(0, 3);
+  const relatedJobs = relatedWindow(categoryJobs, guide.slug, 3);
   const relatedExams = (allExams as import("@/lib/types").EntranceExamPost[]).filter((e) => examSlugs.includes(e.slug));
   const relatedSchemes = (allSchemes as import("@/lib/types").SchemePost[]).filter((s) => schemeSlugs.includes(s.slug));
 

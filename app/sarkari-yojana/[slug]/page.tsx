@@ -15,6 +15,7 @@ import { getSchemePosts, getSchemeBySlug, getJobsByState } from "@/lib/content";
 import { getPublishedDbPosts } from "@/lib/blog-db";
 import { schemeToBlogs } from "@/lib/related-links";
 import { SITE_NAME, SITE_URL, REVALIDATE_INTERVAL } from "@/lib/constants";
+import { relatedWindow, relatedWithFallback } from "@/lib/related-window";
 import { parseFaqsFromMarkdown } from "@/lib/faq-parser";
 import { robotsForRecord } from "@/lib/notification-status";
 
@@ -95,9 +96,13 @@ export default async function SchemePage({ params }: SchemePageProps) {
     getJobsByState(jobsState).catch(() => []),
   ]);
 
-  const relatedSchemes = (allSchemes as import("@/lib/types").SchemePost[])
-    .filter((s) => s.category === scheme.category && s.slug !== scheme.slug)
-    .slice(0, 4);
+  const schemePool = allSchemes as import("@/lib/types").SchemePost[];
+  const relatedSchemes = relatedWithFallback(
+    schemePool.filter((s) => s.category === scheme.category),
+    schemePool,
+    scheme.slug,
+    4,
+  );
 
   const relatedBlogs = (allBlogs as import("@/lib/guides").Guide[])
     .filter((b) => blogSlugs.includes(b.slug));
