@@ -146,6 +146,20 @@ const nextConfig = {
         destination: '/sarkari-naukri/ibps-po-2026',
         permanent: true,
       },
+      // Cannibalisation fix 2026-09-24: nda-2-2026 and cds-2-2026, same pattern again.
+      // NDA and CDS are UPSC recruitment exams rather than entrance exams, so the job
+      // page is canonical under the taxonomy rule. Both exam copies were shorter and
+      // had drifted to an earlier stage of the same cycle than the job copy.
+      {
+        source: '/entrance-exams/nda-2-2026',
+        destination: '/sarkari-naukri/nda-na-2026',
+        permanent: true,
+      },
+      {
+        source: '/entrance-exams/cds-2-2026',
+        destination: '/sarkari-naukri/upsc-cds-ii-2026',
+        permanent: true,
+      },
       // Cannibalisation fix 2026-09-22: rrb-group-d-2026 was live at both paths, both
       // indexable, both in the sitemap, and the two copies had drifted to different
       // stages of the same cycle. Same taxonomy rule as the 2026-08-04 batch: the
