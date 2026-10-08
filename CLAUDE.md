@@ -345,6 +345,23 @@ Apply to every sentence of every article.
 
 ---
 
+## Manual indexing queue
+
+`manual_link.md` at the project root holds the URLs to submit by hand in Search Console,
+and `scripts/update-manual-links.py` regenerates its Pending section from the data files.
+
+Run the generator after any batch of content corrections, so the queue reflects what was
+just fixed:
+
+```
+python3 scripts/update-manual-links.py
+```
+
+Why it matters: GSC on 4 October 2026 showed 10 indexed pages, nine last crawled in June.
+Googlebot reaches the homepage roughly monthly and little else, so corrections are invisible
+to Google until a crawl is requested by hand. Fixing a page and not queueing it means the
+fix does not reach the index.
+
 ## Important Warnings
 
 1. **ads.txt placeholder** — `public/ads.txt` has `pub-XXXXXXXXXXXXXXXX`. Update immediately after AdSense approval.
