@@ -20,7 +20,7 @@ shows work not yet done. Inactive rows and redirected slugs never appear.
 Read-only apart from manual_link.md itself.
 """
 import json, re, sys
-from datetime import date
+from datetime import date, timedelta
 
 DOC = "manual_link.md"
 SITE = "https://www.sarkaridarapan.com"
@@ -36,6 +36,34 @@ def already_listed(doc: str) -> set[str]:
     tail = doc.split(END)[-1] if END in doc else ""
     found = re.findall(rf"{re.escape(SITE)}(/[^\s\)|]*)", head + tail)
     return {u.rstrip("/") or "/" for u in found}
+
+
+def ticked_in_pending(doc: str) -> list[str]:
+    """URLs ticked off inside the pending block.
+
+    Without this the generator eats its own homework: a URL ticked in the
+    pending list lives in neither the head nor the tail, so the next run would
+    rebuild the block and hand it back unticked, and the submission would be
+    made twice. They get promoted into the submitted log instead.
+    """
+    if START not in doc or END not in doc:
+        return []
+    block = doc.split(START, 1)[1].split(END, 1)[0]
+    return re.findall(r"^- \[x\] (https://\S+)\s*$", block, re.M)
+
+
+def promote_to_log(doc: str, urls: list[str]) -> str:
+    """Append newly ticked pending URLs to the submitted log table."""
+    if not urls:
+        return doc
+    today = date.today().isoformat()
+    check = (date.today() + timedelta(days=10)).isoformat()
+    rows = "\n".join(f"| {today} | {u} | check from {check} |" for u in urls)
+    m = re.search(r"(## Submitted log.*?\|[^\n]*Date sent[^\n]*\|\n\|[-\s|]+\|\n)", doc, re.S)
+    if not m:
+        print("  WARN: submitted log table not found, ticks not promoted")
+        return doc
+    return doc[:m.end(1)] + rows + "\n" + doc[m.end(1):]
 
 
 def candidates(skip: set[str]):
@@ -88,6 +116,11 @@ def main() -> int:
     if START not in doc or END not in doc:
         print(f"ABORT: {DOC} is missing the {START} / {END} markers.")
         return 1
+
+    promoted = ticked_in_pending(doc)
+    if promoted:
+        doc = promote_to_log(doc, promoted)
+        print(f"  promoted {len(promoted)} ticked URLs from pending into the submitted log")
 
     skip = already_listed(doc)
     rows = candidates(skip)

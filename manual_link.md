@@ -30,23 +30,23 @@ you. Spread the list across days rather than trying to clear it at once.
 Google's copy of these is four months old. Resubmitting refreshes them and signals the site
 is alive. Losing any of these costs more than gaining a new one.
 
-- [ ] https://www.sarkaridarapan.com/
-- [ ] https://www.sarkaridarapan.com/sarkari-naukri/mp-police-constable-2026
-- [ ] https://www.sarkaridarapan.com/sarkari-naukri/india-post-gds-2026
-- [ ] https://www.sarkaridarapan.com/sarkari-naukri/indian-army-agniveer-2026
-- [ ] https://www.sarkaridarapan.com/sarkari-naukri/hpsc-hcs-2026
-- [ ] https://www.sarkaridarapan.com/blog/ssc-cgl-2026-syllabus-preparation-guide
-- [ ] https://www.sarkaridarapan.com/blog/best-government-jobs-for-arts-students-india-2026
+- [x] https://www.sarkaridarapan.com/
+- [x] https://www.sarkaridarapan.com/sarkari-naukri/mp-police-constable-2026
+- [x] https://www.sarkaridarapan.com/sarkari-naukri/india-post-gds-2026
+- [x] https://www.sarkaridarapan.com/sarkari-naukri/indian-army-agniveer-2026
+- [x] https://www.sarkaridarapan.com/sarkari-naukri/hpsc-hcs-2026
+- [x] https://www.sarkaridarapan.com/blog/ssc-cgl-2026-syllabus-preparation-guide
+- [x] https://www.sarkaridarapan.com/blog/best-government-jobs-for-arts-students-india-2026
 
 ## Priority 2: redirect targets and discovery hubs
 
 The first three carry the equity from three indexed URLs that now 301 elsewhere. Google has
 to crawl the target before that signal transfers.
 
-- [ ] https://www.sarkaridarapan.com/sarkari-yojana/pm-mudra-loan-yojana-pmmy-2026
-- [ ] https://www.sarkaridarapan.com/sarkari-naukri/ibps-rrb-2026
-- [ ] https://www.sarkaridarapan.com/sarkari-naukri/ibps-po-2026
-- [ ] https://www.sarkaridarapan.com/all-pages
+- [x] https://www.sarkaridarapan.com/sarkari-yojana/pm-mudra-loan-yojana-pmmy-2026
+- [x] https://www.sarkaridarapan.com/sarkari-naukri/ibps-rrb-2026
+- [x] https://www.sarkaridarapan.com/sarkari-naukri/ibps-po-2026
+- [x] https://www.sarkaridarapan.com/all-pages
 - [ ] https://www.sarkaridarapan.com/sarkari-naukri
 - [ ] https://www.sarkaridarapan.com/sarkari-yojana
 - [ ] https://www.sarkaridarapan.com/entrance-exams
@@ -195,8 +195,18 @@ Record what you sent and when, so we can tell later whether a crawl followed. Ch
 back in GSC after about ten days.
 
 | Date sent | URL | Outcome when checked |
-|---|---|---|
-| | | |
+| --------- | --- | -------------------- |
+| 2026-10-08 | https://www.sarkaridarapan.com/ | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-naukri/mp-police-constable-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-naukri/india-post-gds-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-naukri/indian-army-agniveer-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-naukri/hpsc-hcs-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/blog/ssc-cgl-2026-syllabus-preparation-guide | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/blog/best-government-jobs-for-arts-students-india-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-yojana/pm-mudra-loan-yojana-pmmy-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-naukri/ibps-rrb-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/sarkari-naukri/ibps-po-2026 | check from 2026-10-18 |
+| 2026-10-08 | https://www.sarkaridarapan.com/all-pages | check from 2026-10-18 |
 
 ## What the outcome means
 
