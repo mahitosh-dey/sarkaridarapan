@@ -59,10 +59,23 @@ export default async function HomePage() {
     return aClosed === bClosed ? 0 : aClosed ? 1 : -1;
   });
 
-  const latestJobs = sortedJobs.slice(0, 6);
-  const latestSchemes = schemes.slice(0, 6);
-  const latestExams = sortedExams.slice(0, 6);
-  const latestGuides = guides.slice(0, 4);
+  // Homepage link counts, raised from 6/6/6/4 on 2026-10-08.
+  //
+  // GSC on 4 October showed ten indexed pages, nine of them last crawled in
+  // June. The only URL Googlebot still visits regularly is this one: it was
+  // crawled on 29 September while the rest of the site went untouched for four
+  // months. Crawl propagates from where the bot actually lands, so the number
+  // of detail pages reachable in one hop from here is the constraint on how
+  // much of the site Google ever sees. Twenty-three links was too few to pass
+  // a monthly crawl through 193 pages.
+  //
+  // Not raised further on purpose. A homepage listing every page stops being a
+  // homepage, and crawl budget still caps how many of these get fetched. The
+  // pages that matter most get Request Indexing by hand on top of this.
+  const latestJobs = sortedJobs.slice(0, 12);
+  const latestSchemes = schemes.slice(0, 12);
+  const latestExams = sortedExams.slice(0, 10);
+  const latestGuides = guides.slice(0, 8);
 
   // Jobs whose last date is today or within the next 7 days
   const closingSoonJobs = jobs
