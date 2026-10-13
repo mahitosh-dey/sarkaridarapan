@@ -66,11 +66,13 @@ anything already ticked off above. Submit from the top: a page corrected this we
 Google a reason to index it that a page untouched since July does not.
 
 <!-- PENDING:START -->
-184 pages pending, newest correction first. Generated 2026-10-09.
+184 pages pending, newest correction first. Generated 2026-10-13.
 
 
 **Batch 1** (10 URLs, one day's quota)
 
+- [ ] https://www.sarkaridarapan.com/entrance-exams/gate-2027
+      <!-- 2026-10-13 · 4059w · GATE 2027 Registration Closed: Correction Window 14  -->
 - [ ] https://www.sarkaridarapan.com/entrance-exams/neet-ug-2026
       <!-- 2026-09-30 · 3895w · NEET UG 2026 Round 3 Allotted: Report by 9 October,  -->
 - [ ] https://www.sarkaridarapan.com/sarkari-yojana/national-scholarship-portal-nsp-2026-27-2026
@@ -81,8 +83,6 @@ Google a reason to index it that a page untouched since July does not.
       <!-- 2026-09-29 · 3433w · CUET UG 2026 Admissions Closed: Spot Rounds and 2027 -->
 - [ ] https://www.sarkaridarapan.com/entrance-exams/neet-pg-2026
       <!-- 2026-09-29 · 3229w · NEET PG 2026 Result Out: Cut-Off 262, Scorecard 1 Oc -->
-- [ ] https://www.sarkaridarapan.com/entrance-exams/gate-2027
-      <!-- 2026-09-28 · 3814w · GATE 2027 Registration Extended Again: Now Open to 5 -->
 - [ ] https://www.sarkaridarapan.com/sarkari-naukri/sbi-clerk-2026
       <!-- 2026-09-28 · 3096w · SBI Clerk 2026: Prelims Done, Mains on 23 November -->
 - [ ] https://www.sarkaridarapan.com/entrance-exams/kvs-pgt-tgt-prt-2026
