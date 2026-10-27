@@ -7,9 +7,9 @@ What to do, in order, to earn money from the Bing traffic this site already has.
 | Phase | State | Owner |
 |---|---|---|
 | 0. Clean up existing setup | **Done** | Claude |
-| 1. Apply to networks | **Cuelinks registered 27 Oct**, verification pending | You |
+| 1. Apply to networks | **Cuelinks verified 27 Oct**, script installed | Done |
 | 2. Code | **Partly done**, 1 of 3 | Claude |
-| 3. Place the links | Blocked on Phase 1 | Claude |
+| 3. Place the links | **Next, and the only step that earns anything** | Claude |
 | 4. Measure | Blocked on Phase 3 | You |
 
 Nothing earns money until Phase 1 happens, and Phase 1 is yours. Phases 2.2 and 2.3 are
@@ -76,7 +76,7 @@ both facts.
 
 These are your steps, not Claude's. Each takes under an hour.
 
-### Step 1: Cuelinks (do this first)  [IN PROGRESS] registered 27 Oct, verifying
+### Step 1: Cuelinks  [DONE] registered and verified 27 Oct
 
 The single application that unlocks the most. Cuelinks is an Indian affiliate aggregator:
 one approval gives you Testbook and other edtech advertisers, and it pays in rupees to an
@@ -160,7 +160,29 @@ a commercial relationship it does not have.
 
 ---
 
-## Phase 3: where the links go  [ ] blocked on Phase 1
+
+### What the Cuelinks script does and does not do
+
+Installed 27 October 2026, channel 332035, in `app/layout.tsx`.
+
+Cuelinks is a link converter: it rewrites outbound links to merchant sites into affiliate
+links at page load. It does not create links, and it cannot monetise a link to a site that
+runs no affiliate programme.
+
+A count of every outbound link on this site on 27 October:
+
+| | |
+|---|---|
+| Distinct outbound domains | 342 |
+| Government and academic | 1,936 of 2,113, or 91% |
+
+The most linked destinations are up.gov.in, upsc.gov.in, ssc.gov.in, pib.gov.in and
+pmkisan.gov.in. None pays affiliate commission, and none ever will. So the script currently
+converts nothing and earns nothing, which is working as designed rather than broken.
+
+It earns only once merchant links exist on pages where they make sense, which is Phase 3.
+
+## Phase 3: where the links go  [NEXT] nothing earns until this happens
 
 Not sitewide banners. Links on the pages that already receive Bing clicks, placed where a
 reader is already looking for exam preparation.

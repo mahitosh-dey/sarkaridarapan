@@ -181,6 +181,25 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "x8xyemigwr");
           `}
         </Script>
+        {/* Cuelinks link converter, channel 332035, added 2026-10-27.
+            Rewrites outbound links to merchant sites into affiliate links at runtime.
+            It converts nothing today: 91% of this site's outbound links point at
+            government portals (ssc.gov.in, upsc.gov.in, pmkisan.gov.in) and no affiliate
+            programme pays for those. It earns only once merchant links exist on the exam
+            pages. Loaded now so the integration is in place and Cuelinks can confirm the
+            install. Protocol branch from their snippet dropped: this site is HTTPS only. */}
+        <Script id="cuelinks" strategy="afterInteractive">
+          {`
+            var cId = "332035";
+            (function (d) {
+              var s = d.createElement("script");
+              s.type = "text/javascript";
+              s.async = true;
+              s.src = "https://cdn0.cuelinks.com/js/cuelinksv2.js";
+              d.getElementsByTagName("body")[0].appendChild(s);
+            })(document);
+          `}
+        </Script>
         {/* AdSense script removed 2026-10-27. The account was rejected in July 2026 for
             "low value content" and is still unapproved, so this loaded on every page,
             found no approved account and rendered nothing. Restore this line and the
