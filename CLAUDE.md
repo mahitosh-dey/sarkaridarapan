@@ -364,7 +364,7 @@ fix does not reach the index.
 
 ## Important Warnings
 
-1. **ads.txt placeholder** — `public/ads.txt` has `pub-XXXXXXXXXXXXXXXX`. Update immediately after AdSense approval.
+1. **The ads.txt placeholder warning pointed at the wrong file** (corrected 2026-10-27) — `public/ads.txt` holds a real publisher ID, `pub-1237254119179544`, issued when the AdSense application was made; a publisher ID is issued at application, not approval. The actual `pub-XXXXXXXXXXXXXXXX` placeholder lives in `components/ads/AdBanner.tsx` and `components/ads/InArticleAd.tsx`, as the fallback when `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` is unset. AdSense is still unapproved after the July 2026 rejection, so both components now render nothing until an approved publisher ID is configured.
 2. **Admin is public** — `/admin/*` routes have no authentication. Don't share the admin URL publicly.
 3. **Supabase keys** — Never commit `.env.local`. Service role key is in there.
 4. **Facebook removed** — No Facebook page exists. Footer intentionally shows only Telegram + WhatsApp.

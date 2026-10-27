@@ -49,6 +49,14 @@ export default function AdBanner({
     return null;
   }
 
+  // AdSense has been unapproved since the July 2026 rejection, and with no loader script
+  // on the page these <ins> elements render nothing anyway. Emitting them anyway leaves
+  // markup on every page advertising a placeholder publisher ID, so render nothing until
+  // a real ID is configured. Set NEXT_PUBLIC_ADSENSE_PUBLISHER_ID to bring them back.
+  if (!process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID) {
+    return null;
+  }
+
   return (
     <div className={`w-full my-4 ${className}`}>
       <ins

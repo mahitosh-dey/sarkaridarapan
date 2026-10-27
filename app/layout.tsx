@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import AdSenseScript from "@/components/ads/AdSenseScript";
 import TelegramBanner from "@/components/ui/TelegramBanner";
 import JsonLd from "@/components/seo/JsonLd";
 import Script from "next/script";
@@ -176,7 +175,10 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "x8xyemigwr");
           `}
         </Script>
-        <AdSenseScript />
+        {/* AdSense script removed 2026-10-27. The account was rejected in July 2026 for
+            "low value content" and is still unapproved, so this loaded on every page,
+            found no approved account and rendered nothing. Restore this line and the
+            import above if AdSense is ever approved. */}
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
