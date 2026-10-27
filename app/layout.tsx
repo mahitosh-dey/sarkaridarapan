@@ -66,6 +66,12 @@ export const metadata: Metadata = {
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
     other: {
       "msvalidate.01": process.env.NEXT_PUBLIC_BING_VERIFICATION || "",
+      // Cuelinks publisher verification, added 2026-10-27. Hardcoded rather than
+      // env-only because it is a public ownership token, not a secret, and this way
+      // it works on deploy without a Vercel env var having to be set first. The env
+      // var still overrides it if one is ever configured.
+      "cuelinks-verification":
+        process.env.NEXT_PUBLIC_CUELINKS_VERIFICATION || "VERIFY-CL-1A5ECC46",
     },
   },
   openGraph: {

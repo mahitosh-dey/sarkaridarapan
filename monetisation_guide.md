@@ -7,7 +7,7 @@ What to do, in order, to earn money from the Bing traffic this site already has.
 | Phase | State | Owner |
 |---|---|---|
 | 0. Clean up existing setup | **Done** | Claude |
-| 1. Apply to networks | **Not started** | You |
+| 1. Apply to networks | **Cuelinks registered 27 Oct**, verification pending | You |
 | 2. Code | **Partly done**, 1 of 3 | Claude |
 | 3. Place the links | Blocked on Phase 1 | Claude |
 | 4. Measure | Blocked on Phase 3 | You |
@@ -76,7 +76,7 @@ both facts.
 
 These are your steps, not Claude's. Each takes under an hour.
 
-### Step 1: Cuelinks (do this first)  [ ] not started
+### Step 1: Cuelinks (do this first)  [IN PROGRESS] registered 27 Oct, verifying
 
 The single application that unlocks the most. Cuelinks is an Indian affiliate aggregator:
 one approval gives you Testbook and other edtech advertisers, and it pays in rupees to an
@@ -88,6 +88,10 @@ Indian bank account.
 4. Traffic: be honest, around 165 visits a month from Bing. Understating or inflating it
    both end badly at payout
 5. Add PAN and bank details for payout
+
+**Registered 27 October 2026.** Publisher ID 282260, Bronze Publisher, status Active. The dashboard is branded Parity Cube Private Limited, which is Cuelinks' parent company, so a Parity Cube login is a Cuelinks login.
+
+Site ownership is verified with a meta tag. The tag `cuelinks-verification` / `VERIFY-CL-1A5ECC46` is in `app/layout.tsx`, so it renders in the head of every page. Verification can only succeed after that is deployed to production.
 
 Expect a review of a few working days. Approval is not guaranteed at this traffic level.
 If they decline, ask what traffic they want and reapply later rather than arguing.
