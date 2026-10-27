@@ -50,7 +50,7 @@ every page view and declares an unapproved AdSense account to anyone reading the
 
 **Done.** Removed from `app/layout.tsx` on 27 October 2026. Verified in the build: the homepage now carries zero `googlesyndication` script tags, down from one on every page. Restore the `<AdSenseScript />` line and its import if AdSense is ever approved.
 
-### 0.2 CLAUDE.md is wrong about ads.txt  [DONE, with a twist]
+### 0.2 The fake publisher ID was in the ad components, not ads.txt  [DONE]
 
 The project notes warn that `public/ads.txt` contains a placeholder,
 `pub-XXXXXXXXXXXXXXXX`, and must be updated after AdSense approval. It does not. It
