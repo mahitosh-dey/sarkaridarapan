@@ -182,6 +182,21 @@ converts nothing and earns nothing, which is working as designed rather than bro
 
 It earns only once merchant links exist on pages where they make sense, which is Phase 3.
 
+#### Why the first install failed their checker
+
+Cuelinks' Check Installation reported "Channel Id Incorrect in the Javascript" on
+27 October, while the channel ID in the code was correct.
+
+The script was loaded with `next/script` at `strategy="afterInteractive"`. Next.js hands
+that code to React to inject after hydration, so the server-rendered HTML carries it only
+as an escaped string inside the Flight payload: `\\"children\\":\\"var cId = \\\\\\"332035\\\\\\"`.
+A browser runs it correctly. Cuelinks' checker fetches the HTML without executing
+JavaScript, finds no literal snippet, and reports the channel ID as wrong.
+
+Fixed by rendering a plain `<script>` tag instead, byte-identical to the snippet Cuelinks
+issues. The same reasoning applies to any third-party verification checker: if a network
+has to see the code in the HTML, `next/script` with afterInteractive will hide it.
+
 ## Phase 3: where the links go  [NEXT] nothing earns until this happens
 
 Not sitewide banners. Links on the pages that already receive Bing clicks, placed where a

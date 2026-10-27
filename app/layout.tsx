@@ -186,20 +186,33 @@ export default function RootLayout({
             It converts nothing today: 91% of this site's outbound links point at
             government portals (ssc.gov.in, upsc.gov.in, pmkisan.gov.in) and no affiliate
             programme pays for those. It earns only once merchant links exist on the exam
-            pages. Loaded now so the integration is in place and Cuelinks can confirm the
-            install. Protocol branch from their snippet dropped: this site is HTTPS only. */}
-        <Script id="cuelinks" strategy="afterInteractive">
-          {`
-            var cId = "332035";
-            (function (d) {
-              var s = d.createElement("script");
-              s.type = "text/javascript";
-              s.async = true;
-              s.src = "https://cdn0.cuelinks.com/js/cuelinksv2.js";
-              d.getElementsByTagName("body")[0].appendChild(s);
-            })(document);
-          `}
-        </Script>
+            pages.
+
+            Deliberately a plain script tag, not next/script. With strategy
+            "afterInteractive" Next.js hands the code to React to inject after hydration,
+            so the server-rendered HTML carries it only as an escaped string inside the
+            Flight payload. It runs correctly in a browser, but Cuelinks' Check
+            Installation fetches the HTML without executing JavaScript, finds no literal
+            snippet and reports "Channel Id Incorrect in the Javascript". Rendering it
+            directly puts the verbatim snippet in the HTML where their checker can read
+            it. Kept byte-identical to the snippet Cuelinks issues, single quotes and
+            protocol branch included, so nothing in it can look unfamiliar to the
+            checker. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+var cId = '332035';
+
+(function(d, t) {
+  var s = d.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = (document.location.protocol == 'https:' ? 'https://cdn0.cuelinks.com/js/' : 'http://cdn0.cuelinks.com/js/') + 'cuelinksv2.js';
+  document.getElementsByTagName('body')[0].appendChild(s);
+}());
+`,
+          }}
+        />
         {/* AdSense script removed 2026-10-27. The account was rejected in July 2026 for
             "low value content" and is still unapproved, so this loaded on every page,
             found no approved account and rendered nothing. Restore this line and the
